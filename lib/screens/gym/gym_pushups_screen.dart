@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
 import 'gym_activity_screen.dart';
+import 'gym_plan_generation_screen.dart';
 
 /// Gym Onboarding Step 2 – "How many push-ups can you do at one time?"
 class GymPushupsScreen extends StatefulWidget {
@@ -47,7 +48,7 @@ class _GymPushupsScreenState extends State<GymPushupsScreen> {
                   ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GymPlanGenerationScreen())),
                     child: Text(
                       'Skip',
                       style: GoogleFonts.outfit(

@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
 import '../../data/gym_user_data.dart';
 import 'gym_motivation_screen.dart';
+import 'gym_plan_generation_screen.dart';
 
 /// Body part option model.
 class _BodyPartOption {
@@ -223,7 +224,7 @@ class _GymBodyFocusScreenState extends State<GymBodyFocusScreen>
                   GestureDetector(
                     onTap: () {
                       // Skip action
-                      Navigator.popUntil(context, (route) => route.isFirst);
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const GymPlanGenerationScreen()));
                     },
                     child: Text(
                       'Skip',

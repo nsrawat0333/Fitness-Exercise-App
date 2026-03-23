@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
+import '../../constants/app_colors.dart';
 import 'gym_pushups_screen.dart';
+import 'gym_plan_generation_screen.dart';
 
 /// Gym Onboarding Step 1 – "What are your main goals?"
 /// Shows gender-specific images on goal cards.
@@ -72,7 +74,7 @@ class _GymMotivationScreenState extends State<GymMotivationScreen> {
                   ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GymPlanGenerationScreen())),
                     child: Text(
                       'Skip',
                       style: GoogleFonts.outfit(

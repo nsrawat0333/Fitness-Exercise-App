@@ -62,7 +62,7 @@ class _GymBodyInfoScreenState extends State<GymBodyInfoScreen> {
                   ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GymPlanGenerationScreen())),
                     child: Text(
                       'Skip',
                       style: GoogleFonts.outfit(

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
 import '../../data/gym_user_data.dart';
+import '../../data/gym_user_data.dart';
 import 'gym_body_info_screen.dart';
+import 'gym_plan_generation_screen.dart';
 
 /// Gym Onboarding Step 4 – "Set your weekly goal"
 class GymWeeklyGoalScreen extends StatefulWidget {
@@ -53,7 +55,7 @@ class _GymWeeklyGoalScreenState extends State<GymWeeklyGoalScreen> {
                   ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GymPlanGenerationScreen())),
                     child: Text(
                       'Skip',
                       style: GoogleFonts.outfit(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
 import 'gym_weekly_goal_screen.dart';
+import 'gym_plan_generation_screen.dart';
 
 /// Gym Onboarding Step 3 – "What's your activity level?"
 class GymActivityScreen extends StatefulWidget {
@@ -48,7 +49,7 @@ class _GymActivityScreenState extends State<GymActivityScreen> {
                   ),
                   const Spacer(),
                   GestureDetector(
-                    onTap: () => Navigator.popUntil(context, (r) => r.isFirst),
+                    onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GymPlanGenerationScreen())),
                     child: Text(
                       'Skip',
                       style: GoogleFonts.outfit(

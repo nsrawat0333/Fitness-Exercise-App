@@ -39,7 +39,7 @@
       ],
       "duration": 30,
       "reps": "20-30",
-      "animation": "assets/images/jsonanimation/high knees.json"
+      "animation": "assets/images/jsonanimation/high_knees.json"
     },
     {
       "id": "burpees",
@@ -79,7 +79,7 @@
       ],
       "duration": 30,
       "reps": "20-30",
-      "animation": "assets/images/jsonanimation/Mountain Climbers.json"
+      "animation": "assets/images/jsonanimation/mountain_climbers.json"
     },
     {
       "id": "butt_kicks",
@@ -119,7 +119,7 @@
       ],
       "duration": 60,
       "reps": "50-100",
-      "animation": "assets/images/jsonanimation/Jump rope.json"
+      "animation": "assets/images/jsonanimation/jump_rope.json"
     },
     {
       "id": "skater_jumps",
@@ -219,7 +219,7 @@
       ],
       "duration": 30,
       "reps": "10-20",
-      "animation": "assets/images/jsonanimation/push up.json"
+      "animation": "assets/images/jsonanimation/push_up.json"
     },
     {
       "id": "wide_push_ups",
@@ -260,7 +260,7 @@
       ],
       "duration": 30,
       "reps": "8-12",
-      "animation": "assets/images/jsonanimation/Diamond Push Up.json"
+      "animation": "assets/images/jsonanimation/diamond_push_up.json"
     },
     {
       "id": "decline_push_ups",
@@ -418,7 +418,7 @@
       ],
       "duration": 45,
       "reps": "hold",
-      "animation": "assets/images/jsonanimation/Plank.json"
+      "animation": "assets/images/jsonanimation/plank.json"
     },
     {
       "id": "side_plank",
@@ -457,7 +457,7 @@
       ],
       "duration": 30,
       "reps": "12-15",
-      "animation": "assets/images/jsonanimation/Leg Raises.json"
+      "animation": "assets/images/jsonanimation/leg_raises.json"
     },
     {
       "id": "flutter_kicks",
@@ -496,7 +496,7 @@
       ],
       "duration": 30,
       "reps": "15-20 each side",
-      "animation": "assets/images/jsonanimation/Russian Twist.json"
+      "animation": "assets/images/jsonanimation/russian_twist.json"
     },
     {
       "id": "v_ups",
@@ -516,7 +516,7 @@
       ],
       "duration": 30,
       "reps": "10-15",
-      "animation": "assets/images/jsonanimation/V - up.json"
+      "animation": "assets/images/jsonanimation/v_up.json"
     },
     {
       "id": "dead_bug",
@@ -536,7 +536,7 @@
       ],
       "duration": 30,
       "reps": "10-12 each side",
-      "animation": "assets/images/jsonanimation/Dead bug.json"
+      "animation": "assets/images/jsonanimation/dead_bug.json"
     },
     {
       "id": "toe_touches",
@@ -636,7 +636,7 @@
       ],
       "duration": 30,
       "reps": "12-15",
-      "animation": "assets/images/jsonanimation/jump squats.json"
+      "animation": "assets/images/jsonanimation/jump_squats.json"
     },
     {
       "id": "lunges",
@@ -657,7 +657,7 @@
       ],
       "duration": 30,
       "reps": "10-12 each leg",
-      "animation": "assets/images/jsonanimation/Lunges.json"
+      "animation": "assets/images/jsonanimation/lunges.json"
     },
     {
       "id": "reverse_lunges",
@@ -699,7 +699,7 @@
       ],
       "duration": 30,
       "reps": "10-12 each leg",
-      "animation": "assets/images/jsonanimation/Walking lunges.json"
+      "animation": "assets/images/jsonanimation/walking_lunges.json"
     },
     {
       "id": "wall_sit",
@@ -780,7 +780,7 @@
       ],
       "duration": 30,
       "reps": "15-20",
-      "animation": "assets/images/jsonanimation/sumo squats.json"
+      "animation": "assets/images/jsonanimation/sumo_squats.json"
     },
     {
       "id": "pistol_squats",
@@ -801,7 +801,7 @@
       ],
       "duration": 30,
       "reps": "5-8 each leg",
-      "animation": "assets/images/jsonanimation/Pistol squats.json"
+      "animation": "assets/images/jsonanimation/pistol_squats.json"
     },
     {
       "id": "leg_curls",
@@ -842,7 +842,7 @@
       ],
       "duration": 30,
       "reps": "10-12 each side",
-      "animation": "assets/images/jsonanimation/side lunges.json"
+      "animation": "assets/images/jsonanimation/side_lunges.json"
     },
     {
       "id": "glute_bridges",
@@ -959,7 +959,7 @@
       ],
       "duration": 30,
       "reps": "15-20",
-      "animation": "assets/images/jsonanimation/froggy Glute Lifts.json"
+      "animation": "assets/images/jsonanimation/froggy_glute_lifts.json"
     },
     {
       "id": "bicep_curls",
@@ -980,7 +980,7 @@
       ],
       "duration": 30,
       "reps": "10-15",
-      "animation": "assets/images/jsonanimation/Bicep Curl.json"
+      "animation": "assets/images/jsonanimation/bicep_curl.json"
     },
     {
       "id": "hammer_curls",
@@ -1001,7 +1001,7 @@
       ],
       "duration": 30,
       "reps": "10-15",
-      "animation": "assets/images/jsonanimation/Hammer curl.json"
+      "animation": "assets/images/jsonanimation/hammer_curl.json"
     },
     {
       "id": "tricep_dips",
@@ -1062,7 +1062,7 @@
       ],
       "duration": 30,
       "reps": "15-20 each direction",
-      "animation": "assets/images/jsonanimation/arm circle.json"
+      "animation": "assets/images/jsonanimation/arm_circle.json"
     },
     {
       "id": "overhead_tricep_extension",
@@ -1083,7 +1083,7 @@
       ],
       "duration": 30,
       "reps": "10-12",
-      "animation": "assets/images/jsonanimation/Overhead Tricep extension.json"
+      "animation": "assets/images/jsonanimation/overhead_tricep_extension.json"
     },
     {
       "id": "close_grip_push_ups",
@@ -1105,7 +1105,7 @@
       ],
       "duration": 30,
       "reps": "8-12",
-      "animation": "assets/images/jsonanimation/close Grip Push Ups.json"
+      "animation": "assets/images/jsonanimation/close_grip_push_ups.json"
     },
     {
       "id": "wrist_curls",
@@ -1261,7 +1261,7 @@
       ],
       "duration": 30,
       "reps": "5-10",
-      "animation": "assets/images/jsonanimation/Pull ups.json"
+      "animation": "assets/images/jsonanimation/pull_ups.json"
     },
     {
       "id": "chin_ups",
@@ -1340,7 +1340,7 @@
       ],
       "duration": 30,
       "reps": "10-12",
-      "animation": "assets/images/jsonanimation/Lat Pull Down.json"
+      "animation": "assets/images/jsonanimation/lat_pull_down.json"
     },
     {
       "id": "back_extensions",
@@ -1360,7 +1360,7 @@
       ],
       "duration": 30,
       "reps": "12-15",
-      "animation": "assets/images/jsonanimation/Back Extension.json"
+      "animation": "assets/images/jsonanimation/back_extension.json"
     },
     {
       "id": "inverted_rows",
@@ -1422,7 +1422,7 @@
       ],
       "duration": 30,
       "reps": "8-10",
-      "animation": "assets/images/jsonanimation/DeadLift.json"
+      "animation": "assets/images/jsonanimation/deadlift.json"
     },
     {
       "id": "thrusters",
@@ -1858,7 +1858,7 @@
       ],
       "duration": 30,
       "reps": "10-12",
-      "animation": "assets/images/jsonanimation/Skull Crushers.json"
+      "animation": "assets/images/jsonanimation/skull_crushers.json"
     },
     {
       "id": "concentration_curls",
@@ -1879,7 +1879,7 @@
       ],
       "duration": 30,
       "reps": "10-12 each arm",
-      "animation": "assets/images/jsonanimation/Concentration Curls.json"
+      "animation": "assets/images/jsonanimation/concentration_curls.json"
     },
     {
       "id": "arnold_press",
@@ -1919,7 +1919,7 @@
       ],
       "duration": 30,
       "reps": "12-15",
-      "animation": "assets/images/jsonanimation/Face Pulls.json"
+      "animation": "assets/images/jsonanimation/face_pulls.json"
     },
     {
       "id": "sit_ups",
@@ -2000,7 +2000,7 @@
       ],
       "duration": 30,
       "reps": "8-12",
-      "animation": "assets/images/jsonanimation/Bench Press.json"
+      "animation": "assets/images/jsonanimation/bench_press.json"
     }
   ]
 }
