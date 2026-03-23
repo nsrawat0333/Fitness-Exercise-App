@@ -1,0 +1,37 @@
+﻿Analyzing fitness_app...                                        
+
+warning - Unused import: 'package:flutter/material.dart' - lib\data\gym_challenge_data.dart:1:8 - unused_import
+warning - Unused import: '../../../constants/app_colors.dart' - lib\screens\gym\courses\gym_challenge_detail_screen.dart:3:8 - unused_import
+warning - Unused import: '../../../constants/app_colors.dart' - lib\screens\gym\courses\gym_course_detail_screen.dart:3:8 - unused_import
+   info - Unnecessary use of string interpolation - lib\screens\gym\gym_body_info_screen.dart:222:45 - unnecessary_string_interpolations
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:54:40 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:54:44 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:55:58 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:90:48 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:90:52 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:93:50 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:124:48 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:124:52 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:127:50 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:164:40 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:164:44 - unnecessary_underscores
+   info - Unnecessary use of multiple underscores - lib\screens\home_screen.dart:165:58 - unnecessary_underscores
+warning - Unused import: 'dart:ui' - lib\screens\running\active_run_screen.dart:2:8 - unused_import
+warning - Unused import: 'dart:ui' - lib\screens\running\running_hub_screen.dart:2:8 - unused_import
+warning - The value of the local variable 'spacing' isn't used - lib\screens\step_counter_screen.dart:568:18 - unused_local_variable
+warning - Unused import: '../../constants/app_text_styles.dart' - lib\screens\therapy\therapy_session_screen.dart:4:8 - unused_import
+  error - The name 'MyApp' isn't a class - test\widget_test.dart:16:35 - creation_with_non_type
+
+flutter : 21 issues found. (ran in 
+4.7s)
+At line:1 char:1
++ flutter analyze --no-fatal-infos 
+2>&1 | Out-File -FilePath C:\Users\n 
+...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpeci 
+   fied: (21 issues found. (ran in 4.  
+  7s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCo 
+   mmandError
+ 

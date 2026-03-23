@@ -51,65 +51,63 @@ class _StepCounterWidgetState extends State<StepCounterWidget>
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        return Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.cardLight.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(28),
-              ),
-              child: Column(
-                children: [
-                  CircularPercentIndicator(
-                    radius: 100,
-                    lineWidth: 14,
-                    percent: progress * _animation.value,
-                    animation: false,
-                    circularStrokeCap: CircularStrokeCap.round,
-                    progressColor: AppColors.stepRing,
-                    backgroundColor: AppColors.stepTrack,
-                    center: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          AppUtils.formatNumber(
-                            (widget.steps * _animation.value).round(),
-                          ),
-                          style: AppTextStyles.stepCount,
-                        ),
-                        Text('STEPS', style: AppTextStyles.stepLabel),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.auto_awesome, size: 16, color: AppColors.textSecondary),
-                        const SizedBox(width: 6),
-                        Text(
-                          'GOAL: ${AppUtils.formatNumber(widget.goal)} STEPS',
-                          style: AppTextStyles.cardLabel.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+        return Center(
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              color: AppColors.cardLight.withValues(alpha: 0.6),
+              borderRadius: BorderRadius.circular(28),
             ),
-          ],
+            child: Column(
+              children: [
+                CircularPercentIndicator(
+                  radius: 100,
+                  lineWidth: 14,
+                  percent: progress * _animation.value,
+                  animation: false,
+                  circularStrokeCap: CircularStrokeCap.round,
+                  progressColor: AppColors.stepRing,
+                  backgroundColor: AppColors.stepTrack,
+                  center: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppUtils.formatNumber(
+                          (widget.steps * _animation.value).round(),
+                        ),
+                        style: AppTextStyles.stepCount,
+                      ),
+                      Text('STEPS', style: AppTextStyles.stepLabel),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.7),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.auto_awesome, size: 16, color: AppColors.textSecondary),
+                      const SizedBox(width: 6),
+                      Text(
+                        'GOAL: ${AppUtils.formatNumber(widget.goal)} STEPS',
+                        style: AppTextStyles.cardLabel.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         );
       },
     );

@@ -8,11 +8,16 @@ import '../widgets/water_tracker_card.dart';
 import '../widgets/heart_rate_card.dart';
 import '../widgets/ai_detection_card.dart';
 import '../widgets/therapy_card.dart';
+import 'ai_activity_screen.dart';
+import 'heart_rate_screen.dart';
 import 'step_counter_screen.dart';
+import 'water_tracker_screen.dart';
 
 /// Main home screen of the FitFi app.
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final Function(int)? onTabChange;
+
+  const HomeScreen({super.key, this.onTabChange});
 
   @override
   Widget build(BuildContext context) {
@@ -77,14 +82,68 @@ class HomeScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: WaterTrackerCard(
-                        glasses: user.waterGlasses,
-                        goal: user.waterGoal,
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) =>
+                                  const WaterTrackerScreen(),
+                              transitionsBuilder:
+                                  (_, animation, __, child) {
+                                return SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0, 0.15),
+                                    end: Offset.zero,
+                                  ).animate(CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeOutCubic,
+                                  )),
+                                  child: FadeTransition(
+                                      opacity: animation, child: child),
+                                );
+                              },
+                              transitionDuration:
+                                  const Duration(milliseconds: 400),
+                            ),
+                          );
+                        },
+                        child: WaterTrackerCard(
+                          glasses: user.waterGlasses,
+                          goal: user.waterGoal,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 14),
                     Expanded(
-                      child: HeartRateCard(bpm: user.heartRate),
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder: (_, __, ___) =>
+                                  const HeartRateScreen(),
+                              transitionsBuilder:
+                                  (_, animation, __, child) {
+                                return SlideTransition(
+                                  position: Tween<Offset>(
+                                    begin: const Offset(0, 0.15),
+                                    end: Offset.zero,
+                                  ).animate(CurvedAnimation(
+                                    parent: animation,
+                                    curve: Curves.easeOutCubic,
+                                  )),
+                                  child: FadeTransition(
+                                      opacity: animation, child: child),
+                                );
+                              },
+                              transitionDuration:
+                                  const Duration(milliseconds: 400),
+                            ),
+                          );
+                        },
+                        child: HeartRateCard(bpm: user.heartRate),
+                      ),
                     ),
                   ],
                 ),
@@ -92,21 +151,116 @@ class HomeScreen extends StatelessWidget {
 
               const SizedBox(height: 20),
 
+              // ── Quick Exercise ──
+              _buildQuickExercises(context),
+              const SizedBox(height: 20),
+
               // ── AI Detection ──
-              AiDetectionCard(
-                pushUps: user.pushUps,
-                pullUps: user.pullUps,
-                chinUps: user.chinUps,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (_, __, ___) => const AiActivityScreen(),
+                      transitionsBuilder: (_, animation, __, child) {
+                        return SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.15),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeOutCubic,
+                          )),
+                          child: FadeTransition(opacity: animation, child: child),
+                        );
+                      },
+                      transitionDuration: const Duration(milliseconds: 400),
+                    ),
+                  );
+                },
+                child: AiDetectionCard(
+                  pushUps: user.pushUps,
+                  pullUps: user.pullUps,
+                  chinUps: user.chinUps,
+                ),
               ),
 
               const SizedBox(height: 20),
 
               // ── Therapy Card ──
-              const TherapyCard(),
+              GestureDetector(
+                onTap: () {
+                  if (onTabChange != null) {
+                    onTabChange!(2); // 2 is the index for Therapy tab
+                  }
+                },
+                child: const TherapyCard(),
+              ),
 
               const SizedBox(height: 24),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickExercises(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Quick Exercise',
+          style: AppTextStyles.sageTitle.copyWith(fontSize: 18),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          height: 100,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            children: [
+              _buildExerciseCard(context, 'Push-ups', Icons.fitness_center),
+              _buildExerciseCard(context, 'Pull-ups', Icons.accessibility_new),
+              _buildExerciseCard(context, 'Chin-ups', Icons.sports_gymnastics),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildExerciseCard(BuildContext context, String title, IconData icon) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AiActivityScreen(initialActivity: title),
+          ),
+        );
+      },
+      child: Container(
+        width: 110,
+        margin: const EdgeInsets.only(right: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: AppColors.sageGreen, size: 28),
+            const SizedBox(height: 8),
+            Text(title, style: AppTextStyles.sageSubtitle.copyWith(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.sageTextDark)),
+          ],
         ),
       ),
     );

@@ -1,0 +1,4489 @@
+{
+  "exercises": [
+    {
+      "id": "abdominal_crunches",
+      "name": "Abdominal Crunches",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/abdominal_crunches.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "adductor_stretch_in_standing",
+      "name": "Adductor Stretch In Standing",
+      "category": "stretching",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/adductor_stretch_in_standing.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "alternating_hooks",
+      "name": "Alternating Hooks",
+      "category": "arms",
+      "muscle_group": [
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/alternating_hooks.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "arm_circles",
+      "name": "Arm Circles",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/arm_circles.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "arm_circles_counterclockwise",
+      "name": "Arm Circles Counterclockwise",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/arm_circles_counterclockwise.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "arm_curls_crunch_left_right",
+      "name": "Arm Curls Crunch Left/Right",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/arm_curls_crunch_left_right.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "arm_raises",
+      "name": "Arm Raises",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/arm_raises.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "arm_scissors",
+      "name": "Arm Scissors",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/arm_scissors.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "arnold_dumbbell_press",
+      "name": "Arnold Dumbbell Press",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/arnold_dumbbell_press.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "back_arches",
+      "name": "Back Arches",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/back_arches.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "back_bow_pulls",
+      "name": "Back Bow Pulls",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/back_bow_pulls.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "backward_lunge",
+      "name": "Backward Lunge",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/backward_lunge.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "backward_lunge_with_front_kick",
+      "name": "Backward Lunge With Front Kick Right/Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/backward_lunge_with_front_kick_right_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bent_knee_side_hip_raises",
+      "name": "Bent Knee Side Hip Raises Left/Right",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/bent_knee_side_hip_raises_left_right.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bent_leg_twist",
+      "name": "Bent Leg Twist",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/bent_leg_twist.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bent_over_dumbbell_rows",
+      "name": "Bent Over Dumbbell Rows Left/Right",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/bent_over_dumbbell_rows_left_right.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bent_over_row",
+      "name": "Bent Over Row",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/bent_over_row.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bicycle_crunches",
+      "name": "Bicycle Crunches",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/bicycle_crunches.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bird_dog_left_right",
+      "name": "Bird Dog Left/Right",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/bird_dog_left_right.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bottom_leg_lift_right_left",
+      "name": "Bottom Leg Lift Right/Left",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/bottom_leg_lift_right_left.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "box_push_ups",
+      "name": "Box Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/box_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "bulgarian_split_squat",
+      "name": "Bulgarian Split Squat Left/Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/bulgarian_split_squat_left_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "burpees",
+      "name": "Burpees",
+      "category": "full_body",
+      "muscle_group": [
+        "full_body"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/burpees.png",
+      "instructions": [
+        "Start in a standing position",
+        "Engage your entire body throughout the movement",
+        "Maintain proper form and alignment",
+        "Move through each phase with control",
+        "Land softly if the exercise involves jumping"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "butt_bridge",
+      "name": "Butt Bridge",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes",
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/butt_bridge.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "butt_kicks",
+      "name": "Butt Kicks",
+      "category": "legs",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/butt_kicks.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "calf_raise_with_splayed_foot",
+      "name": "Calf Raise With Splayed Foot/Pigeon-Toed",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/calf_raise_with_splayed_foot_pigeon_toed.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "calf_stretch_left_right",
+      "name": "Calf Stretch Left/Right",
+      "category": "stretching",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/calf_stretch_left_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "cat_cow_pose",
+      "name": "Cat Cow Pose",
+      "category": "stretching",
+      "muscle_group": [
+        "back",
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/cat_cow_pose.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "chest_press_pulse",
+      "name": "Chest Press Pulse",
+      "category": "chest",
+      "muscle_group": [
+        "chest"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/chest_press_pulse.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "chest_stretch",
+      "name": "Chest Stretch",
+      "category": "stretching",
+      "muscle_group": [
+        "chest"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/chest_stretch.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "child_pose",
+      "name": "Child's Pose",
+      "category": "stretching",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/childs_pose.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "clasp_hands_behind_back",
+      "name": "Clasp Hands Behind Back",
+      "category": "stretching",
+      "muscle_group": [
+        "shoulders",
+        "chest"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/clasp_hands_behind_back.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "cobra_stretch",
+      "name": "Cobra Stretch",
+      "category": "stretching",
+      "muscle_group": [
+        "abs",
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/cobra_stretch.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "crossbody_mountain_climber",
+      "name": "Crossbody Mountain Climber",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "full_body"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/crossbody_mountain_climber.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "crossover_crunch",
+      "name": "Crossover Crunch",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/crossover_crunch.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "crunches_with_legs_raised",
+      "name": "Crunches With Legs Raised",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/crunches_with_legs_raised.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "curtsy_lunges",
+      "name": "Curtsy Lunges",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/curtsy_lunges.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dead_bug",
+      "name": "Dead Bug",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/dead_bug.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "decline_push_ups",
+      "name": "Decline Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/decline_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "diagonal_plank",
+      "name": "Diagonal Plank",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "full_body"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/diagonal_plank.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "diamond_push_ups",
+      "name": "Diamond Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/diamond_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "donkey_kicks_right_left",
+      "name": "Donkey Kicks Right/Left",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/donkey_kicks_right_left.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "doorway_curls_left_right",
+      "name": "Doorway Curls Left/Right",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "biceps"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/doorway_curls_left_right.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "double_knees_to_chest",
+      "name": "Double Knees To Chest",
+      "category": "stretching",
+      "muscle_group": [
+        "abs",
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/double_knees_to_chest.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "downward_facing_dog_on_wall",
+      "name": "Downward Facing Dog On The Wall",
+      "category": "stretching",
+      "muscle_group": [
+        "shoulders",
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/downward_facing_dog_on_the_wall.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "dumbbell_concentration_curl_left",
+      "name": "Dumbbell Concentration Curl Left",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "biceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_concentration_curl_left.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_concentration_curl_right",
+      "name": "Dumbbell Concentration Curl Right",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "biceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_concentration_curl_right.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_front_raise",
+      "name": "Dumbbell Front Raise",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_front_raise.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_kickbacks",
+      "name": "Dumbbell Kickbacks",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_kickbacks.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_lying_triceps_extension",
+      "name": "Dumbbell Lying Triceps Extension",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_lying_triceps_extension.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_punch",
+      "name": "Dumbbell Punch",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_punch.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_rear_delt_row",
+      "name": "Dumbbell Rear Delt Row",
+      "category": "back",
+      "muscle_group": [
+        "back",
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_rear_delt_row.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_shrug",
+      "name": "Dumbbell Shrug",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders",
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_shrug.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_side_lateral_raise",
+      "name": "Dumbbell Side Lateral Raise",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_side_lateral_raise.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_triceps_extension",
+      "name": "Dumbbell Triceps Extension",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_triceps_extension.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "dumbbell_upright_row",
+      "name": "Dumbbell Upright-Row",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders",
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/dumbbell_upright_row.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "elbow_plank_rotation_left",
+      "name": "Elbow Plank Rotation Left",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/elbow_plank_rotation_left.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "elbow_plank_rotation_right",
+      "name": "Elbow Plank Rotation Right",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/elbow_plank_rotation_right.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "elbows_back",
+      "name": "Elbows Back",
+      "category": "stretching",
+      "muscle_group": [
+        "shoulders",
+        "chest"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/elbows_back.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "fast_spider_lunges",
+      "name": "Fast Spider Lunges",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "full_body"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/fast_spider_lunges.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "fire_hydrant_left",
+      "name": "Fire Hydrant Left",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/fire_hydrant_left.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "fire_hydrant_right",
+      "name": "Fire Hydrant Right",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/fire_hydrant_right.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "floor_slides",
+      "name": "Floor Slides",
+      "category": "back",
+      "muscle_group": [
+        "back",
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/floor_slides.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "floor_tricep_dips",
+      "name": "Floor Tricep Dips",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/floor_tricep_dips.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "floor_y_raises",
+      "name": "Floor Y Raises",
+      "category": "back",
+      "muscle_group": [
+        "back",
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/floor_y_raises.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "flutter_kick_squats",
+      "name": "Flutter Kick Squats",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "full_body"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/flutter_kick_squats.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "flutter_kicks",
+      "name": "Flutter Kicks",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/flutter_kicks.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "frog_pump",
+      "name": "Frog Pump",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/frog_pump.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "froggy_glute_lifts",
+      "name": "Froggy Glute Lifts",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/froggy_glute_lifts.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "glute_kick_back_left",
+      "name": "Glute Kick Back Left",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/glute_kick_back_left.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "glute_kick_back_right",
+      "name": "Glute Kick Back Right",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/glute_kick_back_right.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "glute_kickback_pulse_left",
+      "name": "Glute Kickback Pulse Left",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/glute_kickback_pulse_left.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "glute_kickback_pulse_right",
+      "name": "Glute Kickback Pulse Right",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/glute_kickback_pulse_right.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "glute_stretch_left",
+      "name": "Glute Stretch Left",
+      "category": "stretching",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/glute_stretch_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "glute_stretch_right",
+      "name": "Glute Stretch Right",
+      "category": "stretching",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/glute_stretch_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "heel_touch",
+      "name": "Heel Touch",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/heel_touch.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "heels_to_the_heavens",
+      "name": "Heels To The Heavens",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/heels_to_the_heavens.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "high_stepping",
+      "name": "High Stepping",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/high_stepping.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "hindu_push_ups",
+      "name": "Hindu Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "shoulders",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/hindu_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "hip_bridge_leg_lift_left",
+      "name": "Hip Bridge & Leg Lift Left",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes",
+        "legs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/hip_bridge_and_leg_lift_left.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "hip_bridge_leg_lift_right",
+      "name": "Hip Bridge & Leg Lift Right",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes",
+        "legs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/hip_bridge_and_leg_lift_right.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "hip_hinge",
+      "name": "Hip Hinge",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/hip_hinge.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "hover_push_up",
+      "name": "Hover Push Up",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/hover_push_up.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "hyperextension",
+      "name": "Hyperextension",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/hyperextension.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "in_and_outs",
+      "name": "In & Outs",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/in_and_outs.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "incline_push_ups",
+      "name": "Incline Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/incline_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "inchworms",
+      "name": "Inchworms",
+      "category": "full_body",
+      "muscle_group": [
+        "full_body"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/inchworms.png",
+      "instructions": [
+        "Start in a standing position",
+        "Engage your entire body throughout the movement",
+        "Maintain proper form and alignment",
+        "Move through each phase with control",
+        "Land softly if the exercise involves jumping"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "jumping_jacks",
+      "name": "Jumping Jacks",
+      "category": "full_body",
+      "muscle_group": [
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/jumping_jacks.png",
+      "instructions": [
+        "Start in a standing position",
+        "Engage your entire body throughout the movement",
+        "Maintain proper form and alignment",
+        "Move through each phase with control",
+        "Land softly if the exercise involves jumping"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "jumping_push_ups",
+      "name": "Jumping Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "advanced",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/jumping_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "jumping_squats",
+      "name": "Jumping Squats",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/jumping_squats.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "knee_plank",
+      "name": "Knee Plank",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/knee_plank.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "knee_push_ups",
+      "name": "Knee Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/knee_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "knee_to_chest_stretch_left",
+      "name": "Knee To Chest Stretch Left",
+      "category": "stretching",
+      "muscle_group": [
+        "legs",
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/knee_to_chest_stretch_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "knee_to_chest_stretch_right",
+      "name": "Knee To Chest Stretch Right",
+      "category": "stretching",
+      "muscle_group": [
+        "legs",
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/knee_to_chest_stretch_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "knee_to_elbow_crunches",
+      "name": "Knee To Elbow Crunches",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/knee_to_elbow_crunches.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "kneeling_lunge_stretch_left",
+      "name": "Kneeling Lunge Stretch Left",
+      "category": "stretching",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/kneeling_lunge_stretch_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "kneeling_lunge_stretch_right",
+      "name": "Kneeling Lunge Stretch Right",
+      "category": "stretching",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/kneeling_lunge_stretch_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "leaning_stretcher_raises",
+      "name": "Leaning Stretcher Raises",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/leaning_stretcher_raises.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "left_leg_lateral_raise",
+      "name": "Left Leg Lateral Raise",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/left_leg_lateral_raise.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "left_quad_stretch_with_wall",
+      "name": "Left Quad Stretch With Wall",
+      "category": "stretching",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/left_quad_stretch_with_wall.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "leg_barbell_curl_left",
+      "name": "Leg Barbell Curl Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/leg_barbell_curl_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "leg_barbell_curl_right",
+      "name": "Leg Barbell Curl Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/leg_barbell_curl_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "leg_in_outs",
+      "name": "Leg In & Outs",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/leg_in_and_outs.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "leg_raises",
+      "name": "Leg Raises",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/leg_raises.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "long_arm_crunches",
+      "name": "Long Arm Crunches",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/long_arm_crunches.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "lunge_twist",
+      "name": "Lunge Twist",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/lunge_twist.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "lunges",
+      "name": "Lunges",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/lunges.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "lying_butterfly_stretch",
+      "name": "Lying Butterfly Stretch",
+      "category": "stretching",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/lying_butterfly_stretch.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "military_press",
+      "name": "Military Press",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/military_press.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "military_push_ups",
+      "name": "Military Push Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/military_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "modified_push_up_low_hold",
+      "name": "Modified Push-Up Low Hold",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/modified_push_up_low_hold.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "mountain_climber",
+      "name": "Mountain Climber",
+      "category": "full_body",
+      "muscle_group": [
+        "full_body",
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/mountain_climber.png",
+      "instructions": [
+        "Start in a standing position",
+        "Engage your entire body throughout the movement",
+        "Maintain proper form and alignment",
+        "Move through each phase with control",
+        "Land softly if the exercise involves jumping"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "90_90_crunch",
+      "name": "90/90 Crunch",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/90_90_crunch.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "oblique_crossover_crunch_left",
+      "name": "Oblique Crossover Crunch Left",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/oblique_crossover_crunch_left.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "oblique_crossover_crunch_right",
+      "name": "Oblique Crossover Crunch Right",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/oblique_crossover_crunch_right.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "offset_push_ups",
+      "name": "Offset Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/offset_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "pigeon_pose_left",
+      "name": "Pigeon Pose Left",
+      "category": "stretching",
+      "muscle_group": [
+        "glutes",
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/pigeon_pose_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "pigeon_pose_right",
+      "name": "Pigeon Pose Right",
+      "category": "stretching",
+      "muscle_group": [
+        "glutes",
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/pigeon_pose_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "pike_push_ups",
+      "name": "Pike Push Ups",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/pike_push_ups.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "pistol_box_squat_left",
+      "name": "Pistol Box Squat Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "advanced",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/pistol_box_squat_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "pistol_box_squat_right",
+      "name": "Pistol Box Squat Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "advanced",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/pistol_box_squat_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "plank",
+      "name": "Plank",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/plank.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "plank_hip_dips",
+      "name": "Plank Hip Dips",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/plank_hip_dips.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "plank_leg_up",
+      "name": "Plank Leg Up",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/plank_leg_up.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "plie_squats",
+      "name": "Plie Squats",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/plie_squats.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "prone_flutter_kicks",
+      "name": "Prone Flutter Kicks",
+      "category": "back",
+      "muscle_group": [
+        "back",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/prone_flutter_kicks.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "prone_triceps_push_ups",
+      "name": "Prone Triceps Push Ups",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/prone_triceps_push_ups.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "punches",
+      "name": "Punches",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/punches.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "push_up_and_rotation",
+      "name": "Push-Up & Rotation",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms",
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/push_up_and_rotation.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "push_up_hold",
+      "name": "Push Up Hold",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/push_up_hold.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "push_ups",
+      "name": "Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reclined_oblique_twist",
+      "name": "Reclined Oblique Twist",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reclined_oblique_twist.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reclined_rhomboid_squeezes",
+      "name": "Reclined Rhomboid Squeezes",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reclined_rhomboid_squeezes.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reverse_crunches",
+      "name": "Reverse Crunches",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reverse_crunches.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reverse_crunches_with_leg_raised",
+      "name": "Reverse Crunches With Leg Raised",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reverse_crunches_with_leg_raised.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reverse_flutter_kicks",
+      "name": "Reverse Flutter Kicks",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reverse_flutter_kicks.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reverse_flys",
+      "name": "Reverse Flys",
+      "category": "back",
+      "muscle_group": [
+        "back",
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reverse_flys.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reverse_push_ups",
+      "name": "Reverse Push-Ups",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reverse_push_ups.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "reverse_snow_angels",
+      "name": "Reverse Snow Angels",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/reverse_snow_angels.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "rhomboid_pulls",
+      "name": "Rhomboid Pulls",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/rhomboid_pulls.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "right_leg_lateral_raise",
+      "name": "Right Leg Lateral Raise",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/right_leg_lateral_raise.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "right_quad_stretch_with_wall",
+      "name": "Right Quad Stretch With Wall",
+      "category": "stretching",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/right_quad_stretch_with_wall.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "russian_twist",
+      "name": "Russian Twist",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/russian_twist.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "scissors",
+      "name": "Scissors",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/scissors.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "seated_butterfly_stretch",
+      "name": "Seated Butterfly Stretch",
+      "category": "stretching",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/seated_butterfly_stretch.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "shoulder_stretch",
+      "name": "Shoulder Stretch",
+      "category": "stretching",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/shoulder_stretch.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "shoulder_gators",
+      "name": "Shoulder Gators",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/shoulder_gators.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_arm_raise",
+      "name": "Side Arm Raise",
+      "category": "shoulders",
+      "muscle_group": [
+        "shoulders"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_arm_raise.png",
+      "instructions": [
+        "Stand tall with your core engaged",
+        "Keep a slight bend in your elbows",
+        "Raise your arms in a controlled manner",
+        "Hold briefly at the top of the movement",
+        "Lower back down with control"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "side_bridges_left",
+      "name": "Side Bridges Left",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_bridges_left.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_bridges_right",
+      "name": "Side Bridges Right",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_bridges_right.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_hop",
+      "name": "Side Hop",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_hop.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "side_leg_circles_left",
+      "name": "Side Leg Circles Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_leg_circles_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_leg_circles_right",
+      "name": "Side Leg Circles Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_leg_circles_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_leg_raise_left",
+      "name": "Side Leg Raise Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_leg_raise_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_leg_raise_right",
+      "name": "Side Leg Raise Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_leg_raise_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_lunges",
+      "name": "Side Lunges",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_lunges.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "side_lying_floor_stretch_left",
+      "name": "Side-Lying Floor Stretch Left",
+      "category": "stretching",
+      "muscle_group": [
+        "back",
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_lying_floor_stretch_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "side_lying_floor_stretch_right",
+      "name": "Side-Lying Floor Stretch Right",
+      "category": "stretching",
+      "muscle_group": [
+        "back",
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_lying_floor_stretch_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "side_lying_leg_lift_left",
+      "name": "Side-Lying Leg Lift Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_lying_leg_lift_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_lying_leg_lift_right",
+      "name": "Side-Lying Leg Lift Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_lying_leg_lift_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "side_plank_left",
+      "name": "Side Plank Left",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_plank_left.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "side_plank_right",
+      "name": "Side Plank Right",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/side_plank_right.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "single_left_leg_calf_raises",
+      "name": "Single Left Leg Calf Raises",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/single_left_leg_calf_raises.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "single_leg_calf_hop_left",
+      "name": "Single Leg Calf Hop Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/single_leg_calf_hop_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "single_leg_calf_hop_right",
+      "name": "Single Leg Calf Hop Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/single_leg_calf_hop_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "single_leg_deadlift_left",
+      "name": "Single Leg Deadlift Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/single_leg_deadlift_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "single_leg_deadlift_right",
+      "name": "Single Leg Deadlift Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/single_leg_deadlift_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "single_right_leg_calf_raises",
+      "name": "Single Right Leg Calf Raises",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/single_right_leg_calf_raises.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "sit_up_twist",
+      "name": "Sit-Up Twist",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/sit_up_twist.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "sit_ups",
+      "name": "Sit-Ups",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/sit_ups.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "skater_jump",
+      "name": "Skater Jump",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "full_body"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/skater_jump.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "skipping_without_rope",
+      "name": "Skipping Without Rope",
+      "category": "full_body",
+      "muscle_group": [
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/skipping_without_rope.png",
+      "instructions": [
+        "Start in a standing position",
+        "Engage your entire body throughout the movement",
+        "Maintain proper form and alignment",
+        "Move through each phase with control",
+        "Land softly if the exercise involves jumping"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "slow_mountain_climber",
+      "name": "Slow Mountain Climber",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/slow_mountain_climber.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "spiderman_plank",
+      "name": "Spiderman Plank",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/spiderman_plank.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "spiderman_push_ups",
+      "name": "Spiderman Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms",
+        "abs"
+      ],
+      "difficulty": "advanced",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/spiderman_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "spine_lumbar_twist_stretch_left",
+      "name": "Spine Lumbar Twist Stretch Left",
+      "category": "stretching",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/spine_lumbar_twist_stretch_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "spine_lumbar_twist_stretch_right",
+      "name": "Spine Lumbar Twist Stretch Right",
+      "category": "stretching",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/spine_lumbar_twist_stretch_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "split_squat_left",
+      "name": "Split Squat Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/split_squat_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "split_squat_right",
+      "name": "Split Squat Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/split_squat_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "squat_kicks",
+      "name": "Squat Kicks",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/squat_kicks.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "squat_pulses",
+      "name": "Squat Pulses",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/squat_pulses.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "squat_reach_ups",
+      "name": "Squat Reach Ups",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/squat_reach_ups.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "squats",
+      "name": "Squats",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/squats.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "staggered_push_ups",
+      "name": "Staggered Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/staggered_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "standing_biceps_stretch_left",
+      "name": "Standing Biceps Stretch Left",
+      "category": "stretching",
+      "muscle_group": [
+        "arms",
+        "biceps"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/standing_biceps_stretch_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "standing_biceps_stretch_right",
+      "name": "Standing Biceps Stretch Right",
+      "category": "stretching",
+      "muscle_group": [
+        "arms",
+        "biceps"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/standing_biceps_stretch_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "standing_glute_kickbacks_left",
+      "name": "Standing Glute Kickbacks Left",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/standing_glute_kickbacks_left.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "standing_glute_kickbacks_right",
+      "name": "Standing Glute Kickbacks Right",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/standing_glute_kickbacks_right.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "standing_oblique_crunches_left",
+      "name": "Standing Oblique Crunches Left",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/standing_oblique_crunches_left.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "standing_oblique_crunches_right",
+      "name": "Standing Oblique Crunches Right",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/standing_oblique_crunches_right.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "starfish_crunch",
+      "name": "Starfish Crunch",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/starfish_crunch.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "step_up_onto_chair",
+      "name": "Step-Up Onto Chair",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/step_up_onto_chair.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "straight_arm_plank_to_pike",
+      "name": "Straight Arm Plank To Pike",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "shoulders"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/straight_arm_plank_to_pike.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "sumo_squat",
+      "name": "Sumo Squat",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/sumo_squat.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "sumo_squat_and_leg_raises",
+      "name": "Sumo Squat & Leg Raises",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/sumo_squat_and_leg_raises.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "sumo_squat_calf_raises_with_wall",
+      "name": "Sumo Squat Calf Raises With Wall",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/sumo_squat_calf_raises_with_wall.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "superman",
+      "name": "Superman",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/superman.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "supine_push_up",
+      "name": "Supine Push Up",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/supine_push_up.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "swimmer_and_superman",
+      "name": "Swimmer And Superman",
+      "category": "back",
+      "muscle_group": [
+        "back"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/swimmer_and_superman.png",
+      "instructions": [
+        "Lie face down on a mat or stand with slight forward lean",
+        "Engage your back muscles to initiate the movement",
+        "Squeeze your shoulder blades together",
+        "Hold the contraction briefly",
+        "Return to starting position with control"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "toy_soldiers",
+      "name": "Toy Soldiers",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "full_body"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/toy_soldiers.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "triceps_dips",
+      "name": "Triceps Dips",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/triceps_dips.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "triceps_kickbacks",
+      "name": "Triceps Kickbacks",
+      "category": "arms",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "dumbbell",
+      "image": "assets/images/jsonimg/triceps_kickbacks.png",
+      "instructions": [
+        "Stand with feet hip-width apart",
+        "Keep your elbows close to your body",
+        "Perform the movement with controlled tempo",
+        "Squeeze the target muscles at the top of the movement",
+        "Return to starting position slowly"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "triceps_stretch_left",
+      "name": "Triceps Stretch Left",
+      "category": "stretching",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/triceps_stretch_left.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "triceps_stretch_right",
+      "name": "Triceps Stretch Right",
+      "category": "stretching",
+      "muscle_group": [
+        "arms",
+        "triceps"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/triceps_stretch_right.png",
+      "instructions": [
+        "Move into the stretch position slowly",
+        "Hold the stretch for the recommended duration",
+        "Breathe deeply and relax into the stretch",
+        "Do not bounce or force the stretch",
+        "You should feel a gentle pull, not pain"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "twisting_piston",
+      "name": "Twisting Piston",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/twisting_piston.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "v_crunch",
+      "name": "V Crunch",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/v_crunch.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "v_up",
+      "name": "V-Up",
+      "category": "abs",
+      "muscle_group": [
+        "abs"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/v_up.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "walking_squats",
+      "name": "Walking Squats",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "glutes"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/walking_squats.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "wall_calf_raises",
+      "name": "Wall Calf Raises",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wall_calf_raises.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "wall_glute_kickback_left_hold",
+      "name": "Wall Glute Kickback Left Hold",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wall_glute_kickback_left_hold.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "wall_glute_kickback_right_hold",
+      "name": "Wall Glute Kickback Right Hold",
+      "category": "glutes",
+      "muscle_group": [
+        "glutes"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wall_glute_kickback_right_hold.png",
+      "instructions": [
+        "Start on all fours or lying face up",
+        "Engage your glute muscles to initiate the movement",
+        "Squeeze your glutes at the top of the movement",
+        "Lower back down with control",
+        "Keep your core engaged throughout"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "wall_push_ups",
+      "name": "Wall Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wall_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "wall_resisting_single_leg_calf_raise_left",
+      "name": "Wall Resisting Single Leg Calf Raise Left",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wall_resisting_single_leg_calf_raise_left.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "wall_resisting_single_leg_calf_raise_right",
+      "name": "Wall Resisting Single Leg Calf Raise Right",
+      "category": "legs",
+      "muscle_group": [
+        "legs",
+        "calves"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wall_resisting_single_leg_calf_raise_right.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "wall_sit",
+      "name": "Wall Sit",
+      "category": "legs",
+      "muscle_group": [
+        "legs"
+      ],
+      "difficulty": "beginner",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wall_sit.png",
+      "instructions": [
+        "Stand with feet shoulder-width apart",
+        "Keep your back straight and core engaged",
+        "Lower your body in a controlled motion",
+        "Push through your heels to return to starting position",
+        "Keep your knees aligned with your toes"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    },
+    {
+      "id": "wide_arm_push_ups",
+      "name": "Wide Arm Push-Ups",
+      "category": "chest",
+      "muscle_group": [
+        "chest",
+        "arms"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/wide_arm_push_ups.png",
+      "instructions": [
+        "Position your hands at shoulder-width apart",
+        "Keep your body in a straight line from head to heels",
+        "Lower yourself in a controlled manner",
+        "Push back up to the starting position",
+        "Engage your core throughout the movement"
+      ],
+      "duration": 30,
+      "reps": "10-15"
+    },
+    {
+      "id": "windshield_wipers",
+      "name": "Windshield Wipers",
+      "category": "abs",
+      "muscle_group": [
+        "abs",
+        "obliques"
+      ],
+      "difficulty": "intermediate",
+      "equipment": "bodyweight",
+      "image": "assets/images/jsonimg/windshield_wipers.png",
+      "instructions": [
+        "Lie on your back on a mat with knees bent",
+        "Engage your core muscles throughout the movement",
+        "Perform the movement in a slow, controlled manner",
+        "Breathe out as you contract, breathe in as you release",
+        "Keep your lower back pressed against the floor"
+      ],
+      "duration": 30,
+      "reps": "N/A"
+    }
+  ]
+}

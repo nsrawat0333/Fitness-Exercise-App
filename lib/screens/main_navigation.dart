@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 import 'home_screen.dart';
+import 'explore_screen.dart';
+import 'running/running_hub_screen.dart';
+import 'therapy/therapy_screen.dart';
 
 /// Main navigation shell with bottom navigation bar.
 /// Manages 5 tabs: Home, Map, Therapy, Explore, Account.
@@ -15,14 +18,20 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  // Screens – only Home is built, others are placeholders
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    _PlaceholderScreen(title: 'Map', icon: Icons.map_outlined),
-    _PlaceholderScreen(title: 'Therapy', icon: Icons.spa_outlined),
-    _PlaceholderScreen(title: 'Explore', icon: Icons.explore_outlined),
-    _PlaceholderScreen(title: 'Account', icon: Icons.person_outlined),
-  ];
+  // Screens – Home and Therapy are built, others are placeholders
+  List<Widget> get _screens => [
+        HomeScreen(
+          onTabChange: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+          },
+        ),
+        const RunningHubScreen(),
+        const TherapyScreen(),
+        const ExploreScreen(),
+        const _PlaceholderScreen(title: 'Account', icon: Icons.person_outlined),
+      ];
 
   @override
   Widget build(BuildContext context) {
