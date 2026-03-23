@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import '../../../data/gym_challenge_data.dart';
 import '../../../data/gym_user_data.dart';
-import 'gym_workout_timer_screen.dart';
+import 'workout_flow_screen.dart';
 
 class CustomWorkoutBuilderScreen extends StatefulWidget {
   const CustomWorkoutBuilderScreen({super.key});
@@ -213,7 +213,7 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
               Navigator.pop(ctx);
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(
-                builder: (_) => GymWorkoutTimerScreen(
+                builder: (_) => WorkoutFlowScreen(
                   exercises: selectedExercises,
                   dayIndex: 0,
                 ),

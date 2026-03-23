@@ -31,6 +31,58 @@ class GymUserData {
   bool isHeightCm = true;
   bool isWeightKg = true;
 
+  // ── Smart Profiling Fields ──
+  // Fitness Goal: 'Weight Loss', 'Weight Gain', 'Muscle Building', 'General Fitness'
+  String fitnessGoal = 'General Fitness';
+
+  // Age (optional, 0 = not set)
+  int age = 0;
+
+  // Body type from scanner/BMI: 'skinny', 'normal', 'overweight', 'fat'
+  String bodyType = 'normal';
+
+  /// Returns workout/diet recommendation based on body type.
+  /// 'diet-heavy' → more diet focus, less intense exercise
+  /// 'workout-heavy' → more workouts + healthy diet
+  /// 'balanced' → maintain fitness plan
+  String get recommendation {
+    switch (bodyType) {
+      case 'skinny':
+        return 'diet-heavy';
+      case 'fat':
+      case 'overweight':
+        return 'workout-heavy';
+      default:
+        return 'balanced';
+    }
+  }
+
+  /// Duration multiplier for exercise phases based on activity level.
+  /// Beginner: shorter exercises, Advanced: longer exercises.
+  double get durationMultiplier {
+    switch (activity) {
+      case 'Beginner':
+        return 0.7;
+      case 'Advanced':
+        return 1.5;
+      default:
+        return 1.0;
+    }
+  }
+
+  /// Maps fitness goal to diet plan key.
+  String get dietPlanKey {
+    switch (fitnessGoal) {
+      case 'Weight Loss':
+        return 'Lose Weight';
+      case 'Weight Gain':
+      case 'Muscle Building':
+        return 'Build Muscle';
+      default:
+        return 'Keep Fit';
+    }
+  }
+
   // ── Weekly Progress Tracking ──
   int completedDays = 0;
   int currentWeek = 1;
@@ -93,4 +145,17 @@ class GymUserData {
 
   // ── Custom Workout Plans ──
   List<Map<String, dynamic>> customPlanExercises = [];
+
+  // ── Home Workout Program Fields ──
+  /// Focus area for home workout: 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Legs', 'Glutes', 'Full Body'
+  String homeWorkoutFocusArea = 'Full Body';
+
+  /// Fitness level for home workout: 'Beginner', 'Intermediate', 'Advanced'
+  String homeWorkoutLevel = 'Beginner';
+
+  /// Goal for home workout: 'Weight Loss', 'Muscle Gain', 'Strength'
+  String homeWorkoutGoal = 'Muscle Gain';
+
+  /// Number of weeks for home workout program (1–12)
+  int homeWorkoutWeeks = 4;
 }

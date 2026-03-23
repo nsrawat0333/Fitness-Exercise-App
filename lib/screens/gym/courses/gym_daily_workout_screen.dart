@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import '../../../data/gym_challenge_data.dart';
-import 'gym_workout_timer_screen.dart';
+import 'workout_flow_screen.dart';
 
 class GymDailyWorkoutScreen extends StatelessWidget {
   final int dayIndex;
@@ -122,7 +122,7 @@ class GymDailyWorkoutScreen extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => GymWorkoutTimerScreen(exercises: exercises, dayIndex: dayIndex))
+                    MaterialPageRoute(builder: (_) => WorkoutFlowScreen(exercises: exercises, dayIndex: dayIndex))
                   );
                 },
                 backgroundColor: const Color(0xFF005FF9),

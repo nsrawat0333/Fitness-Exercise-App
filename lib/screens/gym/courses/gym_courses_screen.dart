@@ -7,8 +7,9 @@ import '../../../data/gym_challenge_data.dart';
 import 'gym_course_detail_screen.dart';
 import 'gym_challenge_detail_screen.dart';
 import 'gym_daily_workout_screen.dart';
-import 'gym_workout_timer_screen.dart';
+import 'workout_flow_screen.dart';
 import 'custom_workout_builder_screen.dart';
+import 'home_workout_setup_screen.dart';
 import '../diet_plan_screen.dart';
 
 class GymCoursesScreen extends StatefulWidget {
@@ -26,7 +27,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
   bool _isSearching = false;
 
   final List<String> _bodyFocusTabs = [
-    'Abs', 'Arm', 'Chest', 'Leg', 'Full Body', 'Shoulder & Back',
+    'Full Body', 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Legs', 'Glutes',
   ];
 
   @override
@@ -515,7 +516,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
   }
 
   // ══════════════════════════════════════════════════════════
-  // CHALLENGES
+  // HOME WORKOUT — Full Body Course + Create Program
   // ══════════════════════════════════════════════════════════
   Widget _buildChallenges() {
     return Column(
@@ -524,7 +525,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'Challenge',
+            'Home Workout',
             style: GoogleFonts.outfit(
               fontSize: 18,
               fontWeight: FontWeight.w800,
@@ -533,91 +534,117 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 260,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: [
-              _buildChallengeCard(
-                color: const Color(0xFF005FF9),
-                days: '28 DAYS',
-                title: 'FULL BODY\nCHALLENGE',
-                desc: 'Start your body-toning journey to target all muscle groups and build your dream body in 4 weeks!',
-                image: 'assets/images/gym/goal_build_muscle_male.png',
+
+        // Full Body Workout Course card
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (_) => const GymChallengeDetailScreen(),
+              ));
+            },
+            child: Container(
+              width: double.infinity,
+              height: 200,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF3B82F6), Color(0xFF6366F1)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF3B82F6).withValues(alpha: 0.3),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
               ),
-              _buildChallengeCard(
-                color: const Color(0xFF00ACC1),
-                days: '30 DAYS',
-                title: 'GET RIPPED\nWITH DUMBBELL',
-                desc: 'Use dumbbells to build bigger muscles and boost full-body strength in 30 days!',
-                image: 'assets/images/gym/goal_keep_fit_male.png',
+              child: Stack(
+                children: [
+                  Positioned(
+                    right: -10,
+                    bottom: 20,
+                    width: 160,
+                    height: 180,
+                    child: Image.asset(
+                      'assets/images/gym/goal_build_muscle_male.png',
+                      fit: BoxFit.contain,
+                      alignment: Alignment.bottomRight,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text('28 DAYS', style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white, letterSpacing: 0.5)),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          'FULL BODY\nWORKOUT COURSE',
+                          style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, height: 1.1),
+                        ),
+                        const Spacer(),
+                        Text(
+                          'Complete body-toning program\nfor all muscle groups.',
+                          style: GoogleFonts.inter(fontSize: 12, color: Colors.white70, height: 1.4),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              _buildChallengeCard(
-                color: const Color(0xFF4527A0),
-                days: '30 DAYS',
-                title: 'SIX PACK\nCHALLENGE',
-                desc: 'Crush this challenge and carve out your six-pack in no time!',
-                image: 'assets/images/gym/goal_lose_weight_male.png',
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        // Create Custom Program button
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (_) => const HomeWorkoutSetupScreen(),
+              ));
+            },
+            child: Container(
+              width: double.infinity,
+              height: 56,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.3)),
               ),
-            ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.auto_awesome, color: Color(0xFF3B82F6), size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Create Personalized Program',
+                    style: GoogleFonts.outfit(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: const Color(0xFF3B82F6),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildChallengeCard({
-    required Color color,
-    required String days,
-    required String title,
-    required String desc,
-    required String image,
-  }) {
-    return Container(
-      width: 300,
-      margin: const EdgeInsets.symmetric(horizontal: 6),
-      decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            right: -20,
-            bottom: 60,
-            width: 180,
-            height: 200,
-            child: Image.asset(image, fit: BoxFit.contain, alignment: Alignment.bottomRight),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(days, style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.white70)),
-                const SizedBox(height: 8),
-                Text(title, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, height: 1.1)),
-                const Spacer(),
-                Text(desc, style: GoogleFonts.outfit(fontSize: 12, color: Colors.white.withValues(alpha: 0.9), height: 1.4)),
-                const SizedBox(height: 16),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const GymChallengeDetailScreen()));
-                  },
-                  child: Container(
-                    width: double.infinity,
-                    height: 44,
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(22)),
-                    alignment: Alignment.center,
-                    child: Text('START', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: color, letterSpacing: 1.0)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -994,7 +1021,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
                         );
                       }).toList();
                       Navigator.push(context, MaterialPageRoute(
-                        builder: (_) => GymWorkoutTimerScreen(
+                        builder: (_) => WorkoutFlowScreen(
                           exercises: customExercises,
                           dayIndex: 0,
                         ),

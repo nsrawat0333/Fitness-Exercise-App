@@ -42,31 +42,55 @@ class _GymBodyFocusScreenState extends State<GymBodyFocusScreen>
       title: 'Full Body',
       subtitle: 'OVERALL TONE',
       icon: Icons.accessibility_new,
-      dotPosition: Offset(0.50, 0.13),  // top of head
+      dotPosition: Offset(0.50, 0.10),
     ),
     _BodyPartOption(
-      title: 'Arm',
-      subtitle: 'STRENGTH & DEFINITION',
+      title: 'Chest',
+      subtitle: 'UPPER BODY',
+      icon: Icons.favorite,
+      dotPosition: Offset(0.50, 0.20),
+    ),
+    _BodyPartOption(
+      title: 'Back',
+      subtitle: 'POSTURE & STRENGTH',
+      icon: Icons.airline_seat_flat,
+      dotPosition: Offset(0.50, 0.28),
+    ),
+    _BodyPartOption(
+      title: 'Shoulders',
+      subtitle: 'DEFINITION',
+      icon: Icons.expand,
+      dotPosition: Offset(0.50, 0.22),
+    ),
+    _BodyPartOption(
+      title: 'Biceps',
+      subtitle: 'ARM STRENGTH',
       icon: Icons.fitness_center,
-      dotPosition: Offset(0.50, 0.25),  // shoulder line
+      dotPosition: Offset(0.50, 0.30),
+    ),
+    _BodyPartOption(
+      title: 'Triceps',
+      subtitle: 'ARM DEFINITION',
+      icon: Icons.sports_gymnastics,
+      dotPosition: Offset(0.50, 0.32),
     ),
     _BodyPartOption(
       title: 'Abs',
       subtitle: 'CORE STABILITY',
-      icon: Icons.self_improvement,
-      dotPosition: Offset(0.50, 0.42),  // center abdomen
+      icon: Icons.grid_view,
+      dotPosition: Offset(0.50, 0.42),
     ),
     _BodyPartOption(
-      title: 'Butt',
+      title: 'Glutes',
       subtitle: 'GLUTE SHAPING',
       icon: Icons.directions_walk,
-      dotPosition: Offset(0.50, 0.53),  // hip / glute line
+      dotPosition: Offset(0.50, 0.53),
     ),
     _BodyPartOption(
-      title: 'Leg',
+      title: 'Legs',
       subtitle: 'LOWER POWER',
       icon: Icons.directions_run,
-      dotPosition: Offset(0.50, 0.75),  // mid-thigh / knee
+      dotPosition: Offset(0.50, 0.72),
     ),
   ];
 
@@ -77,31 +101,55 @@ class _GymBodyFocusScreenState extends State<GymBodyFocusScreen>
       title: 'Full Body',
       subtitle: 'OVERALL TONE',
       icon: Icons.accessibility_new,
-      dotPosition: Offset(0.50, 0.12),  // top of head
-    ),
-    _BodyPartOption(
-      title: 'Arm',
-      subtitle: 'STRENGTH & DEFINITION',
-      icon: Icons.fitness_center,
-      dotPosition: Offset(0.50, 0.26),  // shoulder / upper arm
+      dotPosition: Offset(0.50, 0.10),
     ),
     _BodyPartOption(
       title: 'Chest',
-      subtitle: 'ACTIVE SELECTION',
+      subtitle: 'UPPER POWER',
       icon: Icons.favorite,
-      dotPosition: Offset(0.50, 0.35),  // chest / pecs
+      dotPosition: Offset(0.50, 0.28),
+    ),
+    _BodyPartOption(
+      title: 'Back',
+      subtitle: 'POSTURE & STRENGTH',
+      icon: Icons.airline_seat_flat,
+      dotPosition: Offset(0.50, 0.32),
+    ),
+    _BodyPartOption(
+      title: 'Shoulders',
+      subtitle: 'BROAD & DEFINED',
+      icon: Icons.expand,
+      dotPosition: Offset(0.50, 0.22),
+    ),
+    _BodyPartOption(
+      title: 'Biceps',
+      subtitle: 'ARM STRENGTH',
+      icon: Icons.fitness_center,
+      dotPosition: Offset(0.50, 0.30),
+    ),
+    _BodyPartOption(
+      title: 'Triceps',
+      subtitle: 'ARM DEFINITION',
+      icon: Icons.sports_gymnastics,
+      dotPosition: Offset(0.50, 0.33),
     ),
     _BodyPartOption(
       title: 'Abs',
       subtitle: 'CORE STABILITY',
       icon: Icons.grid_view,
-      dotPosition: Offset(0.50, 0.46),  // center abdomen
+      dotPosition: Offset(0.50, 0.42),
     ),
     _BodyPartOption(
-      title: 'Leg',
+      title: 'Legs',
       subtitle: 'LOWER POWER',
       icon: Icons.directions_run,
-      dotPosition: Offset(0.50, 0.72),  // mid-thigh
+      dotPosition: Offset(0.50, 0.68),
+    ),
+    _BodyPartOption(
+      title: 'Glutes',
+      subtitle: 'HIP & GLUTE',
+      icon: Icons.directions_walk,
+      dotPosition: Offset(0.50, 0.55),
     ),
   ];
 
@@ -316,7 +364,7 @@ class _GymBodyFocusScreenState extends State<GymBodyFocusScreen>
 
         // Side-by-side: Options list + Body image with dots
         SizedBox(
-          height: 520,
+          height: 720,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

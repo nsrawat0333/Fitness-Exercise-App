@@ -13,6 +13,15 @@ class GymExercise {
   final String? videoAsset;
   final String? imageAsset;
   final List<String> instructions;
+
+  // ── 5-Phase Workout Flow Fields ──
+  final int breathingDuration;
+  final int previewDuration;
+  final int performDuration;
+  final int recoveryDuration;
+  final String? breathingAnimation;
+  final String? previewAnimation;
+  final String? exerciseAnimation;
   
   const GymExercise({
     this.id = '',
@@ -25,7 +34,22 @@ class GymExercise {
     this.videoAsset,
     this.imageAsset,
     this.instructions = const [],
+    this.breathingDuration = 20,
+    this.previewDuration = 20,
+    this.performDuration = 30,
+    this.recoveryDuration = 20,
+    this.breathingAnimation,
+    this.previewAnimation,
+    this.exerciseAnimation,
   });
+
+  /// Phase durations map for the workout flow controller.
+  Map<String, int> get phaseDurations => {
+    'breathing': breathingDuration,
+    'preview': previewDuration,
+    'perform': performDuration,
+    'recovery': recoveryDuration,
+  };
 }
 
 class GymChallengeData {
@@ -46,9 +70,12 @@ class GymChallengeData {
     List<String> targets = [];
     if (cat.contains('abs')) targets.addAll(['abs']);
     if (cat.contains('arm')) targets.addAll(['arms', 'biceps', 'triceps']);
+    if (cat.contains('biceps')) targets.addAll(['biceps', 'arms']);
+    if (cat.contains('triceps')) targets.addAll(['triceps', 'arms']);
     if (cat.contains('chest')) targets.addAll(['chest']);
     if (cat.contains('leg')) targets.addAll(['legs', 'calves', 'glutes']);
-    if (cat.contains('shoulder') || cat.contains('back')) targets.addAll(['shoulders', 'back']);
+    if (cat.contains('shoulder')) targets.addAll(['shoulders']);
+    if (cat.contains('back')) targets.addAll(['back']);
     if (cat.contains('butt') || cat.contains('glute')) targets.addAll(['glutes']);
     if (cat.contains('full body') || cat.contains('full_body')) targets.addAll(['full_body']);
 
@@ -93,18 +120,44 @@ class GymChallengeData {
         ?.map((e) => e.toString()).toList() ?? [];
     String difficulty = exData['difficulty'] ?? 'beginner';
 
-    // Lottie overrides
-    if (exName == 'Jumping Jacks') {
-      lottiePath = 'assets/images/jsonanimation/animationjumpingjaks.json';
-    } else if (exName.toLowerCase().contains('squat')) {
-      lottiePath = 'assets/images/jsonanimation/sqautss.json';
-    } else if (exName.toLowerCase().contains('froggy glute lift')) {
-      lottiePath = 'assets/images/jsonanimation/froggy Glute Lifts.json';
+    // Read animation path from JSON data first
+    String? jsonAnimation = exData['animation']?.toString();
+    if (jsonAnimation != null && jsonAnimation.isNotEmpty) {
+      lottiePath = jsonAnimation;
+    }
+
+    // Fallback Lottie overrides for exercises without animation in JSON
+    if (lottiePath == null) {
+      if (exName == 'Jumping Jacks') {
+        lottiePath = 'assets/images/jsonanimation/animationjumpingjaks.json';
+      } else if (exName.toLowerCase().contains('squat')) {
+        lottiePath = 'assets/images/jsonanimation/sqautss.json';
+      } else if (exName.toLowerCase().contains('froggy glute lift')) {
+        lottiePath = 'assets/images/jsonanimation/froggy Glute Lifts.json';
+      }
     }
 
     // Video overrides
     if (exName.toLowerCase().contains('push')) {
       videoPath = 'assets/images/mp4videofolder/pushup.mp4';
+    }
+
+    // Difficulty-based phase duration adjustments
+    int breathingDur = 20;
+    int previewDur = 20;
+    int performDur = duration;
+    int recoveryDur = 20;
+
+    final userLevel = GymUserData().activity.toLowerCase();
+    if (userLevel == 'beginner') {
+      breathingDur = 25;
+      previewDur = 20;
+      recoveryDur = 25;
+    } else if (userLevel == 'advanced') {
+      breathingDur = 15;
+      previewDur = 15;
+      performDur = (duration * 1.5).round();
+      recoveryDur = 15;
     }
 
     return GymExercise(
@@ -118,6 +171,13 @@ class GymChallengeData {
       videoAsset: videoPath,
       imageAsset: imagePath,
       instructions: instrs,
+      breathingDuration: breathingDur,
+      previewDuration: previewDur,
+      performDuration: performDur,
+      recoveryDuration: recoveryDur,
+      breathingAnimation: null, // Configurable: set Lottie path when available
+      previewAnimation: lottiePath, // Reuse exercise animation for preview
+      exerciseAnimation: lottiePath,
     );
   }
 
