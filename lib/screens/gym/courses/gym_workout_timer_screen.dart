@@ -150,68 +150,93 @@ class _GymWorkoutTimerScreenState extends State<GymWorkoutTimerScreen> with Sing
     int totalDurationSeconds = widget.exercises.fold(0, (sum, ex) => sum + ex.durationSeconds);
     double hours = totalDurationSeconds / 3600;
     int calories = (5.0 * GymUserData().weightKg * hours).round();
+    final userData = GymUserData();
+    double bmi = userData.bmi;
+    String bmiCategory = userData.bmiCategory;
+    
+    // Mark this day as completed
+    if (widget.dayIndex > 0) {
+      userData.completeDay(widget.dayIndex);
+    }
+
+    final now = DateTime.now();
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    final firstWeekday = DateTime(now.year, now.month, 1).weekday;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F2EC), // Base background from app
+      backgroundColor: const Color(0xFFF5F2EC),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(
                 child: Column(
                   children: [
-                    const Icon(Icons.check_circle_outline, color: Color(0xFF005FF9), size: 80),
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF005FF9).withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.check_circle, color: Color(0xFF005FF9), size: 48),
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'WORKOUT COMPLETE!',
-                      style: GoogleFonts.outfit(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.black,
-                      ),
+                      style: GoogleFonts.outfit(fontSize: 26, fontWeight: FontWeight.w900, color: Colors.black),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
-                      'Day ${widget.dayIndex} Finished',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w600,
-                      ),
+                      widget.dayIndex > 0 ? 'Day ${widget.dayIndex} Finished' : 'Custom Workout Finished',
+                      style: GoogleFonts.inter(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.w600),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
-              
-              // Calendar Date
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today, color: Colors.black87, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    _formatDate(DateTime.now()),
-                    style: GoogleFonts.outfit(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
               const SizedBox(height: 24),
 
-              // Metrics Row: Heart Rate & Calories
+              // ── BMI + Kcal Row ──
               Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(child: const HeartRateCard(bpm: 112)),
-                  const SizedBox(width: 16),
+                  // BMI Card
                   Expanded(
                     child: Container(
-                      height: 122, // roughly matching HeartRateCard default height
+                      height: 130,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: bmi < 25
+                            ? Colors.green.withValues(alpha: 0.1)
+                            : Colors.orange.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.monitor_weight_outlined,
+                            color: bmi < 25 ? Colors.green : Colors.orange, size: 26),
+                          const Spacer(),
+                          Text(
+                            bmi.toStringAsFixed(1),
+                            style: GoogleFonts.outfit(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                              color: bmi < 25 ? Colors.green[700] : Colors.orange[700],
+                            ),
+                          ),
+                          Text('BMI • $bmiCategory',
+                            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black54)),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  // Kcal Card
+                  Expanded(
+                    child: Container(
+                      height: 130,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.orange.withValues(alpha: 0.1),
@@ -220,45 +245,148 @@ class _GymWorkoutTimerScreenState extends State<GymWorkoutTimerScreen> with Sing
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.local_fire_department, color: Colors.orange, size: 28),
+                          const Icon(Icons.local_fire_department, color: Colors.orange, size: 26),
                           const Spacer(),
-                          Text('$calories', style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.orange)),
-                          Text('Kcal Burned', style: GoogleFonts.inter(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black54)),
+                          Text('$calories',
+                            style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.orange)),
+                          Text('Kcal Burned',
+                            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black54)),
                         ],
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
 
-              // Water Intake Card
+              // ── Heart Rate + Duration ──
+              Row(
+                children: [
+                  Expanded(child: const HeartRateCard(bpm: 112)),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Container(
+                      height: 122,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF9C27B0).withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.timer, color: Color(0xFF9C27B0), size: 26),
+                          const Spacer(),
+                          Text(
+                            '${(totalDurationSeconds / 60).round()}',
+                            style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w800, color: const Color(0xFF9C27B0)),
+                          ),
+                          Text('Minutes',
+                            style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.black54)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 14),
+
+              // ── Water Intake ──
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
                   color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.water_drop, color: Colors.blue, size: 40),
-                    const SizedBox(width: 16),
+                    const Icon(Icons.water_drop, color: Colors.blue, size: 36),
+                    const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Hydration Reminder', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.blue[800])),
-                          const SizedBox(height: 4),
-                          Text('Great job! Drink at least 500ml water to recover.', style: GoogleFonts.inter(fontSize: 13, color: Colors.blue[600])),
+                          Text('Hydration Reminder',
+                            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.blue[800])),
+                          const SizedBox(height: 3),
+                          Text('Drink at least 500ml water to recover.',
+                            style: GoogleFonts.inter(fontSize: 12, color: Colors.blue[600])),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
 
-              const SizedBox(height: 48),
+              // ── Calendar ──
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: const Color(0xFFE8E4DD)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.calendar_today, color: Colors.black87, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          _formatDate(now),
+                          style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    // Weekday headers
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'].map((d) => SizedBox(
+                        width: 32,
+                        child: Text(d, textAlign: TextAlign.center,
+                          style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.grey[500])),
+                      )).toList(),
+                    ),
+                    const SizedBox(height: 8),
+                    // Day grid
+                    Wrap(
+                      children: List.generate(firstWeekday - 1, (_) => const SizedBox(width: 46, height: 32))
+                        + List.generate(daysInMonth, (i) {
+                          int day = i + 1;
+                          bool isToday = day == now.day;
+                          return SizedBox(
+                            width: 46,
+                            height: 32,
+                            child: Center(
+                              child: Container(
+                                width: 28,
+                                height: 28,
+                                decoration: isToday ? BoxDecoration(
+                                  color: const Color(0xFF005FF9),
+                                  shape: BoxShape.circle,
+                                ) : null,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  '$day',
+                                  style: GoogleFonts.inter(
+                                    fontSize: 12,
+                                    fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
+                                    color: isToday ? Colors.white : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
               
               // Finish Button
               SizedBox(

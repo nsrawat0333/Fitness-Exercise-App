@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../constants/app_colors.dart';
+import '../../../data/gym_user_data.dart';
 import 'gym_workout_plan_screen.dart';
+import 'gym_daily_workout_screen.dart';
 
 class GymCourseDetailScreen extends StatelessWidget {
   final String courseName;
@@ -34,7 +36,7 @@ class GymCourseDetailScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   _buildDescription(),
                   const SizedBox(height: 32),
-                  _buildProgramOverview(),
+                  _buildProgramOverview(context),
                   const SizedBox(height: 100), // spacing for bottom button
                 ],
               ),
@@ -166,7 +168,30 @@ class GymCourseDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProgramOverview() {
+  Widget _buildProgramOverview(BuildContext context) {
+    int totalDays;
+    if (difficulty == 'Beginner') {
+      totalDays = 7;
+    } else if (difficulty == 'Intermediate') {
+      totalDays = 14;
+    } else {
+      totalDays = 30;
+    }
+
+    final userData = GymUserData();
+    final dayTitles = [
+      'Full Body Activation', 'Core & Stability', 'Rest & Recovery',
+      'Strength Builder', 'Cardio Blast', 'Upper Body Focus',
+      'Lower Body Focus', 'HIIT Session', 'Flexibility Day',
+      'Power Training', 'Endurance Build', 'Active Recovery',
+      'Peak Performance', 'Total Body Burn', 'Rest Day',
+      'Progressive Overload', 'Muscle Endurance', 'Speed Training',
+      'Core Intensive', 'Resistance Training', 'Plyometrics',
+      'Balance & Stability', 'Circuit Training', 'Rest & Stretch',
+      'High Volume', 'Functional Training', 'Explosive Power',
+      'Tempo Training', 'Challenge Day', 'Final Push',
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -178,68 +203,105 @@ class GymCourseDetailScreen extends StatelessWidget {
             color: Colors.black,
           ),
         ),
+        const SizedBox(height: 8),
+        Text(
+          '$totalDays Day Plan • $difficulty',
+          style: GoogleFonts.inter(
+            fontSize: 13,
+            color: Colors.grey[600],
+          ),
+        ),
         const SizedBox(height: 16),
-        // Just show a few sample days
-        _buildDayRow('Day 1', 'Full Body Activation', '15 mins', true),
-        _buildDayRow('Day 2', 'Core & Stability', '20 mins', false),
-        _buildDayRow('Day 3', 'Rest & Recovery', '0 mins', false),
-        _buildDayRow('Day 4', 'Strength Builder', '25 mins', false),
+        ...List.generate(totalDays, (i) {
+          int day = i + 1;
+          bool isCompleted = userData.isDayCompleted(day);
+          bool isUnlocked = userData.isDayUnlocked(day);
+          String title = dayTitles[i % dayTitles.length];
+          int mins = 10 + (i * 2) % 25;
+
+          return _buildDayRow('Day $day', title, '$mins mins', isUnlocked, isCompleted, day, context);
+        }),
       ],
     );
   }
 
-  Widget _buildDayRow(String day, String title, String time, bool isUnlocked) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: isUnlocked ? const Color(0xFFE3F2FD) : const Color(0xFFF5F5F5),
-              shape: BoxShape.circle,
+  Widget _buildDayRow(String day, String title, String time, bool isUnlocked, bool isCompleted, int dayIndex, BuildContext context) {
+    return GestureDetector(
+      onTap: isUnlocked && !isCompleted
+          ? () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (_) => GymDailyWorkoutScreen(dayIndex: dayIndex),
+              ));
+            }
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: isCompleted
+                    ? Colors.green.withValues(alpha: 0.15)
+                    : isUnlocked
+                        ? const Color(0xFFE3F2FD)
+                        : const Color(0xFFF5F5F5),
+                shape: BoxShape.circle,
+              ),
+              alignment: Alignment.center,
+              child: Icon(
+                isCompleted
+                    ? Icons.check
+                    : isUnlocked
+                        ? Icons.play_arrow
+                        : Icons.lock_outline,
+                color: isCompleted
+                    ? Colors.green
+                    : isUnlocked
+                        ? const Color(0xFF3B82F6)
+                        : Colors.grey[400],
+                size: 20,
+              ),
             ),
-            alignment: Alignment.center,
-            child: Icon(
-              isUnlocked ? Icons.play_arrow : Icons.lock_outline,
-              color: isUnlocked ? const Color(0xFF3B82F6) : Colors.grey[400],
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  day,
-                  style: GoogleFonts.outfit(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[600],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    day,
+                    style: GoogleFonts.outfit(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[600],
+                    ),
                   ),
-                ),
-                Text(
-                  title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: isUnlocked ? Colors.black : Colors.grey[500],
+                  Text(
+                    title,
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: isCompleted
+                          ? Colors.green[700]
+                          : isUnlocked
+                              ? Colors.black
+                              : Colors.grey[500],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Text(
-            time,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Colors.grey[600],
+            Text(
+              time,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
