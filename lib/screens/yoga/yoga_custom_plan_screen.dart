@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
-import '../../data/gym_challenge_data.dart';
-import '../../services/yoga_service.dart';
-import '../gym/courses/workout_flow_screen.dart';
+import 'yoga_custom_plan_generation_screen.dart';
 
 class YogaCustomPlanScreen extends StatefulWidget {
   const YogaCustomPlanScreen({super.key});
@@ -21,33 +19,13 @@ class _YogaCustomPlanScreenState extends State<YogaCustomPlanScreen> {
   final _goals = ['Weight Loss', 'Flexibility', 'Relax', 'Strength'];
 
   void _generateAndStart() {
-    final session = YogaService.generateCustomPlan(
-      level: _level,
-      goal: _goal,
-      durationMinutes: _duration.toInt(),
-    );
-
-    final gymExercises = session.poses.map((p) {
-      return GymExercise(
-        id: p.name.toLowerCase().replaceAll(' ', '_'),
-        name: p.name,
-        category: p.category,
-        muscleGroup: p.focusAreas,
-        difficulty: session.difficulty,
-        durationSeconds: p.durationSeconds,
-        performDuration: p.durationSeconds,
-        instructions: p.steps,
-        imageAsset: p.image,
-        animationLottie: p.animation.isNotEmpty ? p.animation : null,
-      );
-    }).toList();
-
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => WorkoutFlowScreen(
-          exercises: gymExercises,
-          dayIndex: 0,
+        builder: (_) => YogaCustomPlanGenerationScreen(
+          level: _level,
+          goal: _goal,
+          durationMinutes: _duration.toInt(),
         ),
       ),
     );

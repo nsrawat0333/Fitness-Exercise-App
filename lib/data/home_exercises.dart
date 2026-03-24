@@ -31,7 +31,7 @@ class HomeExercisesData {
         description: 'Wider hand placement emphasizes the outer chest.',
         steps: ['Place hands wider than shoulder-width', 'Lower chest to floor', 'Push back up with control', 'Focus on chest squeeze'],
         duration: '30s', reps: '10-15', rest: '30s',
-        image: 'assets/images/jsonimg/wide_push_ups.png', animation: 'assets/images/jsonanimation/push up.json',
+        image: 'assets/images/jsonimg/wide_push_ups.png', animation: 'assets/images/jsonanimation/wide Arm push up.json',
       ),
       HomeExercise(
         name: 'Diamond Push-Ups',
@@ -272,7 +272,7 @@ class HomeExercisesData {
         description: 'Overhead press-down movement targeting long head of triceps.',
         steps: ['Hold dumbbell overhead with both hands', 'Lower weight behind head', 'Extend arms back up', 'Keep elbows close to head'],
         duration: '30s', reps: '10-12', rest: '30s',
-        image: 'assets/images/jsonimg/overhead_tricep_extension.png', animation: 'assets/images/jsonanimation/overhead_tricep_extension.json',
+        image: 'assets/images/jsonimg/overhead_tricep_extension.png', animation: 'assets/images/jsonanimation/overhead tricep extention.json',
       ),
       HomeExercise(
         name: 'Bench Tricep Push-Ups',
@@ -292,7 +292,7 @@ class HomeExercisesData {
         description: 'Standard crunch targeting the upper abs.',
         steps: ['Lie on back with knees bent', 'Place hands behind head', 'Curl upper body towards knees', 'Lower with control'],
         duration: '30s', reps: '15-20', rest: '25s',
-        image: 'assets/images/jsonimg/abdominal_crunches.png', animation: 'assets/images/jsonanimation/Abdominal crunhes.json',
+        image: 'assets/images/jsonimg/abdominal_crunches.png', animation: 'assets/images/jsonanimation/abdominal_crunhes.json',
       ),
       HomeExercise(
         name: 'Bicycle Crunches',
@@ -341,7 +341,7 @@ class HomeExercisesData {
         description: 'Dynamic plank exercise for abs and cardiovascular endurance.',
         steps: ['Start in plank position', 'Drive one knee towards chest', 'Quickly switch legs', 'Keep core tight and hips level'],
         duration: '30s', reps: '20-30', rest: '25s',
-        image: 'assets/images/jsonimg/mountain_climbers.png', animation: 'assets/images/jsonanimation/mountain_climbers.json',
+        image: 'assets/images/jsonimg/mountain_climbers.png', animation: 'assets/images/jsonanimation/mountain climber.json',
       ),
     ],
 
@@ -375,14 +375,14 @@ class HomeExercisesData {
         description: 'Isometric quad hold against a wall.',
         steps: ['Lean against a wall', 'Slide down until thighs parallel', 'Hold the position', 'Keep back flat against wall'],
         duration: '45s', reps: 'hold', rest: '30s',
-        image: 'assets/images/jsonimg/wall_sit.png', animation: 'assets/images/jsonanimation/Lunges.json',
+        image: 'assets/images/jsonimg/wall_sit.png', animation: 'assets/images/jsonanimation/lunges.json',
       ),
       HomeExercise(
         name: 'Calf Raises',
         description: 'Standing toe raise to build calf muscles.',
         steps: ['Stand with feet hip-width apart', 'Rise up onto toes', 'Hold briefly at top', 'Lower slowly'],
         duration: '30s', reps: '15-20', rest: '25s',
-        image: 'assets/images/jsonimg/calf_raises.png', animation: 'assets/images/jsonanimation/Calf rasies.json',
+        image: 'assets/images/jsonimg/calf_raises.png', animation: 'assets/images/jsonanimation/calf_rasies.json',
       ),
       HomeExercise(
         name: 'Sumo Squats',
@@ -403,7 +403,7 @@ class HomeExercisesData {
         description: 'Unilateral step exercise using a bench or stair.',
         steps: ['Stand in front of a step', 'Step up with one foot', 'Bring other foot up', 'Step back down and alternate'],
         duration: '30s', reps: '10-12 each leg', rest: '30s',
-        image: 'assets/images/jsonimg/step_ups.png', animation: 'assets/images/jsonanimation/jump squats.json',
+        image: 'assets/images/jsonimg/step_ups.png', animation: 'assets/images/jsonanimation/jump_squats.json',
       ),
     ],
 
@@ -416,14 +416,14 @@ class HomeExercisesData {
         description: 'Hip thrust from the floor targeting the glutes.',
         steps: ['Lie on back with knees bent', 'Push hips up towards ceiling', 'Squeeze glutes at top', 'Lower hips back down'],
         duration: '30s', reps: '15-20', rest: '25s',
-        image: 'assets/images/jsonimg/glute_bridges.png', animation: 'assets/images/jsonanimation/side lunges.json',
+        image: 'assets/images/jsonimg/glute_bridges.png', animation: 'assets/images/jsonanimation/side_lunges.json',
       ),
       HomeExercise(
         name: 'Single Leg Glute Bridge',
         description: 'Unilateral glute bridge for isolated activation.',
         steps: ['Lie on back with one leg extended', 'Push hips up using one leg', 'Squeeze glute at top', 'Lower and switch'],
         duration: '30s', reps: '10-12 each leg', rest: '30s',
-        image: 'assets/images/jsonimg/single_leg_glute_bridge.png', animation: 'assets/images/jsonanimation/sumo squats.json',
+        image: 'assets/images/jsonimg/single_leg_glute_bridge.png', animation: 'assets/images/jsonanimation/sumo_squats.json',
       ),
       HomeExercise(
         name: 'Donkey Kicks',
@@ -451,14 +451,14 @@ class HomeExercisesData {
         description: 'Prone glute squeeze with soles pressed together.',
         steps: ['Lie face down, knees bent, soles together', 'Squeeze glutes to lift thighs', 'Hold briefly at top', 'Lower with control'],
         duration: '30s', reps: '15-20', rest: '25s',
-        image: 'assets/images/jsonimg/froggy_glute_lifts.png', animation: 'assets/images/jsonanimation/froggy_glute_lifts.json',
+        image: 'assets/images/jsonimg/froggy_glute_lifts.png', animation: 'assets/images/jsonanimation/froggy Glute lifts.json',
       ),
       HomeExercise(
         name: 'Curtsy Lunges',
         description: 'Cross-behind lunge targeting the glutes from a unique angle.',
         steps: ['Stand with feet hip-width', 'Step one leg behind and across', 'Lower into lunge', 'Push back up and alternate'],
         duration: '30s', reps: '10-12 each side', rest: '30s',
-        image: 'assets/images/jsonimg/curtsy_lunges.png', animation: 'assets/images/jsonanimation/Dubmbbell Lunges.json',
+        image: 'assets/images/jsonimg/curtsy_lunges.png', animation: 'assets/images/jsonanimation/dubmbbell_lunges.json',
       ),
     ],
 
@@ -471,7 +471,7 @@ class HomeExercisesData {
         description: 'Full-body conditioning combining push-up, squat, and jump.',
         steps: ['Stand with feet shoulder-width', 'Drop into squat, hands on floor', 'Jump feet back to plank', 'Push-up, jump forward, jump up'],
         duration: '30s', reps: '10-15', rest: '40s',
-        image: 'assets/images/jsonimg/burpees.png', animation: '',
+        image: 'assets/images/jsonimg/burpees.png', animation: 'assets/images/jsonanimation/burpees.json',
       ),
       HomeExercise(
         name: 'Jumping Jacks',
@@ -485,7 +485,7 @@ class HomeExercisesData {
         description: 'Plank-based cardio targeting core, shoulders, and legs.',
         steps: ['Start in plank position', 'Drive one knee towards chest', 'Quickly switch legs', 'Keep hips level'],
         duration: '30s', reps: '20-30', rest: '25s',
-        image: 'assets/images/jsonimg/mountain_climbers.png', animation: 'assets/images/jsonanimation/mountain_climbers.json',
+        image: 'assets/images/jsonimg/mountain_climbers.png', animation: 'assets/images/jsonanimation/mountain climber.json',
       ),
       HomeExercise(
         name: 'Push-Ups',
@@ -520,7 +520,7 @@ class HomeExercisesData {
         description: 'Transition between forearm and full plank for total body work.',
         steps: ['Start in forearm plank', 'Push up to full plank one arm at a time', 'Lower back to forearms', 'Alternate leading arm'],
         duration: '30s', reps: '10-12', rest: '30s',
-        image: 'assets/images/jsonimg/plank_to_push_up.png', animation: 'assets/images/jsonanimation/Lunges.json',
+        image: 'assets/images/jsonimg/plank_to_push_up.png', animation: 'assets/images/jsonanimation/lunges.json',
       ),
       HomeExercise(
         name: 'Bear Crawl',
@@ -534,7 +534,7 @@ class HomeExercisesData {
         description: 'Cardio exercise driving knees upward rapidly.',
         steps: ['Stand tall, feet hip-width', 'Drive one knee up towards chest', 'Quickly switch', 'Pump arms for momentum'],
         duration: '30s', reps: '20-30', rest: '25s',
-        image: 'assets/images/jsonimg/high_knees.png', animation: 'assets/images/jsonanimation/high_knees.json',
+        image: 'assets/images/jsonimg/high_knees.png', animation: 'assets/images/jsonanimation/high knnee.json',
       ),
     ],
   };

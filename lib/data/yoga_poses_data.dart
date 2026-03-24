@@ -86,7 +86,7 @@ class YogaPosesData {
       category: 'warmup',
       focusAreas: ['back_pain', 'flexibility', 'stress_relief'],
       image: 'assets/images/yoga/cat_cow.png',
-      animation: 'assets/images/jsonanimation/Cat Cow Pose.json',
+      animation: 'assets/images/jsonanimation/cat_cow_pose.json',
     ),
     YogaPose(
       name: 'Downward Dog',
@@ -103,6 +103,7 @@ class YogaPosesData {
       category: 'warmup',
       focusAreas: ['full_body', 'flexibility', 'weight_loss'],
       image: 'assets/images/yoga/downward_dog.png',
+      animation: 'assets/images/jsonanimation/downward dog.json',
     ),
     YogaPose(
       name: 'Cobra Pose',
@@ -119,6 +120,7 @@ class YogaPosesData {
       category: 'warmup',
       focusAreas: ['back_pain', 'flexibility', 'abs_core'],
       image: 'assets/images/yoga/cobra_pose.png',
+      animation: 'assets/images/jsonanimation/Cobra Stretch.json',
     ),
   ];
 
@@ -173,7 +175,7 @@ class YogaPosesData {
       category: 'strength',
       focusAreas: ['abs_core', 'weight_loss', 'full_body'],
       image: 'assets/images/yoga/plank_pose.png',
-      animation: 'assets/images/jsonanimation/Plank.json',
+      animation: 'assets/images/jsonanimation/plank.json',
     ),
     YogaPose(
       name: 'Boat Pose',
