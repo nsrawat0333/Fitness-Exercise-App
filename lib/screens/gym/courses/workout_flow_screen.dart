@@ -7,6 +7,8 @@ import '../../../data/gym_challenge_data.dart';
 import '../../../data/gym_user_data.dart';
 import '../../../widgets/breathing_animation_widget.dart';
 import '../../../widgets/heart_rate_card.dart';
+import '../../heart_rate_screen.dart';
+import '../../water_tracker_screen.dart';
 
 /// Workout phase enum for the 5-phase flow.
 enum WorkoutPhase {
@@ -500,11 +502,35 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     required String label,
   }) {
     return Center(
-      child: BreathingAnimationWidget(
-        color: color,
-        glowColor: glowColor,
-        size: 220,
-        label: label,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 250,
+            child: Lottie.asset(
+              'assets/images/jsonanimation/breathresttime.json',
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) {
+                return BreathingAnimationWidget(
+                  color: color,
+                  glowColor: glowColor,
+                  size: 220,
+                  label: label,
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: color,
+              letterSpacing: 1.0,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -824,6 +850,22 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Back button
+              Align(
+                alignment: Alignment.centerLeft,
+                child: GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.arrow_back, color: Colors.black87, size: 22),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               Center(
                 child: Column(
                   children: [
@@ -913,7 +955,12 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
               // Heart Rate + Duration
               Row(
                 children: [
-                  Expanded(child: const HeartRateCard(bpm: 112)),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeartRateScreen())),
+                      child: const HeartRateCard(bpm: 112),
+                    ),
+                  ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Container(
@@ -943,30 +990,34 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
               const SizedBox(height: 14),
 
               // Water Intake
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.blue.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.water_drop, color: Colors.blue, size: 36),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Hydration Reminder',
-                            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.blue[800])),
-                          const SizedBox(height: 3),
-                          Text('Drink at least 500ml water to recover.',
-                            style: GoogleFonts.inter(fontSize: 12, color: Colors.blue[600])),
-                        ],
+              GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WaterTrackerScreen())),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.water_drop, color: Colors.blue, size: 36),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Hydration Reminder',
+                              style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.blue[800])),
+                            const SizedBox(height: 3),
+                            Text('Drink at least 500ml water to recover.',
+                              style: GoogleFonts.inter(fontSize: 12, color: Colors.blue[600])),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                      Icon(Icons.chevron_right, color: Colors.blue[400]),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),

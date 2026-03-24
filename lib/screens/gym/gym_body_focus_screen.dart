@@ -220,21 +220,7 @@ class _GymBodyFocusScreenState extends State<GymBodyFocusScreen>
                       color: AppColors.textPrimary,
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  GestureDetector(
-                    onTap: () {
-                      // Skip action
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const GymPlanGenerationScreen()));
-                    },
-                    child: Text(
-                      'Skip',
-                      style: GoogleFonts.outfit(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
+                  const SizedBox(width: 24), // Balance spacer
                 ],
               ),
             ),

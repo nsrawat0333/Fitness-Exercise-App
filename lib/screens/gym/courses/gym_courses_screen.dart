@@ -98,19 +98,18 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-      automaticallyImplyLeading: false,
-      title: Row(
-        children: [
-          Text(
-            'HOME WORKOUT',
-            style: GoogleFonts.outfit(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: Colors.black,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ],
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.black),
+        onPressed: () => Navigator.pop(context),
+      ),
+      title: Text(
+        'HOME WORKOUT',
+        style: GoogleFonts.outfit(
+          fontSize: 22,
+          fontWeight: FontWeight.w900,
+          color: Colors.black,
+          letterSpacing: 0.5,
+        ),
       ),
     );
   }
@@ -418,7 +417,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
                         bool isUnlocked = isWeekUnlocked && userData.isDayUnlocked(day);
 
                         return GestureDetector(
-                          onTap: isUnlocked && !isDone
+                          onTap: isUnlocked
                               ? () {
                                   Navigator.push(
                                     context,
