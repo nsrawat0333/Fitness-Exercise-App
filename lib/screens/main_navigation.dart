@@ -6,6 +6,7 @@ import 'explore_screen.dart';
 import 'running/running_hub_screen.dart';
 import 'therapy/therapy_screen.dart';
 import 'account/account_screen.dart';
+import '../services/points_manager.dart';
 
 /// Main navigation shell with bottom navigation bar.
 /// Manages 5 tabs: Home, Map, Therapy, Explore, Account.
@@ -18,6 +19,13 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Trigger offline data sync whenever user logs in or opens the app
+    PointsManager().syncOfflineData();
+  }
 
   // Screens – Home and Therapy are built, others are placeholders
   List<Widget> get _screens => [

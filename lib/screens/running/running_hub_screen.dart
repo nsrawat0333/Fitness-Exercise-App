@@ -1,106 +1,203 @@
 import 'package:flutter/material.dart';
-import 'dart:ui' as ui;
 import '../../constants/app_colors.dart';
 import '../../constants/app_text_styles.dart';
+import '../../models/run_data.dart';
+import '../../services/run_storage_service.dart';
 import 'goal_selection_screen.dart';
 
-class RunningHubScreen extends StatelessWidget {
+/// Dashboard – weekly stats, run history, and start-run CTA.
+class RunningHubScreen extends StatefulWidget {
   const RunningHubScreen({super.key});
+
+  @override
+  State<RunningHubScreen> createState() => _RunningHubScreenState();
+}
+
+class _RunningHubScreenState extends State<RunningHubScreen> with SingleTickerProviderStateMixin {
+  double _totalDistKm = 0;
+  int _totalTimeSec = 0;
+  int _runsCount = 0;
+  int _totalSteps = 0;
+  int _improvement = 0;
+  List<RunRecord> _history = [];
+  bool _loading = true;
+
+  late AnimationController _animCtrl;
+  late Animation<double> _fadeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _animCtrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _fadeAnim = CurvedAnimation(parent: _animCtrl, curve: Curves.easeOut);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final stats = await RunStorageService.getWeeklyStats();
+    final history = await RunStorageService.loadHistory();
+    if (!mounted) return;
+    setState(() {
+      _totalDistKm = stats['totalDistKm'];
+      _totalTimeSec = stats['totalTimeSec'];
+      _runsCount = stats['runsCount'];
+      _totalSteps = stats['totalSteps'];
+      _improvement = stats['improvement'];
+      _history = history;
+      _loading = false;
+    });
+    _animCtrl.forward();
+  }
+
+  String _formatTime(int secs) {
+    final h = secs ~/ 3600;
+    final m = (secs % 3600) ~/ 60;
+    if (h > 0) return '${h}h ${m}m';
+    return '${m}m';
+  }
+
+  @override
+  void dispose() {
+    _animCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.sageBg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('OVERVIEW', style: AppTextStyles.sageSubtitle.copyWith(letterSpacing: 1.5, fontSize: 12)),
-              const SizedBox(height: 4),
-              Text('Weekly Progress', style: AppTextStyles.sageTitle.copyWith(fontSize: 34)),
-              const SizedBox(height: 24),
-
-              // ── TOTAL DISTANCE CARD ──
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.sageDark,
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('TOTAL DISTANCE', style: AppTextStyles.sageSubtitle.copyWith(color: Colors.white54, fontSize: 12)),
-                    const SizedBox(height: 8),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
+        child: _loading
+            ? const Center(child: CircularProgressIndicator(color: AppColors.sageGreen))
+            : FadeTransition(
+                opacity: _fadeAnim,
+                child: RefreshIndicator(
+                  color: AppColors.sageGreen,
+                  onRefresh: _loadData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('45.3', style: AppTextStyles.sageStatBig),
-                        const SizedBox(width: 8),
-                        Text('km', style: AppTextStyles.sageStatBig.copyWith(fontSize: 24, color: AppColors.sageGreen)),
+                        // ── HEADER ──
+                        Text('OVERVIEW',
+                            style: AppTextStyles.sageSubtitle
+                                .copyWith(letterSpacing: 1.5, fontSize: 12)),
+                        const SizedBox(height: 4),
+                        Text('Weekly Progress',
+                            style: AppTextStyles.sageTitle.copyWith(fontSize: 34)),
+                        const SizedBox(height: 24),
+
+                        // ── TOTAL DISTANCE HERO CARD ──
+                        _buildHeroCard(),
+                        const SizedBox(height: 16),
+
+                        // ── TIME / RUNS / STEPS ROW ──
+                        Row(
+                          children: [
+                            Expanded(child: _buildMetricCard('TIME', _formatTime(_totalTimeSec), 'Moving activity')),
+                            const SizedBox(width: 12),
+                            Expanded(child: _buildMetricCard('RUNS', '$_runsCount', 'This week')),
+                            const SizedBox(width: 12),
+                            Expanded(child: _buildMetricCard('STEPS', _formatSteps(_totalSteps), 'Total')),
+                          ],
+                        ),
+                        const SizedBox(height: 28),
+
+                        // ── PERFORMANCE CHART ──
+                        _buildPerformanceChart(),
+                        const SizedBox(height: 28),
+
+                        // ── RUN HISTORY ──
+                        if (_history.isNotEmpty) ...[
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Run History',
+                                  style: AppTextStyles.sageTitle.copyWith(fontSize: 22)),
+                              Text('${_history.length} runs',
+                                  style: AppTextStyles.sageSubtitle
+                                      .copyWith(color: AppColors.sageGreen, fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          ..._history.take(5).map(_buildHistoryTile),
+                          const SizedBox(height: 24),
+                        ],
+
+                        // ── START RUN CTA ──
+                        _buildNextRunCTA(context),
+                        const SizedBox(height: 20),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        const Icon(Icons.trending_up, color: AppColors.sageGreenLight, size: 16),
-                        const SizedBox(width: 6),
-                        Text('12% above last week', style: AppTextStyles.sageSubtitle.copyWith(color: AppColors.sageGreenLight)),
-                      ],
-                    ),
-                  ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 16),
-
-              // ── TIME & RUNS ROW ──
-              Row(
-                children: [
-                  Expanded(child: _buildMetricCard('TIME', '4h 21m', 'Moving activity')),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildMetricCard('RUNS', '6', 'Completed sessions')),
-                ],
-              ),
-              const SizedBox(height: 24),
-
-              // ── PERFORMANCE CHART ──
-              _buildPerformanceChart(),
-              const SizedBox(height: 16),
-
-              // ── AVERAGE HEART RATE ──
-              _buildHeartRateCard(),
-              const SizedBox(height: 32),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Last Route', style: AppTextStyles.sageTitle.copyWith(fontSize: 24)),
-                  Text('5.2 km Run', style: AppTextStyles.sageSubtitle.copyWith(color: AppColors.sageGreen, fontWeight: FontWeight.w600)),
-                ],
-              ),
-              const SizedBox(height: 16),
-              
-              // ── LAST ROUTE MAP CARD ──
-              _buildLastRouteMap(),
-              const SizedBox(height: 24),
-
-              // ── READY CTA ──
-              _buildNextRunCTA(context),
-              const SizedBox(height: 40),
-            ],
-          ),
-        ),
       ),
     );
   }
 
+  String _formatSteps(int steps) {
+    if (steps >= 1000) return '${(steps / 1000).toStringAsFixed(1)}k';
+    return '$steps';
+  }
+
+  // ── HERO CARD ──
+  Widget _buildHeroCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.sageDark,
+        borderRadius: BorderRadius.circular(32),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('TOTAL DISTANCE',
+              style: AppTextStyles.sageSubtitle
+                  .copyWith(color: Colors.white54, fontSize: 12)),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(_totalDistKm.toStringAsFixed(1),
+                  style: AppTextStyles.sageStatBig),
+              const SizedBox(width: 8),
+              Text('km',
+                  style: AppTextStyles.sageStatBig
+                      .copyWith(fontSize: 24, color: AppColors.sageGreen)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(
+                _improvement >= 0 ? Icons.trending_up : Icons.trending_down,
+                color: AppColors.sageGreenLight,
+                size: 16,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                _improvement >= 0
+                    ? '$_improvement% above last week'
+                    : '${_improvement.abs()}% below last week',
+                style: AppTextStyles.sageSubtitle
+                    .copyWith(color: AppColors.sageGreenLight),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── METRIC CARD ──
   Widget _buildMetricCard(String title, String value, String subtitle) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(24),
@@ -108,17 +205,39 @@ class RunningHubScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: AppTextStyles.sageSubtitle.copyWith(fontSize: 12)),
-          const SizedBox(height: 8),
-          Text(value, style: AppTextStyles.sageTitle.copyWith(fontSize: 26, letterSpacing: -0.5)),
-          const SizedBox(height: 4),
-          Text(subtitle, style: AppTextStyles.sageSubtitle.copyWith(fontSize: 11)),
+          Text(title,
+              style: AppTextStyles.sageSubtitle.copyWith(fontSize: 10, letterSpacing: 1.2)),
+          const SizedBox(height: 6),
+          Text(value,
+              style: AppTextStyles.sageTitle
+                  .copyWith(fontSize: 22, letterSpacing: -0.5)),
+          const SizedBox(height: 2),
+          Text(subtitle,
+              style: AppTextStyles.sageSubtitle.copyWith(fontSize: 10)),
         ],
       ),
     );
   }
 
+  // ── BAR CHART ──
   Widget _buildPerformanceChart() {
+    // Get last 7 days run distances
+    final now = DateTime.now();
+    final dayLabels = List.generate(7, (i) {
+      final d = now.subtract(Duration(days: 6 - i));
+      return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][d.weekday - 1];
+    });
+    final dayDistances = List.generate(7, (i) {
+      final d = now.subtract(Duration(days: 6 - i));
+      return _history
+          .where((r) =>
+              r.startTime.year == d.year &&
+              r.startTime.month == d.month &&
+              r.startTime.day == d.day)
+          .fold<double>(0, (s, r) => s + r.distanceKm);
+    });
+    final maxDist = dayDistances.fold<double>(1.0, (a, b) => a > b ? a : b);
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -133,8 +252,9 @@ class RunningHubScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Performance', style: AppTextStyles.sageTitle.copyWith(fontSize: 20)),
-                  Text('18 - 24 Nov', style: AppTextStyles.sageSubtitle),
+                  Text('Performance',
+                      style: AppTextStyles.sageTitle.copyWith(fontSize: 20)),
+                  Text('Last 7 days', style: AppTextStyles.sageSubtitle),
                 ],
               ),
               Container(
@@ -143,31 +263,25 @@ class RunningHubScreen extends StatelessWidget {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Row(
-                  children: [
-                    Text('View by: Week', style: AppTextStyles.sageSubtitle.copyWith(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w600)),
-                    const Icon(Icons.arrow_drop_down, size: 16),
-                  ],
-                ),
+                child: Text('Distance',
+                    style: AppTextStyles.sageSubtitle.copyWith(
+                        color: Colors.black,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600)),
               ),
             ],
           ),
           const SizedBox(height: 32),
-          // Mock Bar Chart
           SizedBox(
             height: 100,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                _buildBar(40, '18'),
-                _buildBar(60, '19'),
-                _buildBar(20, '20'),
-                _buildBar(90, '21', isAccent: true), // Highlighted
-                _buildBar(50, '22'),
-                _buildBar(70, '23'),
-                _buildBar(30, '24'),
-              ],
+              children: List.generate(7, (i) {
+                final h = (dayDistances[i] / maxDist * 90).clamp(4.0, 90.0);
+                final isToday = i == 6;
+                return _buildBar(h, dayLabels[i], isAccent: isToday);
+              }),
             ),
           ),
         ],
@@ -179,52 +293,85 @@ class RunningHubScreen extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        Container(
-          width: 24,
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOut,
+          width: 28,
           height: height,
           decoration: BoxDecoration(
-            color: isAccent ? AppColors.sageGreen : AppColors.sageGreenLight.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(12),
+            color: isAccent
+                ? AppColors.sageGreen
+                : AppColors.sageGreenLight.withValues(alpha: 0.6),
+            borderRadius: BorderRadius.circular(14),
           ),
         ),
-        const SizedBox(height: 12),
-        Text(label, style: AppTextStyles.sageSubtitle.copyWith(fontSize: 11)),
+        const SizedBox(height: 10),
+        Text(label,
+            style: AppTextStyles.sageSubtitle.copyWith(
+                fontSize: 11,
+                fontWeight: isAccent ? FontWeight.w700 : FontWeight.w400,
+                color: isAccent ? AppColors.sageGreen : AppColors.sageTextMuted)),
       ],
     );
   }
 
-  Widget _buildHeartRateCard() {
+  // ── HISTORY TILE ──
+  Widget _buildHistoryTile(RunRecord run) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.sageGreenLight.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(40),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            width: 48,
+            height: 48,
             decoration: BoxDecoration(
-              color: AppColors.sageGreenLight,
-              shape: BoxShape.circle,
+              color: AppColors.sageGreenLight.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(16),
             ),
-            child: const Icon(Icons.favorite, color: AppColors.sageGreen),
+            child: Center(
+              child: Text(run.type.emoji, style: const TextStyle(fontSize: 22)),
+            ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Average Heart Rate', style: AppTextStyles.sageTitle.copyWith(fontSize: 16)),
-                Text('During runs this week', style: AppTextStyles.sageSubtitle.copyWith(fontSize: 12)),
+                Text(run.type.label,
+                    style: AppTextStyles.sageTitle.copyWith(fontSize: 16)),
+                const SizedBox(height: 2),
+                Text(
+                  '${run.distanceKm.toStringAsFixed(2)} km  •  ${run.formattedDuration}  •  ${run.steps} steps',
+                  style: AppTextStyles.sageSubtitle.copyWith(fontSize: 12),
+                ),
               ],
             ),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text('142', style: AppTextStyles.sageTitle.copyWith(fontSize: 28, color: AppColors.sageGreen)),
-              Text('BPM', style: AppTextStyles.sageSubtitle.copyWith(fontSize: 10)),
+              Text(
+                '${run.startTime.day}/${run.startTime.month}',
+                style: AppTextStyles.sageSubtitle
+                    .copyWith(fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+              Text(
+                run.formattedPace,
+                style: AppTextStyles.sageSubtitle
+                    .copyWith(fontSize: 11, color: AppColors.sageGreen),
+              ),
             ],
           ),
         ],
@@ -232,73 +379,59 @@ class RunningHubScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildLastRouteMap() {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: AppColors.sageMapBg,
-        borderRadius: BorderRadius.circular(32),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(32),
-        child: CustomPaint(
-          painter: _MiniMapPainter(),
-          child: Stack(
-            children: [
-              Positioned(
-                bottom: 16,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.timer, size: 14, color: AppColors.sageGreen),
-                        const SizedBox(width: 4),
-                        Text('24:12', style: AppTextStyles.sageSubtitle.copyWith(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black)),
-                        const SizedBox(width: 12),
-                        const Icon(Icons.speed, size: 14, color: AppColors.sageGreen),
-                        const SizedBox(width: 4),
-                        Text('4\'39"/km', style: AppTextStyles.sageSubtitle.copyWith(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.black)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
+  // ── START CTA ──
   Widget _buildNextRunCTA(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const GoalSelectionScreen()));
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const GoalSelectionScreen()),
+        );
+        _loadData(); // Refresh after returning
       },
       child: Container(
         height: 140,
         width: double.infinity,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(32),
-          // Using a solid dark color simulation if image asset is unavailable
-          color: AppColors.sageDark,
+          gradient: const LinearGradient(
+            colors: [Color(0xFF2D6A4F), Color(0xFF5B7E5F)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.sageGreen.withValues(alpha: 0.3),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
         child: Stack(
           children: [
-            // Faux image background pattern
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.1,
-                child: Image.network('https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=600', fit: BoxFit.cover),
+            // Decorative circles
+            Positioned(
+              right: -30,
+              top: -30,
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.08),
+                ),
+              ),
+            ),
+            Positioned(
+              right: 30,
+              bottom: -40,
+              child: Container(
+                width: 80,
+                height: 80,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white.withValues(alpha: 0.05),
+                ),
               ),
             ),
             Padding(
@@ -306,22 +439,33 @@ class RunningHubScreen extends StatelessWidget {
               child: Row(
                 children: [
                   Expanded(
-                    child: Text(
-                      'Ready for\nyour\nnext run?',
-                      style: AppTextStyles.sageTitle.copyWith(color: Colors.white, fontSize: 28, height: 1.1),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Ready for\nyour next run?',
+                          style: AppTextStyles.sageTitle.copyWith(
+                              color: Colors.white, fontSize: 26, height: 1.2),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Set your goal and hit the road',
+                          style: AppTextStyles.sageSubtitle
+                              .copyWith(color: Colors.white70, fontSize: 13),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
-                      color: AppColors.sageGreen,
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Text(
-                      'START\nNOW',
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.sageTitle.copyWith(color: Colors.white, fontSize: 14, height: 1.2),
-                    ),
+                    child: const Icon(Icons.play_arrow_rounded,
+                        color: Colors.white, size: 32),
                   ),
                 ],
               ),
@@ -331,60 +475,4 @@ class RunningHubScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-// ── CUSTOM PAINTER FOR MINI MAP (DOTTED LINE + RED FLAG) ──
-class _MiniMapPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    // Draw grid dots
-    final dotPaint = Paint()..color = AppColors.sageGreenLight.withValues(alpha: 0.5);
-    for (double x = 20; x < size.width; x += 30) {
-      for (double y = 20; y < size.height; y += 30) {
-        canvas.drawCircle(Offset(x, y), 1.5, dotPaint);
-      }
-    }
-
-    // Define sine wave route path
-    final path = Path();
-    path.moveTo(size.width * 0.15, size.height * 0.7);
-    path.quadraticBezierTo(size.width * 0.3, size.height * 0.3, size.width * 0.5, size.height * 0.5);
-    path.quadraticBezierTo(size.width * 0.7, size.height * 0.7, size.width * 0.85, size.height * 0.3);
-
-    // Draw dotted path
-    final pathMetrics = path.computeMetrics().first;
-    final pathPaint = Paint()
-      ..color = AppColors.sageGreen
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke;
-    
-    double distance = 0.0;
-    while (distance < pathMetrics.length) {
-      final extractPath = pathMetrics.extractPath(distance, distance + 6);
-      canvas.drawPath(extractPath, pathPaint);
-      distance += 14;
-    }
-
-    // Start point Ring
-    final startPos = pathMetrics.getTangentForOffset(0)?.position ?? Offset.zero;
-    canvas.drawCircle(startPos, 6, Paint()..color = Colors.white);
-    canvas.drawCircle(startPos, 3, Paint()..color = AppColors.sageGreen);
-
-    // End point Flag
-    final endPos = pathMetrics.getTangentForOffset(pathMetrics.length)?.position ?? Offset.zero;
-    
-    // Draw flag pole
-    canvas.drawLine(endPos, Offset(endPos.dx, endPos.dy - 30), Paint()..color = AppColors.sageFlagRed..strokeWidth = 2);
-    // Draw flag banner
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(Rect.fromLTWH(endPos.dx, endPos.dy - 30, 20, 14), const Radius.circular(2)),
-      Paint()..color = AppColors.sageFlagRed,
-    );
-    // Flag pole base
-    canvas.drawCircle(endPos, 3, Paint()..color = AppColors.sageFlagRed);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

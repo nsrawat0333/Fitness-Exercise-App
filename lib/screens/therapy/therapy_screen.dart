@@ -112,7 +112,7 @@ final List<TherapyCategory> therapyCategories = [
       'Knee to Chest Stretch',
       'Pelvic Tilt',
       'Superman Exercise',
-      'tanding Side Stretch',
+      'Standing Side Stretch',
     ],
     imagePath: 'assets/images/therapy/therapy_back_pain.png',
     accentColor: Color(0xFFD4A574),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../services/auth_service.dart';
 
 class LoginRegisterScreen extends StatefulWidget {
   const LoginRegisterScreen({super.key});
@@ -20,6 +21,8 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> with SingleTi
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -102,31 +105,21 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> with SingleTi
 
                 // Action button
                 GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          _tabController.index == 0 ? 'Login coming soon with Firebase!' : 'Register coming soon with Firebase!',
-                          style: GoogleFonts.inter(fontWeight: FontWeight.w600),
-                        ),
-                        backgroundColor: _accent,
-                        behavior: SnackBarBehavior.floating,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                    );
-                  },
+                  onTap: _isLoading ? null : _handleAuthAction,
                   child: Container(
                     width: double.infinity, height: 56,
                     decoration: BoxDecoration(
-                      color: _accent,
+                      color: _isLoading ? Colors.grey : _accent,
                       borderRadius: BorderRadius.circular(18),
                       boxShadow: [BoxShadow(color: _accent.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 8))],
                     ),
                     child: Center(
-                      child: Text(
-                        _tabController.index == 0 ? 'Login' : 'Create Account',
-                        style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
-                      ),
+                      child: _isLoading 
+                        ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : Text(
+                            _tabController.index == 0 ? 'Login' : 'Create Account',
+                            style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+                          ),
                     ),
                   ),
                 ),
@@ -145,9 +138,17 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> with SingleTi
 
                 // Social
                 Row(children: [
-                  Expanded(child: _SocialButton(icon: Icons.g_mobiledata, label: 'Google', onTap: () {})),
+                  Expanded(child: _SocialButton(icon: Icons.g_mobiledata, label: 'Google', onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Google Sign-In coming soon!', style: GoogleFonts.inter()), backgroundColor: const Color(0xFF5B7E5F)),
+                    );
+                  })),
                   const SizedBox(width: 12),
-                  Expanded(child: _SocialButton(icon: Icons.apple, label: 'Apple', onTap: () {})),
+                  Expanded(child: _SocialButton(icon: Icons.apple, label: 'Apple', onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Apple Sign-In coming soon!', style: GoogleFonts.inter()), backgroundColor: const Color(0xFF5B7E5F)),
+                    );
+                  })),
                 ]),
                 const SizedBox(height: 24),
 
@@ -163,6 +164,51 @@ class _LoginRegisterScreenState extends State<LoginRegisterScreen> with SingleTi
         ),
       ),
     );
+  }
+
+  Future<void> _handleAuthAction() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill in all fields.', style: GoogleFonts.inter()), backgroundColor: Colors.redAccent),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+    try {
+      if (_tabController.index == 0) {
+        // Login
+        await _authService.login(email: email, password: password);
+      } else {
+        // Register
+        if (_nameController.text.trim().isEmpty) {
+          throw Exception('Please enter your full name.');
+        }
+        await _authService.signUp(
+          name: _nameController.text.trim(),
+          email: email,
+          password: password,
+        );
+      }
+      // AuthWrapper will automatically navigate to MainNavigation
+      // No Navigator.pop needed — StreamBuilder handles it
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString().replaceAll('Exception: ', ''), style: GoogleFonts.inter()),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Widget _buildLoginForm() {

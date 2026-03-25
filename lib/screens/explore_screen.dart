@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../constants/app_colors.dart';
 import 'gym/gym_welcome_screen.dart';
 import 'yoga/onboarding/yoga_welcome_screen.dart';
+import 'body_scan/body_scan_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -51,6 +52,25 @@ class ExploreScreen extends StatelessWidget {
 
               const SizedBox(height: 24),
 
+              // ── Workout Programs Card ──
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _ExploreCard(
+                  tag: 'PERFORMANCE',
+                  tagColor: const Color(0xFFD4A574),
+                  title: 'Workout\nPrograms',
+                  backgroundAsset: 'assets/images/explore/gym_bodybuilder.png',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const GymWelcomeScreen()),
+                    );
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
               // ── Yoga Flow Card ──
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -71,18 +91,19 @@ class ExploreScreen extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // ── Workout Programs Card ──
+              // ── AI Body Scan Card ──
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: _ExploreCard(
-                  tag: 'PERFORMANCE',
-                  tagColor: const Color(0xFFD4A574),
-                  title: 'Workout\nPrograms',
-                  backgroundAsset: 'assets/images/explore/gym_bodybuilder.png',
+                  tag: 'AI POWERED',
+                  tagColor: AppColors.primary,
+                  title: 'AI Body\nScan',
+                  backgroundAsset: 'assets/images/explore/gym_bodybuilder.png', // Reusing asset for now
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const GymWelcomeScreen()),
+                      MaterialPageRoute(
+                          builder: (_) => const BodyScanScreen()),
                     );
                   },
                 ),

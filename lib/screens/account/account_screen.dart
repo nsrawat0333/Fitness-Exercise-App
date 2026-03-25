@@ -5,6 +5,10 @@ import 'leaderboard_screen.dart';
 import 'login_register_screen.dart';
 import '../heart_rate_screen.dart';
 import '../water_tracker_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/family_service.dart';
+import 'package:flutter/services.dart';
 
 class AccountScreen extends StatefulWidget {
   const AccountScreen({super.key});
@@ -17,6 +21,9 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
   late AnimationController _pointsAnimController;
   late Animation<double> _pointsAnim;
 
+  final FamilyService _familyService = FamilyService();
+  final User? currentUser = FirebaseAuth.instance.currentUser;
+  
   // App theme colors
   static const _bg = Color(0xFFF9F7F3);
   static const _cardBg = Color(0xFFFFFFFF);
@@ -25,11 +32,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
   static const _textDark = Color(0xFF1A1A1A);
   static const _textMuted = Color(0xFF8D8D8D);
 
-  // Mock data
-  final String _userName = 'Fitness User';
-  final String _email = 'user@fitapp.com';
-  final int _totalPoints = 2750;
-  final int _level = 12;
+  // Remaining mock data for unimplemented features
   final int _streak = 7;
   final int _totalWorkouts = 86;
   final int _totalMinutes = 2580;
@@ -57,31 +60,55 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    if (currentUser == null) {
+      return const Scaffold(body: Center(child: Text("Please Login to view your account.")));
+    }
     return Scaffold(
       backgroundColor: _bg,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildTopBar(),
-              const SizedBox(height: 8),
-              _buildProfileHeader(),
-              const SizedBox(height: 24),
-              _buildPointsAndLevel(),
-              const SizedBox(height: 24),
-              _buildStatsCards(),
-              const SizedBox(height: 24),
-              _buildWeeklyImprovement(),
-              const SizedBox(height: 24),
-              _buildDataAnalysis(),
-              const SizedBox(height: 24),
-              _buildLeaderboardPreview(),
-              const SizedBox(height: 24),
-              _buildSettingsSection(),
-              const SizedBox(height: 40),
-            ],
-          ),
+        child: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (!snapshot.hasData || !snapshot.data!.exists) {
+              return const Center(child: Text("Missing User Data."));
+            }
+
+            final data = snapshot.data!.data() as Map<String, dynamic>;
+            final userName = data['name'] ?? 'User';
+            final email = data['email'] ?? '';
+            final totalPoints = data['points'] ?? 0;
+            final level = (totalPoints ~/ 500) + 1; // 500 points per level
+            final familyId = data['familyId'];
+
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTopBar(),
+                  const SizedBox(height: 8),
+                  _buildProfileHeader(userName, email),
+                  const SizedBox(height: 24),
+                  _buildPointsAndLevel(totalPoints, level),
+                  const SizedBox(height: 24),
+                  _buildFamilySection(familyId),
+                  const SizedBox(height: 24),
+                  _buildStatsCards(),
+                  const SizedBox(height: 24),
+                  _buildWeeklyImprovement(),
+                  const SizedBox(height: 24),
+                  _buildDataAnalysis(),
+                  const SizedBox(height: 24),
+                  _buildLeaderboardPreview(totalPoints, familyId),
+                  const SizedBox(height: 24),
+                  _buildSettingsSection(),
+                  const SizedBox(height: 40),
+                ],
+              ),
+            );
+          }
         ),
       ),
     );
@@ -121,7 +148,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(String userName, String email) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -138,7 +165,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
             ),
             child: Center(
               child: Text(
-                _userName.isNotEmpty ? _userName[0].toUpperCase() : 'U',
+                userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
                 style: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white),
               ),
             ),
@@ -148,9 +175,9 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(_userName, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: _textDark)),
+                Text(userName, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: _textDark)),
                 const SizedBox(height: 4),
-                Text(_email, style: GoogleFonts.inter(fontSize: 13, color: _textMuted)),
+                Text(email, style: GoogleFonts.inter(fontSize: 13, color: _textMuted)),
                 const SizedBox(height: 6),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -177,7 +204,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildPointsAndLevel() {
+  Widget _buildPointsAndLevel(int totalPoints, int level) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
@@ -198,7 +225,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
                   height: 100,
                   child: CustomPaint(
                     painter: _ProgressRingPainter(
-                      progress: _pointsAnim.value * (_totalPoints % 500) / 500,
+                      progress: _pointsAnim.value * (totalPoints % 500) / 500,
                       color: _accent,
                       bgColor: _accentLight.withValues(alpha: 0.5),
                     ),
@@ -206,8 +233,8 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Lv $_level', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: _textDark)),
-                          Text('${(_pointsAnim.value * _totalPoints).toInt()}', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: _accent)),
+                          Text('Lv $level', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: _textDark)),
+                          Text('${(_pointsAnim.value * totalPoints).toInt()}', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: _accent)),
                         ],
                       ),
                     ),
@@ -225,7 +252,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
                   AnimatedBuilder(
                     animation: _pointsAnim,
                     builder: (context, _) {
-                      return Text('${(_pointsAnim.value * _totalPoints).toInt()} XP',
+                      return Text('${(_pointsAnim.value * totalPoints).toInt()} XP',
                         style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, color: _textDark),
                       );
                     },
@@ -239,7 +266,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
                       builder: (context, _) {
                         return FractionallySizedBox(
                           alignment: Alignment.centerLeft,
-                          widthFactor: _pointsAnim.value * (_totalPoints % 500) / 500,
+                          widthFactor: _pointsAnim.value * (totalPoints % 500) / 500,
                           child: Container(
                             decoration: BoxDecoration(color: _accent, borderRadius: BorderRadius.circular(3)),
                           ),
@@ -248,7 +275,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
                     ),
                   ),
                   const SizedBox(height: 6),
-                  Text('${500 - (_totalPoints % 500)} XP to Level ${_level + 1}', style: GoogleFonts.inter(fontSize: 11, color: _textMuted)),
+                  Text('${500 - (totalPoints % 500)} XP to Level ${level + 1}', style: GoogleFonts.inter(fontSize: 11, color: _textMuted)),
                 ],
               ),
             ),
@@ -256,6 +283,114 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
         ),
       ),
     );
+  }
+
+  Widget _buildFamilySection(String? familyId) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: _cardBg,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.group, color: _accent, size: 20),
+                const SizedBox(width: 8),
+                Text('Family System', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (familyId != null) ...[
+              Text("Your Family Code:", style: GoogleFonts.inter(fontSize: 12, color: _textMuted)),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(familyId, style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, color: _accent, letterSpacing: 2)),
+                  IconButton(
+                    icon: const Icon(Icons.copy, size: 20, color: _accent),
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: familyId));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied Family Code!')));
+                    },
+                  )
+                ],
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton(
+                onPressed: () async {
+                  await _familyService.leaveFamily();
+                },
+                child: const Text('Leave Family', style: TextStyle(color: Colors.red)),
+              )
+            ] else ...[
+              Text("Join or create a family to compete together!", style: GoogleFonts.inter(fontSize: 12, color: _textMuted), textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: _accent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                      onPressed: () => _showJoinFamilyDialog(),
+                      child: Text('Join', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: _accent.withValues(alpha: 0.5)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () async {
+                        try {
+                          await _familyService.createFamily();
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+                        }
+                      },
+                      child: Text('Create', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: _accent)),
+                    ),
+                  ),
+                ],
+              ),
+            ]
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showJoinFamilyDialog() {
+    final tc = TextEditingController();
+    showDialog(context: context, builder: (ctx) => AlertDialog(
+      title: const Text("Join Family"),
+      content: TextField(
+        controller: tc,
+        textCapitalization: TextCapitalization.characters,
+        maxLength: 6,
+        decoration: const InputDecoration(hintText: "Enter 6-char Family Code"),
+      ),
+      actions: [
+        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
+        ElevatedButton(
+          onPressed: () async {
+            try {
+              await _familyService.joinFamily(tc.text.trim());
+              Navigator.pop(ctx);
+            } catch (e) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+            }
+          },
+          child: const Text("Join"),
+        )
+      ],
+    ));
   }
 
   Widget _buildStatsCards() {
@@ -306,7 +441,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
             ),
             const SizedBox(height: 20),
             SizedBox(
-              height: 120,
+              height: 140,
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: List.generate(7, (i) {
@@ -389,12 +524,105 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildLeaderboardPreview() {
+  Widget _buildLeaderboardPreview(int totalPoints, String? familyId) {
+    if (familyId == null) {
+      return _buildMockGlobalLeaderboard(totalPoints);
+    }
+    
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('users').where('familyId', isEqualTo: familyId).snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final docs = snapshot.data!.docs;
+        final List<Map<String, dynamic>> familyMembers = docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return {
+            'uid': doc.id,
+            'name': data['name'] ?? 'User',
+            'points': data['points'] ?? 0,
+          };
+        }).toList();
+
+        // Sort locally by points descending
+        familyMembers.sort((a, b) => (b['points'] as int).compareTo(a['points'] as int));
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: _cardBg,
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.groups, color: _accent, size: 20),
+                    const SizedBox(width: 8),
+                    Text('Family Clash', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(color: const Color(0xFFFF6B35).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+                      child: Text('Live', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: const Color(0xFFFF6B35))),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ...familyMembers.asMap().entries.take(5).map((entry) {
+                  final rank = entry.key + 1;
+                  final user = entry.value;
+                  final isYou = user['uid'] == currentUser!.uid;
+                  
+                  Color rankColor = _textMuted;
+                  if (rank == 1) rankColor = const Color(0xFFFFD700);
+                  if (rank == 2) rankColor = const Color(0xFFC0C0C0);
+                  if (rank == 3) rankColor = const Color(0xFFCD7F32);
+
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isYou ? _accent.withValues(alpha: 0.08) : const Color(0xFFF5F0EB),
+                      borderRadius: BorderRadius.circular(14),
+                      border: isYou ? Border.all(color: _accent.withValues(alpha: 0.3)) : null,
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 28, height: 28,
+                          decoration: BoxDecoration(color: rankColor.withValues(alpha: 0.15), shape: BoxShape.circle),
+                          child: Center(child: Text('#$rank', style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w800, color: rankColor))),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(user['name'] as String,
+                          maxLines: 1, overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.outfit(fontSize: 14, fontWeight: isYou ? FontWeight.w800 : FontWeight.w600, color: isYou ? _accent : _textDark))),
+                        const SizedBox(width: 8),
+                        Text('${user['points']} XP', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: isYou ? _accent : _textMuted)),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      }
+    );
+  }
+
+  Widget _buildMockGlobalLeaderboard(int totalPoints) {
     final mockLeaderboard = [
       {'name': 'Alex Pro', 'points': 5200, 'rank': 1},
       {'name': 'Sara Fit', 'points': 4800, 'rank': 2},
       {'name': 'Mike Strong', 'points': 4100, 'rank': 3},
-      {'name': 'You', 'points': _totalPoints, 'rank': 8},
+      {'name': 'You', 'points': totalPoints, 'rank': 8},
     ];
 
     return Padding(
@@ -412,7 +640,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
               children: [
                 const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 20),
                 const SizedBox(width: 8),
-                Text('Leaderboard', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
+                Text('Global Leaderboard', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
                 const Spacer(),
                 GestureDetector(
                   onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardScreen())),
@@ -446,6 +674,7 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
                     ),
                     const SizedBox(width: 12),
                     Expanded(child: Text(user['name'] as String,
+                      maxLines: 1, overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.outfit(fontSize: 14, fontWeight: isYou ? FontWeight.w800 : FontWeight.w600, color: isYou ? _accent : _textDark))),
                     Text('${user['points']} XP', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: isYou ? _accent : _textMuted)),
                   ],
@@ -473,7 +702,9 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
             _SettingsTile(icon: Icons.notifications, label: 'Notifications', onTap: () {}),
             _SettingsTile(icon: Icons.privacy_tip, label: 'Privacy', onTap: () {}),
             _SettingsTile(icon: Icons.help, label: 'Help & Support', onTap: () {}),
-            _SettingsTile(icon: Icons.info, label: 'About', onTap: () {}, isLast: true),
+            _SettingsTile(icon: Icons.logout, label: 'Logout', onTap: () {
+              FirebaseAuth.instance.signOut();
+            }, isLast: true),
           ],
         ),
       ),

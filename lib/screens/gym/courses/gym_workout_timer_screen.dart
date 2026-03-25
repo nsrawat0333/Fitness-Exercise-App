@@ -6,6 +6,8 @@ import 'package:video_player/video_player.dart';
 import '../../../data/gym_challenge_data.dart';
 import '../../../data/gym_user_data.dart';
 import '../../../widgets/heart_rate_card.dart';
+import '../../../services/points_manager.dart';
+import '../../../utils/gamification_overlay.dart';
 
 class GymWorkoutTimerScreen extends StatefulWidget {
   final List<GymExercise> exercises;
@@ -102,6 +104,7 @@ class _GymWorkoutTimerScreenState extends State<GymWorkoutTimerScreen> with Sing
         _currentState = 'completed';
         _timer?.cancel();
         _videoController?.pause();
+        _awardPoints();
       } else {
         _currentState = 'rest';
         _initVideoForCurrentState();
@@ -112,6 +115,13 @@ class _GymWorkoutTimerScreenState extends State<GymWorkoutTimerScreen> with Sing
       _currentExerciseIndex++;
       _initVideoForCurrentState();
       _startTimerForCurrentState();
+    }
+  }
+
+  Future<void> _awardPoints() async {
+    final earned = await PointsManager().addWorkoutPoints(50);
+    if (earned && mounted) {
+      GamificationOverlay.showPointsEarned(context, 50);
     }
   }
 

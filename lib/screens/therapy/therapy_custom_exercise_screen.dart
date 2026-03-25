@@ -24,12 +24,24 @@ class _TherapyCustomExerciseScreenState extends State<TherapyCustomExerciseScree
   void initState() {
     super.initState();
     _allExercises = allTherapyExercises;
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   List<TherapyExerciseEntry> get _filteredExercises {
-    if (_searchQuery.isEmpty) return _allExercises;
+    final query = _searchQuery.trim().toLowerCase();
+    if (query.isEmpty) return _allExercises;
     return _allExercises
-        .where((e) => e.name.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .where((e) => e.name.toLowerCase().contains(query))
         .toList();
   }
 
@@ -157,7 +169,6 @@ class _TherapyCustomExerciseScreenState extends State<TherapyCustomExerciseScree
                     Expanded(
                       child: TextField(
                         controller: _searchController,
-                        onChanged: (v) => setState(() => _searchQuery = v),
                         decoration: InputDecoration(
                           hintText: 'Search exercises...',
                           hintStyle: GoogleFonts.inter(
@@ -174,7 +185,6 @@ class _TherapyCustomExerciseScreenState extends State<TherapyCustomExerciseScree
                       GestureDetector(
                         onTap: () {
                           _searchController.clear();
-                          setState(() => _searchQuery = '');
                         },
                         child: Icon(Icons.close, color: Colors.grey[400], size: 20),
                       ),
