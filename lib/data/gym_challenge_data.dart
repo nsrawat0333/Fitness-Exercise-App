@@ -13,6 +13,7 @@ class GymExercise {
   final String? videoAsset;
   final String? imageAsset;
   final List<String> instructions;
+  final String reps; // Added reps field
 
   // ── 5-Phase Workout Flow Fields ──
   final int breathingDuration;
@@ -34,6 +35,7 @@ class GymExercise {
     this.videoAsset,
     this.imageAsset,
     this.instructions = const [],
+    this.reps = '', // Default to empty string for reps
     this.breathingDuration = 20,
     this.previewDuration = 20,
     this.performDuration = 30,
@@ -119,6 +121,7 @@ class GymChallengeData {
     List<String> muscleGroup = (exData['muscle_group'] as List<dynamic>?)
         ?.map((e) => e.toString()).toList() ?? [];
     String difficulty = exData['difficulty'] ?? 'beginner';
+    String reps = exData['reps']?.toString() ?? ''; // Parse reps
 
     // Read animation path from JSON data first
     String? jsonAnimation = exData['animation']?.toString();
@@ -178,6 +181,7 @@ class GymChallengeData {
       breathingAnimation: null, // Configurable: set Lottie path when available
       previewAnimation: lottiePath, // Reuse exercise animation for preview
       exerciseAnimation: lottiePath,
+      reps: reps, // Include reps in the returned map
     );
   }
 

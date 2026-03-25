@@ -36,6 +36,7 @@ class _Yoga30DayScreenState extends State<Yoga30DayScreen> {
         difficulty: day.phase,
         durationSeconds: p.durationSeconds,
         performDuration: p.durationSeconds,
+        previewDuration: 20, // Increased preparation time for yoga poses
         instructions: p.steps,
         imageAsset: p.image,
         animationLottie: p.animation.isNotEmpty ? p.animation : null,

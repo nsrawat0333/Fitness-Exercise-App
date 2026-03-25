@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../constants/app_colors.dart';
 import '../../../data/gym_user_data.dart';
+import '../../../data/gym_challenge_data.dart'; // Add missing import
 import 'gym_workout_plan_screen.dart';
 import 'gym_daily_workout_screen.dart';
 
@@ -10,6 +11,7 @@ class GymCourseDetailScreen extends StatelessWidget {
   final String duration;
   final String difficulty;
   final String imagePath;
+  final List<GymExercise>? exerciseList; // Added to carry the actual exercises
 
   const GymCourseDetailScreen({
     super.key,
@@ -17,6 +19,7 @@ class GymCourseDetailScreen extends StatelessWidget {
     required this.duration,
     required this.difficulty,
     required this.imagePath,
+    this.exerciseList,
   });
 
   @override
@@ -230,7 +233,10 @@ class GymCourseDetailScreen extends StatelessWidget {
       onTap: isUnlocked && !isCompleted
           ? () {
               Navigator.push(context, MaterialPageRoute(
-                builder: (_) => GymDailyWorkoutScreen(dayIndex: dayIndex),
+                builder: (_) => GymDailyWorkoutScreen(
+                  dayIndex: dayIndex,
+                  customExercises: exerciseList,
+                ),
               ));
             }
           : null,
@@ -314,6 +320,7 @@ class GymCourseDetailScreen extends StatelessWidget {
           Navigator.push(context, MaterialPageRoute(
             builder: (_) => GymWorkoutPlanScreen(
               workoutName: courseName,
+              exerciseList: exerciseList ?? [], // Provide the exerciseList or empty array
             )
           ));
         },

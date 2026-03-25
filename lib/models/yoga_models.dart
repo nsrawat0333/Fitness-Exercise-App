@@ -17,7 +17,7 @@ class YogaPose {
     required this.sanskritName,
     required this.description,
     this.steps = const [],
-    this.durationSeconds = 120,
+    this.durationSeconds = 60,
     this.category = 'warmup',
     this.focusAreas = const [],
     this.image = '',

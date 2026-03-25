@@ -172,7 +172,7 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
         break;
       case WorkoutPhase.perform:
         if (_isLastExercise) {
-          // No recovery/next preview for last exercise → complete
+          // No recovery for last exercise → complete
           setState(() => _isCompleted = true);
           _videoController?.pause();
           return;
@@ -180,17 +180,14 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
         _currentPhase = WorkoutPhase.recovery;
         break;
       case WorkoutPhase.recovery:
-        if (_nextExercise != null) {
-          _currentPhase = WorkoutPhase.nextPreview;
-        } else {
-          setState(() => _isCompleted = true);
-          return;
-        }
+        // Move to next exercise directly to Preview
+        _currentExerciseIndex++;
+        _currentPhase = WorkoutPhase.preview;
         break;
       case WorkoutPhase.nextPreview:
-        // Move to next exercise
+        // Dead code, preserved for enum completeness
         _currentExerciseIndex++;
-        _currentPhase = WorkoutPhase.breathing;
+        _currentPhase = WorkoutPhase.preview;
         break;
     }
 
@@ -536,41 +533,46 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   }
 
   Widget _buildPreviewContent(GymExercise exercise) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Animation
-          if (exercise.animationLottie != null)
-            SizedBox(
-              height: 250,
-              child: Lottie.asset(
-                exercise.animationLottie!,
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildExercisePlaceholder(exercise);
-                },
-              ),
-            )
-          else
-            _buildExercisePlaceholder(exercise),
-          const SizedBox(height: 20),
-          // Instructions
-          if (exercise.instructions.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Text(
-                exercise.instructions.first,
-                textAlign: TextAlign.center,
-                style: GoogleFonts.inter(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                  fontWeight: FontWeight.w500,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final animHeight = constraints.maxHeight * 0.75;
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (exercise.animationLottie != null)
+                Container(
+                  width: double.infinity,
+                  height: animHeight.clamp(200.0, 400.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Lottie.asset(
+                    exercise.animationLottie!,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildExercisePlaceholder(exercise);
+                    },
+                  ),
+                )
+              else
+                _buildExercisePlaceholder(exercise),
+              const SizedBox(height: 16),
+              if (exercise.instructions.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    exercise.instructions.first,
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-        ],
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -606,55 +608,180 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   }
 
   Widget _buildPerformContent() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Video or Lottie
-        if (_videoController != null && _videoController!.value.isInitialized)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: AspectRatio(
-              aspectRatio: _videoController!.value.aspectRatio,
-              child: VideoPlayer(_videoController!),
-            ),
-          )
-        else if (_currentExercise.animationLottie != null)
-          Lottie.asset(
-            _currentExercise.animationLottie!,
-            fit: BoxFit.contain,
-            errorBuilder: (context, error, stackTrace) {
-              return _buildExercisePlaceholder(_currentExercise);
-            },
-          )
-        else
-          _buildExercisePlaceholder(_currentExercise),
-
-        // Instructions overlay at bottom
-        if (_currentExercise.instructions.isNotEmpty)
-          Positioned(
-            bottom: 16,
-            left: 24,
-            right: 24,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Stack(
+          alignment: Alignment.center,
+          children: [
+            // Video or Lottie
+            if (_videoController != null && _videoController!.value.isInitialized)
+              ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                _currentExercise.instructions.join(' • '),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.inter(
-                  fontSize: 12,
-                  color: Colors.white,
-                  fontWeight: FontWeight.w500,
+                child: AspectRatio(
+                  aspectRatio: _videoController!.value.aspectRatio,
+                  child: VideoPlayer(_videoController!),
+                ),
+              )
+            else if (_currentExercise.animationLottie != null)
+              Container(
+                width: double.infinity,
+                height: constraints.maxHeight - 70,
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                child: Lottie.asset(
+                  _currentExercise.animationLottie!,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return _buildExercisePlaceholder(_currentExercise);
+                  },
+                ),
+              )
+            else
+              _buildExercisePlaceholder(_currentExercise),
+
+            // Instructions overlay at bottom
+            if (_currentExercise.instructions.isNotEmpty)
+              Positioned(
+                bottom: 8,
+                left: 20,
+                right: 20,
+                child: GestureDetector(
+                  onTap: () => _showInstructionsModal(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: _phaseColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: _phaseColor.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline, color: _phaseColor, size: 20),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _currentExercise.instructions.first,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: GoogleFonts.inter(
+                              fontSize: 13,
+                              color: Colors.black87,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.keyboard_arrow_up, color: _phaseColor.withValues(alpha: 0.7), size: 20),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showInstructionsModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: _phaseColor.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.fitness_center, color: _phaseColor),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      _currentExercise.name,
+                      style: GoogleFonts.outfit(
+                        fontSize: 22,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'How to perform:',
+                style: GoogleFonts.outfit(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ..._currentExercise.instructions.asMap().entries.map((entry) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: _phaseColor,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${entry.key + 1}',
+                          style: GoogleFonts.inter(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          entry.value,
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            color: Colors.grey[800],
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+            ],
           ),
-      ],
+        );
+      },
     );
   }
 
@@ -958,7 +1085,10 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
                   Expanded(
                     child: GestureDetector(
                       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeartRateScreen())),
-                      child: const HeartRateCard(bpm: 112),
+                      child: const SizedBox(
+                        height: 122,
+                        child: HeartRateCard(bpm: 112),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 14),

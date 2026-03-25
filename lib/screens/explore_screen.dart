@@ -49,32 +49,6 @@ class ExploreScreen extends StatelessWidget {
 
               const SizedBox(height: 8),
 
-              // ── Search Bar ──
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF0EDE7),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      const SizedBox(width: 16),
-                      Icon(Icons.search, color: AppColors.textMuted, size: 22),
-                      const SizedBox(width: 10),
-                      Text(
-                        'Search experiences...',
-                        style: GoogleFonts.inter(
-                          fontSize: 14,
-                          color: AppColors.textMuted,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
               const SizedBox(height: 24),
 
               // ── Yoga Flow Card ──
@@ -84,8 +58,7 @@ class ExploreScreen extends StatelessWidget {
                   tag: 'RESTORATIVE',
                   tagColor: const Color(0xFFD4A574),
                   title: 'Yoga Flow',
-                  gradientColors: const [Color(0xFFD4DEC4), Color(0xFFB8CCAA)],
-                  icon: Icons.self_improvement,
+                  backgroundAsset: 'assets/images/explore/yoga_girl.png',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -105,8 +78,7 @@ class ExploreScreen extends StatelessWidget {
                   tag: 'PERFORMANCE',
                   tagColor: const Color(0xFFD4A574),
                   title: 'Workout\nPrograms',
-                  gradientColors: const [Color(0xFFD5CCC0), Color(0xFFB8AFA3)],
-                  icon: Icons.fitness_center,
+                  backgroundAsset: 'assets/images/explore/gym_bodybuilder.png',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -130,16 +102,14 @@ class _ExploreCard extends StatelessWidget {
   final String tag;
   final Color tagColor;
   final String title;
-  final List<Color> gradientColors;
-  final IconData icon;
+  final String backgroundAsset;
   final VoidCallback onTap;
 
   const _ExploreCard({
     required this.tag,
     required this.tagColor,
     required this.title,
-    required this.gradientColors,
-    required this.icon,
+    required this.backgroundAsset,
     required this.onTap,
   });
 
@@ -151,37 +121,21 @@ class _ExploreCard extends StatelessWidget {
         width: double.infinity,
         height: 280,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: gradientColors,
-          ),
           borderRadius: BorderRadius.circular(28),
+          image: DecorationImage(
+            image: AssetImage(backgroundAsset),
+            fit: BoxFit.cover,
+          ),
         ),
         child: Stack(
           children: [
-            // Central icon (placeholder for image)
-            Positioned(
-              top: 30,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: 140,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 72,
-                    color: Colors.white.withValues(alpha: 0.8),
-                  ),
-                ),
+            // Dark overlay for readable text
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(28),
+                color: Colors.black.withValues(alpha: 0.3),
               ),
             ),
-
             // Tag badge
             Positioned(
               left: 24,

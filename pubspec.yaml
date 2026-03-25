@@ -24,6 +24,14 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/explore/
     - assets/images/gym/
     - assets/images/jsonanimation/
-    - assets/images/mp4videofolder/
+    - assets/images/yogajsonanimation/
+    - assets/images/therapy/
+    - assets/images/therepy/jsonanimationheadeche/
+    - assets/images/therepy/jsonanimationneckpain/
+    - assets/images/therepy/jsonanimationbackpain/
+    - assets/images/therepy/jsonanimationkneepain/
+    - assets/images/therepy/jsonanimationperiodscare/
+    - assets/images/therepy/jsonanimationstomackpain/

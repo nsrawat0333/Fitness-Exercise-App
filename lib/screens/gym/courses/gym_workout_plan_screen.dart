@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lottie/lottie.dart';
+import '../../../data/gym_challenge_data.dart';
+import 'workout_flow_screen.dart';
 
 class GymWorkoutPlanScreen extends StatelessWidget {
   final String workoutName;
+  final List<GymExercise> exerciseList;
 
   const GymWorkoutPlanScreen({
     super.key,
     required this.workoutName,
+    this.exerciseList = const [],
   });
 
   @override
@@ -36,45 +41,52 @@ class GymWorkoutPlanScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
                 Text(
-                  'Day 1',
+                  'Workout Plan',
                   style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF3B82F6),
+                     fontSize: 16,
+                     fontWeight: FontWeight.w600,
+                     color: const Color(0xFF3B82F6),
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   workoutName,
                   style: GoogleFonts.outfit(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                    height: 1.1,
+                     fontSize: 28,
+                     fontWeight: FontWeight.w900,
+                     color: Colors.black,
+                     height: 1.1,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '16 Exercises • 15 mins total',
+                  '${exerciseList.isNotEmpty ? exerciseList.length : 0} Exercises • ${(exerciseList.fold(0, (sum, item) => sum + item.durationSeconds) / 60).ceil()} mins total',
                   style: GoogleFonts.inter(
-                    fontSize: 14,
-                    color: Colors.grey[600],
+                     fontSize: 14,
+                     color: Colors.grey[600],
                   ),
                 ),
-              ],
+               ],
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-              itemCount: 8, // Example exercises
-              itemBuilder: (context, index) {
-                return _buildExerciseRow(index);
-              },
-            ),
+            child: exerciseList.isEmpty
+                ? Center(
+                    child: Text(
+                      'No exercises found for this plan.',
+                      style: GoogleFonts.inter(color: Colors.grey),
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                    itemCount: exerciseList.length,
+                    itemBuilder: (context, index) {
+                      return _buildExerciseRow(exerciseList[index], index);
+                    },
+                  ),
           ),
           _buildStartWorkoutButton(context),
         ],
@@ -82,23 +94,12 @@ class GymWorkoutPlanScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildExerciseRow(int index) {
-    final names = [
-      'Jumping Jacks',
-      'Push-Ups',
-      'Plank',
-      'Squats',
-      'Lunges',
-      'Crunches',
-      'High Knees',
-      'Burpees'
-    ];
-    final counts = [
-      '00:30', '12x', '01:00', '15x', '12x per side', '20x', '00:45', '10x'
-    ];
-    
-    final name = names[index % names.length];
-    final count = counts[index % counts.length];
+  Widget _buildExerciseRow(GymExercise exercise, int index) {
+    String formatTime(int seconds) {
+      final m = (seconds / 60).floor().toString().padLeft(2, '0');
+      final s = (seconds % 60).toString().padLeft(2, '0');
+      return '$m:$s';
+    }
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 24),
@@ -115,7 +116,12 @@ class GymWorkoutPlanScreen extends StatelessWidget {
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.fitness_center, color: Colors.grey),
+            child: exercise.animationLottie != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Lottie.asset(exercise.animationLottie!, fit: BoxFit.cover),
+                  )
+                : const Icon(Icons.fitness_center, color: Colors.grey),
           ),
           const SizedBox(width: 16),
           // Details
@@ -124,7 +130,7 @@ class GymWorkoutPlanScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  exercise.name,
                   style: GoogleFonts.outfit(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -133,7 +139,7 @@ class GymWorkoutPlanScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  count,
+                  exercise.reps.isNotEmpty ? exercise.reps : formatTime(exercise.durationSeconds),
                   style: GoogleFonts.inter(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -158,10 +164,17 @@ class GymWorkoutPlanScreen extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: GestureDetector(
-          onTap: () {
-            // End of flow: pop to home.
-            Navigator.popUntil(context, (r) => r.isFirst);
-          },
+          onTap: exerciseList.isEmpty 
+              ? null
+              : () {
+                  // Navigate to the real work flow!
+                  Navigator.pushReplacement(context, MaterialPageRoute(
+                    builder: (_) => WorkoutFlowScreen(
+                      exercises: exerciseList,
+                      dayIndex: 1, // Optional: just pass 1 for custom plans.
+                    )
+                  ));
+                },
           child: Container(
             width: double.infinity,
             height: 56,

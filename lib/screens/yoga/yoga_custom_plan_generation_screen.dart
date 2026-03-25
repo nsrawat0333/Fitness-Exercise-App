@@ -102,6 +102,7 @@ class _YogaCustomPlanGenerationScreenState extends State<YogaCustomPlanGeneratio
         difficulty: session.difficulty,
         durationSeconds: p.durationSeconds,
         performDuration: p.durationSeconds,
+        previewDuration: 20,
         instructions: p.steps,
         imageAsset: p.image,
         animationLottie: p.animation.isNotEmpty ? p.animation : null,

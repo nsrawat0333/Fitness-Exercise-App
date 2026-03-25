@@ -270,4 +270,45 @@ class YogaService {
     'Champion Practice',
     'Mind-Body Fusion',
   ];
+
+  /// Get all poses matching a focus key (e.g. 'weight_loss', 'flexibility').
+  /// If focusKey is 'all' or empty, returns all poses.
+  static List<YogaPose> getPosesForFocusKey(String focusKey) {
+    if (focusKey.isEmpty || focusKey == 'all') {
+      return YogaPosesData.allPoses;
+    }
+    return YogaPosesData.getPosesForFocus(focusKey);
+  }
+
+  /// Build course-style sessions for a given focus area.
+  /// Returns 3 sessions: Beginner, Intermediate, Advanced with varying pose counts.
+  static List<YogaSession> getCourseSessions(String focusKey) {
+    final poses = getPosesForFocusKey(focusKey);
+    if (poses.isEmpty) return [];
+
+    final sessions = <YogaSession>[];
+    final configs = [
+      ('Beginner Flow', 'Beginner', 3, 15),
+      ('Intermediate Practice', 'Intermediate', 5, 25),
+      ('Advanced Mastery', 'Advanced', 7, 35),
+    ];
+
+    for (int i = 0; i < configs.length; i++) {
+      final (title, difficulty, count, mins) = configs[i];
+      final sessionPoses = <YogaPose>[];
+      for (int j = 0; j < count && j < poses.length; j++) {
+        sessionPoses.add(poses[(i * 2 + j) % poses.length]);
+      }
+
+      sessions.add(YogaSession(
+        title: '$title — ${_focusLabel(focusKey)}',
+        duration: '$mins min',
+        focusArea: focusKey,
+        difficulty: difficulty,
+        poses: sessionPoses,
+      ));
+    }
+
+    return sessions;
+  }
 }

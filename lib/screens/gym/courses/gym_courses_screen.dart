@@ -815,6 +815,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
             duration: time,
             difficulty: levelIndex == 1 ? 'Beginner' : (levelIndex == 2 ? 'Intermediate' : 'Advanced'),
             imagePath: 'assets/images/gym/goal_keep_fit_male.png',
+            exerciseList: exerciseList, // Pass the actual exercises here!
           )
         ));
       },

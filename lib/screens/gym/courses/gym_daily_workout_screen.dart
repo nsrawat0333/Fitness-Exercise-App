@@ -6,13 +6,20 @@ import 'workout_flow_screen.dart';
 
 class GymDailyWorkoutScreen extends StatelessWidget {
   final int dayIndex;
+  final List<GymExercise>? customExercises;
 
-  const GymDailyWorkoutScreen({super.key, required this.dayIndex});
+  const GymDailyWorkoutScreen({
+    super.key, 
+    required this.dayIndex,
+    this.customExercises,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Get the dynamic list of 10 exercises for this abstract day
-    final exercises = GymChallengeData.getExercisesForDay(dayIndex);
+    // Get the dynamic list of exercises
+    final exercises = customExercises != null && customExercises!.isNotEmpty 
+        ? customExercises! 
+        : GymChallengeData.getExercisesForDay(dayIndex);
     
     final totalSeconds = exercises.fold<int>(0, (sum, e) => sum + e.durationSeconds);
     // Add rest time: 30s per exercise except the last one

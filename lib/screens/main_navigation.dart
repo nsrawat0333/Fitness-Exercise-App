@@ -5,6 +5,7 @@ import 'home_screen.dart';
 import 'explore_screen.dart';
 import 'running/running_hub_screen.dart';
 import 'therapy/therapy_screen.dart';
+import 'account/account_screen.dart';
 
 /// Main navigation shell with bottom navigation bar.
 /// Manages 5 tabs: Home, Map, Therapy, Explore, Account.
@@ -28,9 +29,9 @@ class _MainNavigationState extends State<MainNavigation> {
           },
         ),
         const RunningHubScreen(),
-        const TherapyScreen(),
+        const TherapyHomeScreen(),
         const ExploreScreen(),
-        const _PlaceholderScreen(title: 'Account', icon: Icons.person_outlined),
+        const AccountScreen(),
       ];
 
   @override
@@ -146,32 +147,4 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-/// Placeholder screen for tabs not yet implemented.
-class _PlaceholderScreen extends StatelessWidget {
-  final String title;
-  final IconData icon;
 
-  const _PlaceholderScreen({required this.title, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 64, color: AppColors.textMuted),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: AppTextStyles.heading2.copyWith(color: AppColors.textMuted),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Coming Soon',
-            style: AppTextStyles.bodySmall,
-          ),
-        ],
-      ),
-    );
-  }
-}

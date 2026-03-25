@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
-import '../../constants/app_text_styles.dart';
 import 'yoga_30day_screen.dart';
-import 'yoga_focus_screen.dart';
 import 'yoga_diet_screen.dart';
 import 'yoga_custom_plan_screen.dart';
+import 'yoga_courses_screen.dart';
 
 class YogaHomeScreen extends StatelessWidget {
   const YogaHomeScreen({super.key});
@@ -126,14 +125,14 @@ class YogaHomeScreen extends StatelessWidget {
                       ),
                       _buildMenuCard(
                         context,
-                        title: 'Focus\nAreas',
-                        subtitle: 'Targeted sessions',
+                        title: 'Courses',
+                        subtitle: 'Focus & levels',
                         icon: Icons.track_changes_rounded,
                         color: const Color(0xFF5EC6C6),
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const YogaFocusScreen()),
+                              builder: (_) => const YogaCoursesScreen()),
                         ),
                       ),
                       _buildMenuCard(

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
 import '../../../data/gym_challenge_data.dart';
 import '../../../data/gym_user_data.dart';
-import 'workout_flow_screen.dart';
+import 'gym_custom_plan_generation_screen.dart';
 
 class CustomWorkoutBuilderScreen extends StatefulWidget {
   const CustomWorkoutBuilderScreen({super.key});
@@ -184,48 +184,13 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
 
     GymUserData().customPlanExercises = planData;
 
-    // Show success and ask to start
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Color(0xFF43A047), size: 28),
-            const SizedBox(width: 8),
-            Text('Plan Saved!', style: GoogleFonts.outfit(fontWeight: FontWeight.w800)),
-          ],
+    // Navigate to the loading/progress animation screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => GymCustomPlanGenerationScreen(
+          exercises: selectedExercises,
         ),
-        content: Text(
-          '${selectedExercises.length} exercises added to your custom plan. Start now?',
-          style: GoogleFonts.inter(fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pop(context);
-            },
-            child: Text('Later', style: GoogleFonts.outfit(fontWeight: FontWeight.w600)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(
-                builder: (_) => WorkoutFlowScreen(
-                  exercises: selectedExercises,
-                  dayIndex: 0,
-                ),
-              ));
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3B82F6),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: Text('START NOW', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white)),
-          ),
-        ],
       ),
     );
   }
@@ -515,7 +480,7 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     ),
                     child: Text(
-                      'SAVE PLAN (${_selectedIndices.length} exercises)',
+                      'GENERATE EXERCISES (${_selectedIndices.length})',
                       style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: 0.5),
                     ),
                   ),
