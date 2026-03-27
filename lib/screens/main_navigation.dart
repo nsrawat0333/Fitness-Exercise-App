@@ -7,6 +7,7 @@ import 'running/running_hub_screen.dart';
 import 'therapy/therapy_screen.dart';
 import 'account/account_screen.dart';
 import '../services/points_manager.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 /// Main navigation shell with bottom navigation bar.
 /// Manages 5 tabs: Home, Map, Therapy, Explore, Account.
@@ -25,6 +26,16 @@ class _MainNavigationState extends State<MainNavigation> {
     super.initState();
     // Trigger offline data sync whenever user logs in or opens the app
     PointsManager().syncOfflineData();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    // Request pedometer and notification permissions as soon as app opens
+    await [
+      Permission.activityRecognition,
+      Permission.notification,
+      Permission.locationWhenInUse,
+    ].request();
   }
 
   // Screens – Home and Therapy are built, others are placeholders

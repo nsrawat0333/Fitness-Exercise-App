@@ -165,6 +165,7 @@ class _TherapyDetailScreenState extends State<TherapyDetailScreen> {
                         difficulty: 'Beginner',
                         durationSeconds: 60,
                         instructions: ['Follow the animation and breathe deeply for $exName.'],
+                        imageAsset: GymChallengeData.getFallbackImage(exName),
                         animationLottie: category.animationFolderPath != null 
                             ? '${category.animationFolderPath!}$exName.json' 
                             : null,
@@ -241,7 +242,7 @@ class _TherapyDetailScreenState extends State<TherapyDetailScreen> {
                 Image.asset(
                   category.imagePath!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _buildGradientBg(category),
+                  errorBuilder: (_, _, _) => _buildGradientBg(category),
                 )
               else
                 _buildGradientBg(category),

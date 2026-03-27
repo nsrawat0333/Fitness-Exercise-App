@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 /// Types of running activities.
 enum RunType {

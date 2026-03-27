@@ -13,6 +13,11 @@ import 'heart_rate_screen.dart';
 import 'step_counter_screen.dart';
 import 'water_tracker_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../services/water_storage_service.dart';
+import '../models/water_intake_model.dart';
+import '../services/health_storage_service.dart';
+import '../services/step_counter_service.dart';
 import '../services/points_manager.dart';
 
 /// Main home screen of the FitFi app.
@@ -24,6 +29,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = UserModel.mock();
+    final stepService = StepCounterService();
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -35,7 +41,21 @@ class HomeScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
               // ── App Bar ──
-              const FitfiAppBar(),
+              FitfiAppBar(
+                onProfileTap: () {
+                  if (onTabChange != null) {
+                    onTabChange!(4); // Switch to Account Tab
+                  }
+                },
+                onNotificationTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('No new notifications'),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
+                },
+              ),
               const SizedBox(height: 12),
 
               // ── Sync Status ──
@@ -77,7 +97,7 @@ class HomeScreen extends StatelessWidget {
 
               // ── Greeting ──
               Text(
-                'READY, ${user.name.toUpperCase()}',
+                'READY, ${FirebaseAuth.instance.currentUser?.displayName?.toUpperCase() ?? "TESTER"}',
                 style: AppTextStyles.greeting,
               ),
 
@@ -89,8 +109,8 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => const StepCounterScreen(),
-                      transitionsBuilder: (_, animation, __, child) {
+                      pageBuilder: (_, _, _) => const StepCounterScreen(),
+                      transitionsBuilder: (_, animation, _, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
                             begin: const Offset(0, 0.15),
@@ -106,9 +126,14 @@ class HomeScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: StepCounterWidget(
-                  steps: user.steps,
-                  goal: user.stepGoal,
+                child: ValueListenableBuilder<StepData>(
+                  valueListenable: stepService.stepDataNotifier,
+                  builder: (context, stepData, child) {
+                    return StepCounterWidget(
+                      steps: stepData.steps,
+                      goal: user.stepGoal,
+                    );
+                  },
                 ),
               ),
 
@@ -125,10 +150,10 @@ class HomeScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             PageRouteBuilder(
-                              pageBuilder: (_, __, ___) =>
+                              pageBuilder: (_, _, _) =>
                                   const WaterTrackerScreen(),
                               transitionsBuilder:
-                                  (_, animation, __, child) {
+                                  (_, animation, _, child) {
                                 return SlideTransition(
                                   position: Tween<Offset>(
                                     begin: const Offset(0, 0.15),
@@ -146,9 +171,20 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: WaterTrackerCard(
-                          glasses: user.waterGlasses,
-                          goal: user.waterGoal,
+                        child: ValueListenableBuilder<WaterIntakeModel>(
+                          valueListenable: WaterStorageService().waterDataNotifier,
+                          builder: (context, waterData, _) {
+                            // Convert ml to "glasses" (roughly 250ml per glass)
+                            int glasses = (waterData.currentIntakeMl / 250).round();
+                            int goalGlasses = (waterData.dailyGoalMl / 250).round();
+                            // prevent divide by zero or infinite
+                            if (goalGlasses == 0) goalGlasses = 8;
+                            
+                            return WaterTrackerCard(
+                              glasses: glasses,
+                              goal: goalGlasses,
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -159,10 +195,10 @@ class HomeScreen extends StatelessWidget {
                           Navigator.push(
                             context,
                             PageRouteBuilder(
-                              pageBuilder: (_, __, ___) =>
+                              pageBuilder: (_, _, _) =>
                                   const HeartRateScreen(),
                               transitionsBuilder:
-                                  (_, animation, __, child) {
+                                  (_, animation, _, child) {
                                 return SlideTransition(
                                   position: Tween<Offset>(
                                     begin: const Offset(0, 0.15),
@@ -180,7 +216,12 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: HeartRateCard(bpm: user.heartRate),
+                        child: ValueListenableBuilder<HealthData>(
+                          valueListenable: HealthStorageService().healthDataNotifier,
+                          builder: (context, healthData, _) {
+                            return HeartRateCard(bpm: healthData.lastBpm);
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -199,8 +240,8 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                      pageBuilder: (_, __, ___) => const AiActivityScreen(),
-                      transitionsBuilder: (_, animation, __, child) {
+                      pageBuilder: (_, _, _) => const AiActivityScreen(),
+                      transitionsBuilder: (_, animation, _, child) {
                         return SlideTransition(
                           position: Tween<Offset>(
                             begin: const Offset(0, 0.15),
@@ -216,10 +257,15 @@ class HomeScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: AiDetectionCard(
-                  pushUps: user.pushUps,
-                  pullUps: user.pullUps,
-                  chinUps: user.chinUps,
+                child: ValueListenableBuilder<HealthData>(
+                  valueListenable: HealthStorageService().healthDataNotifier,
+                  builder: (context, healthData, _) {
+                    return AiDetectionCard(
+                      pushUps: healthData.pushUps,
+                      pullUps: healthData.pullUps,
+                      chinUps: healthData.chinUps,
+                    );
+                  },
                 ),
               ),
 

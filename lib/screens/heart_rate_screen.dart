@@ -1,9 +1,10 @@
-import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
+import '../services/heart_rate_service.dart';
+import '../services/health_storage_service.dart';
 
 enum ScanState { initial, scanning, result }
 
@@ -25,6 +26,10 @@ class _HeartRateScreenState extends State<HeartRateScreen>
   late AnimationController _progressCtrl;
   late AnimationController _equalizerCtrl;
 
+  // ── Heart Rate Service ──
+  final _hrService = HeartRateService();
+  int _finalBpm = 0;
+
   @override
   void initState() {
     super.initState();
@@ -34,8 +39,9 @@ class _HeartRateScreenState extends State<HeartRateScreen>
       duration: const Duration(seconds: 1),
     )..repeat(reverse: true);
 
+    // Give it 10 seconds to find a good pulse, then jump to Result
     _progressCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 3500));
+        vsync: this, duration: const Duration(seconds: 10));
 
     _equalizerCtrl = AnimationController(
       vsync: this,
@@ -45,25 +51,39 @@ class _HeartRateScreenState extends State<HeartRateScreen>
 
   @override
   void dispose() {
+    _hrService.stopMeasurement();
     _pulseCtrl.dispose();
     _progressCtrl.dispose();
     _equalizerCtrl.dispose();
     super.dispose();
   }
 
-  void _startScan() {
+  void _startScan() async {
     setState(() => _currentState = ScanState.scanning);
     _progressCtrl.forward(from: 0);
+    
+    await _hrService.startMeasurement();
 
-    // Simulate 3.5 second scan period, then jump to Result.
-    Future.delayed(const Duration(milliseconds: 3500), () {
-      if (mounted && _currentState == ScanState.scanning) {
-        setState(() => _currentState = ScanState.result);
+    // End scan when progress is done or if manually stopped
+    _progressCtrl.addStatusListener((status) async {
+      if (status == AnimationStatus.completed && _currentState == ScanState.scanning) {
+        _finalBpm = _hrService.readingNotifier.value.bpm;
+        if (_finalBpm == 0) _finalBpm = 72; // fallback if no pulse detected
+        
+        // Save to persistent storage
+        HealthStorageService().updateBpm(_finalBpm);
+        
+        await _hrService.stopMeasurement();
+        if (mounted) {
+          setState(() => _currentState = ScanState.result);
+        }
       }
     });
   }
 
   void _resetScan() {
+    _progressCtrl.stop();
+    _hrService.stopMeasurement();
     setState(() {
       _currentState = ScanState.initial;
     });
@@ -378,10 +398,29 @@ class _HeartRateScreenState extends State<HeartRateScreen>
 
         const Spacer(flex: 2),
 
-        // Text
-        Text('Scanning . . .', style: AppTextStyles.hrScanTitle),
-        const SizedBox(height: 8),
-        Text('Analyzing your heart rate', style: AppTextStyles.hrScanSub),
+        ValueListenableBuilder<HeartRateReading>(
+          valueListenable: _hrService.readingNotifier,
+          builder: (context, reading, _) {
+            if (reading.bpm > 0) {
+              return Column(
+                children: [
+                  Text('${reading.bpm}', style: AppTextStyles.hrBpmHuge),
+                  Text('BPM', style: AppTextStyles.hrBpmUnit),
+                  const SizedBox(height: 8),
+                  Text('Signal Quality: ${(reading.signalQuality * 100).toInt()}%', 
+                       style: AppTextStyles.bodySmall.copyWith(color: AppColors.heartPink)),
+                ],
+              );
+            }
+            return Column(
+              children: [
+                Text('Scanning . . .', style: AppTextStyles.hrScanTitle),
+                const SizedBox(height: 8),
+                Text('Analyzing your heart rate', style: AppTextStyles.hrScanSub),
+              ],
+            );
+          },
+        ),
 
         const SizedBox(height: 40),
 
@@ -510,7 +549,7 @@ class _HeartRateScreenState extends State<HeartRateScreen>
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text('78', style: AppTextStyles.hrBpmHuge),
+              Text('$_finalBpm', style: AppTextStyles.hrBpmHuge),
               const SizedBox(width: 8),
               Text('BPM', style: AppTextStyles.hrBpmUnit),
             ],

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
-import '../../constants/app_text_styles.dart';
+import '../../data/hindi_exercise_instructions.dart';
+import '../../services/voice_coach_service.dart';
+import '../../services/music_service.dart';
+import '../../widgets/voice_toggle_button.dart';
+import '../../widgets/music_toggle_button.dart';
 
-class TherapySessionScreen extends StatelessWidget {
+class TherapySessionScreen extends StatefulWidget {
   final String categoryTitle;
   final int duration;
   final String sessionLabel;
@@ -16,6 +20,48 @@ class TherapySessionScreen extends StatelessWidget {
     required this.sessionLabel,
     required this.exercises,
   });
+
+  @override
+  State<TherapySessionScreen> createState() => _TherapySessionScreenState();
+}
+
+class _TherapySessionScreenState extends State<TherapySessionScreen> {
+  final VoiceCoachService _voiceCoach = VoiceCoachService();
+  final MusicService _musicService = MusicService();
+
+  @override
+  void initState() {
+    super.initState();
+    _voiceCoach.init();
+    _musicService.init();
+    _speakTherapyInstructions();
+    _musicService.setVolume(0.2);
+    _musicService.play();
+  }
+
+  @override
+  void dispose() {
+    _voiceCoach.stop();
+    _musicService.stop();
+    super.dispose();
+  }
+
+  void _speakTherapyInstructions() {
+    final key = widget.categoryTitle.toLowerCase();
+    final data = HindiExerciseInstructions.getInstructions(key);
+    if (data != null) {
+      _voiceCoach.speakSequence(data.start);
+      _voiceCoach.speakSequence(data.posture);
+      _voiceCoach.speakSequence(data.breathing);
+    } else {
+      // Fallback generic therapy guidance
+      _voiceCoach.speakSequence([
+        'थेरेपी सेशन शुरू हो रहा है।',
+        'आराम से करें, कोई झटका न दें।',
+        'धीरे और नियंत्रित मूवमेंट रखें।',
+      ]);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +93,10 @@ class TherapySessionScreen extends StatelessWidget {
                       child: const Icon(Icons.close, color: AppColors.textPrimary, size: 24),
                     ),
                     const Spacer(),
+                    const VoiceToggleButton(),
+                    const SizedBox(width: 6),
+                    const MusicToggleButton(),
+                    const SizedBox(width: 12),
                     const Icon(Icons.more_horiz, color: AppColors.textPrimary, size: 24),
                   ],
                 ),
@@ -139,7 +189,7 @@ class TherapySessionScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       Text(
-                        '$categoryTitle – $sessionLabel',
+                        '${widget.categoryTitle} – ${widget.sessionLabel}',
                         style: GoogleFonts.outfit(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
@@ -148,7 +198,7 @@ class TherapySessionScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '$duration min session  •  ${exercises.length} exercises',
+                        '${widget.duration} min session  •  ${widget.exercises.length} exercises',
                         style: GoogleFonts.inter(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -158,7 +208,7 @@ class TherapySessionScreen extends StatelessWidget {
                       const Divider(color: Color(0xFFE0DCD4)),
                       const SizedBox(height: 12),
                       // Exercise list preview
-                      ...exercises.map((e) => Padding(
+                      ...widget.exercises.map((e) => Padding(
                         padding: const EdgeInsets.symmetric(vertical: 6),
                         child: Row(
                           children: [

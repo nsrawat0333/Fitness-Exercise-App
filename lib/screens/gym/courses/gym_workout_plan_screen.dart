@@ -116,12 +116,30 @@ class GymWorkoutPlanScreen extends StatelessWidget {
               color: const Color(0xFFF5F5F5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: exercise.animationLottie != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Lottie.asset(exercise.animationLottie!, fit: BoxFit.cover),
-                  )
-                : const Icon(Icons.fitness_center, color: Colors.grey),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: exercise.animationLottie != null
+                  ? Lottie.asset(
+                      exercise.animationLottie!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Image.asset(
+                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Colors.grey),
+                      ),
+                    )
+                  : Image.asset(
+                      exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty
+                          ? exercise.imageAsset!
+                          : (GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Image.asset(
+                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Colors.grey),
+                      ),
+                    ),
+            ),
           ),
           const SizedBox(width: 16),
           // Details

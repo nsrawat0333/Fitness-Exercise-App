@@ -4,6 +4,8 @@ import '../../constants/app_colors.dart';
 import '../planner/planner_home_screen.dart';
 import '../diet/diet_planner_screen.dart';
 import 'gym_gender_screen.dart';
+import '../../services/scheduling_service.dart';
+import '../../models/course_schedule_model.dart';
 /// Gym Screen 1 – Welcome / Journey intro.
 class GymWelcomeScreen extends StatelessWidget {
   const GymWelcomeScreen({super.key});
@@ -13,14 +15,12 @@ class GymWelcomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F2EC),
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
+          children: [
+            const SizedBox(height: 16),
 
-              // ── FitFi Logo ──
+            // ── FitFi Logo ──
               Row(
                 children: [
                   Icon(Icons.eco, color: AppColors.primary, size: 22),
@@ -39,8 +39,8 @@ class GymWelcomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Large Image Card ──
-              Expanded(
-                flex: 5,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -87,39 +87,32 @@ class GymWelcomeScreen extends StatelessWidget {
               const SizedBox(height: 36),
 
               // ── Welcome Text ──
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              RichText(
+                text: TextSpan(
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Hello,\nwelcome to\nthe ',
-                            style: GoogleFonts.outfit(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.textPrimary,
-                              height: 1.15,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'journey to\nyour dream',
-                            style: GoogleFonts.outfit(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w800,
-                              fontStyle: FontStyle.italic,
-                              color: AppColors.primary,
-                              height: 1.15,
-                            ),
-                          ),
-                        ],
+                    TextSpan(
+                      text: 'Hello,\nwelcome to\nthe ',
+                      style: GoogleFonts.outfit(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        height: 1.15,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'journey to\nyour dream',
+                      style: GoogleFonts.outfit(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w800,
+                        fontStyle: FontStyle.italic,
+                        color: AppColors.primary,
+                        height: 1.15,
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
 
               // ── AI Diet Planner Entry ──
               GestureDetector(
@@ -250,6 +243,20 @@ class GymWelcomeScreen extends StatelessWidget {
               // ── Start Button ──
               GestureDetector(
                 onTap: () {
+                  // Fire-and-forget: do not await scheduling so navigation is instant
+                  try {
+                    SchedulingService().subscribeToCourse(ScheduledCourse(
+                      courseId: 'gym_journey_1',
+                      courseName: 'Gym Journey',
+                      totalDays: 30,
+                      preferredTime: const TimeOfDay(hour: 7, minute: 0),
+                      startDate: DateTime.now(),
+                    ));
+                  } catch (e) {
+                    debugPrint('Course scheduling failed: $e');
+                  }
+                  
+                  // Navigate immediately
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const GymGenderScreen()),
@@ -284,7 +291,6 @@ class GymWelcomeScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

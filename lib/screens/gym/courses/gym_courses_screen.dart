@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lottie/lottie.dart';
-import '../../../constants/app_colors.dart';
 import '../../../data/gym_user_data.dart';
 import '../../../data/gym_challenge_data.dart';
 import 'gym_course_detail_screen.dart';
@@ -208,7 +207,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
       ),
       child: Row(
         children: [
-          // Exercise image/animation
+          // Exercise image/animation (Safe Fallback)
           Container(
             width: 60,
             height: 60,
@@ -216,23 +215,30 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
               color: const Color(0xFFE9EEF5),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: exercise.animationLottie != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Lottie.asset(exercise.animationLottie!, fit: BoxFit.cover),
-                  )
-                : exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          exercise.imageAsset!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(
-                            Icons.fitness_center, color: Color(0xFF005FF9), size: 28,
-                          ),
-                        ),
-                      )
-                    : const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: exercise.animationLottie != null
+                  ? Lottie.asset(
+                      exercise.animationLottie!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Image.asset(
+                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
+                      ),
+                    )
+                  : Image.asset(
+                      exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty
+                          ? exercise.imageAsset!
+                          : (GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Image.asset(
+                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
+                      ),
+                    ),
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -731,7 +737,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Text(
-            'Exercises in ${_selectedBodyFocus}',
+            'Exercises in $_selectedBodyFocus',
             style: GoogleFonts.outfit(
               fontSize: 16,
               fontWeight: FontWeight.w700,
@@ -758,22 +764,31 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Safe Image/Animation Fallback
                     SizedBox(
                       width: 60,
                       height: 60,
                       child: ex.animationLottie != null
-                          ? Lottie.asset(ex.animationLottie!, fit: BoxFit.contain)
-                          : ex.imageAsset != null && ex.imageAsset!.isNotEmpty
-                              ? Image.asset(
-                                  ex.imageAsset!,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (_, __, ___) => Icon(
-                                    Icons.fitness_center,
-                                    color: const Color(0xFF005FF9),
-                                    size: 28,
-                                  ),
-                                )
-                              : Icon(Icons.fitness_center, color: const Color(0xFF005FF9), size: 28),
+                          ? Lottie.asset(
+                              ex.animationLottie!,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Image.asset(
+                                GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
+                              ),
+                            )
+                          : Image.asset(
+                              ex.imageAsset != null && ex.imageAsset!.isNotEmpty
+                                  ? ex.imageAsset!
+                                  : (GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => Image.asset(
+                                GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                                fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
+                              ),
+                            ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
@@ -824,6 +839,7 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
         color: Colors.transparent,
         child: Row(
           children: [
+            // Safe Image/Animation Fallback for list items
             Container(
               width: 80,
               height: 80,
@@ -831,12 +847,30 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
                 color: const Color(0xFFE9EEF5),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: exerciseList != null && exerciseList.isNotEmpty && exerciseList.first.animationLottie != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Lottie.asset(exerciseList.first.animationLottie!, fit: BoxFit.cover),
-                    )
-                  : const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 32),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: exerciseList != null && exerciseList.isNotEmpty
+                    ? (exerciseList.first.animationLottie != null
+                        ? Lottie.asset(
+                            exerciseList.first.animationLottie!,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset(
+                              GymChallengeData.getFallbackImage(exerciseList.first.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 32),
+                            ),
+                          )
+                        : Image.asset(
+                            exerciseList.first.imageAsset ?? (GymChallengeData.getFallbackImage(exerciseList.first.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Image.asset(
+                              GymChallengeData.getFallbackImage(exerciseList.first.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 32),
+                            ),
+                          ))
+                    : const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 32),
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(

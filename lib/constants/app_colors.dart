@@ -97,4 +97,11 @@ class AppColors {
   static const Color sageFlagRed = Color(0xFFCE2845);  // Endpoint flag color
   static const Color sageTextDark = Color(0xFF1A1A1A); // Main text
   static const Color sageTextMuted = Color(0xFF8D8D8D); // Secondary text
+
+  // ── Yoga ───────────────────────────────────────────────
+  static const Color yogaSecondary = Color(0xFFD4A574);
+
+  // ── General UI Surface & Border ────────────────────────
+  static const Color surface = Color(0xFFF5F0EB);
+  static const Color border = Color(0xFFE0D8CF);
 }

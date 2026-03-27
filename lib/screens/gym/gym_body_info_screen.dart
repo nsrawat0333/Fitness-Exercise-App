@@ -220,7 +220,7 @@ class _GymBodyInfoScreenState extends State<GymBodyInfoScreen> {
                                     TextSpan(
                                       text: _heightIsCm
                                           ? '$_heightCm'
-                                          : '${(_heightCm / 30.48).toStringAsFixed(1)}',
+                                          : (_heightCm / 30.48).toStringAsFixed(1),
                                       style: GoogleFonts.outfit(
                                         fontSize: 36,
                                         fontWeight: FontWeight.w800,

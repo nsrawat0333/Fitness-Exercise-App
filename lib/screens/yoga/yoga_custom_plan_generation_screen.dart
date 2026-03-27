@@ -104,7 +104,7 @@ class _YogaCustomPlanGenerationScreenState extends State<YogaCustomPlanGeneratio
         performDuration: p.durationSeconds,
         previewDuration: 20,
         instructions: p.steps,
-        imageAsset: p.image,
+        imageAsset: p.image.isNotEmpty ? p.image : GymChallengeData.getFallbackImage(p.name),
         animationLottie: p.animation.isNotEmpty ? p.animation : null,
       );
     }).toList();

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../../../constants/app_colors.dart';
 import '../../../data/gym_user_data.dart';
 import '../../../data/gym_challenge_data.dart'; // Add missing import
 import 'gym_workout_plan_screen.dart';

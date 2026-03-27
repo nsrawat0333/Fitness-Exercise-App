@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import '../../constants/app_colors.dart';
 import '../../services/body_scan_service.dart';
 import 'widgets/ml_result_popup.dart';

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 import '../models/water_intake_model.dart';
+import '../services/water_storage_service.dart';
 
 /// Water Tracker Screen – exact replica of the Stitch design.
 class WaterTrackerScreen extends StatefulWidget {
@@ -19,12 +20,13 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
   late AnimationController _addWaterCtrl;
   late Animation<double> _addWaterAnim;
 
+  final _waterService = WaterStorageService();
   late WaterIntakeModel _data;
 
   @override
   void initState() {
     super.initState();
-    _data = WaterIntakeModel.mock();
+    _data = _waterService.waterDataNotifier.value;
 
     _fillCtrl = AnimationController(
       vsync: this,
@@ -50,30 +52,21 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
 
   void _drinkWater() {
     final vessel = WaterIntakeModel.vessels[_data.selectedVesselIndex];
-    setState(() {
-      _data.currentIntakeMl =
-          (_data.currentIntakeMl + vessel.ml).clamp(0, _data.dailyGoalMl * 2);
+    
+    // Add history entry
+    final now = TimeOfDay.now();
+    final hour = now.hourOfPeriod == 0 ? 12 : now.hourOfPeriod;
+    final period = now.period == DayPeriod.am ? 'AM' : 'PM';
+    final timeStr =
+        '${hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} $period';
+        
+    final label = vessel.ml >= 500
+        ? 'Large Bottle'
+        : vessel.ml >= 250
+            ? 'Medium Glass'
+            : 'Small Cup';
 
-      // Add history entry
-      final now = TimeOfDay.now();
-      final hour = now.hourOfPeriod == 0 ? 12 : now.hourOfPeriod;
-      final period = now.period == DayPeriod.am ? 'AM' : 'PM';
-      final timeStr =
-          '${hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')} $period';
-
-      _data.history.insert(
-        0,
-        WaterHistoryEntry(
-          label: vessel.ml >= 500
-              ? 'Large Bottle'
-              : vessel.ml >= 250
-                  ? 'Medium Glass'
-                  : 'Small Cup',
-          time: timeStr,
-          amountMl: vessel.ml,
-        ),
-      );
-    });
+    _waterService.addIntake(vessel.ml, label, timeStr);
 
     // Trigger add-water pulse animation
     _addWaterCtrl.forward(from: 0);
@@ -125,7 +118,7 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
             onPressed: () {
               final val = double.tryParse(controller.text);
               if (val != null && val > 0) {
-                setState(() => _data.dailyGoalMl = (val * 1000).round());
+                _waterService.updateGoal((val * 1000).round());
                 _fillCtrl.forward(from: 0);
               }
               Navigator.pop(ctx);
@@ -238,45 +231,51 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
   // ─── Build ──────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.waterScreenBg,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  _buildAppBar(context),
-                  const SizedBox(height: 24),
-                  _buildWaterGlass(),
-                  const SizedBox(height: 24),
-                  _buildTodayGoalRow(),
-                  const SizedBox(height: 20),
-                  _buildWeeklyMonthlyRow(),
-                  const SizedBox(height: 28),
-                  _buildVesselSelector(),
-                  const SizedBox(height: 20),
-                  _buildReminderToggle(),
-                  const SizedBox(height: 28),
-                  _buildTodayHistory(),
-                  const SizedBox(height: 100), // space for floating button
-                ],
-              ),
+    return ValueListenableBuilder<WaterIntakeModel>(
+      valueListenable: _waterService.waterDataNotifier,
+      builder: (context, dynamicData, _) {
+        _data = dynamicData; // update local ref
+        return Scaffold(
+          backgroundColor: AppColors.waterScreenBg,
+          body: SafeArea(
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8),
+                      _buildAppBar(context),
+                      const SizedBox(height: 24),
+                      _buildWaterGlass(),
+                      const SizedBox(height: 24),
+                      _buildTodayGoalRow(),
+                      const SizedBox(height: 20),
+                      _buildWeeklyMonthlyRow(),
+                      const SizedBox(height: 28),
+                      _buildVesselSelector(),
+                      const SizedBox(height: 20),
+                      _buildReminderToggle(),
+                      const SizedBox(height: 28),
+                      _buildTodayHistory(),
+                      const SizedBox(height: 100), // space for floating button
+                    ],
+                  ),
+                ),
+                // ── Floating Drink Water Button ──
+                Positioned(
+                  bottom: 24,
+                  left: 20,
+                  right: 20,
+                  child: _buildDrinkWaterButton(),
+                ),
+              ],
             ),
-            // ── Floating Drink Water Button ──
-            Positioned(
-              bottom: 24,
-              left: 20,
-              right: 20,
-              child: _buildDrinkWaterButton(),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -699,7 +698,7 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
             Switch(
               value: _data.remindersEnabled,
               onChanged: (val) {
-                setState(() => _data.remindersEnabled = val);
+                _waterService.toggleReminders(val);
                 if (val) _showRemindersSheet();
               },
               activeThumbColor: AppColors.waterTeal,

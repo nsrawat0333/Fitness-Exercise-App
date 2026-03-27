@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import '../../constants/app_colors.dart';
 import '../../data/gym_challenge_data.dart';
 import '../gym/courses/workout_flow_screen.dart';
 import 'therapy_screen.dart';
 
 class TherapyCustomExerciseScreen extends StatefulWidget {
-  const TherapyCustomExerciseScreen({super.key});
+  final bool returnSelection;
+  const TherapyCustomExerciseScreen({super.key, this.returnSelection = false});
 
   @override
   State<TherapyCustomExerciseScreen> createState() => _TherapyCustomExerciseScreenState();
@@ -61,6 +61,11 @@ class _TherapyCustomExerciseScreenState extends State<TherapyCustomExerciseScree
     final selected = _selectedIndices
         .map((i) => _allExercises[i])
         .toList();
+
+    if (widget.returnSelection) {
+      Navigator.pop(context, selected);
+      return;
+    }
 
     final gymExercises = selected.map((entry) {
       return GymExercise(
@@ -260,7 +265,9 @@ class _TherapyCustomExerciseScreenState extends State<TherapyCustomExerciseScree
                         const Icon(Icons.play_circle_filled, color: Colors.white, size: 24),
                         const SizedBox(width: 10),
                         Text(
-                          'Start Session (${_selectedIndices.length} exercises)',
+                          widget.returnSelection 
+                              ? 'Add to Plan (${_selectedIndices.length} exercises)'
+                              : 'Start Session (${_selectedIndices.length} exercises)',
                           style: GoogleFonts.outfit(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
@@ -328,19 +335,11 @@ class _ExerciseSelectCard extends StatelessWidget {
                   color: const Color(0xFF667EEA).withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Lottie.asset(
-                      exercise.animationPath,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.self_improvement,
-                        color: Color(0xFF667EEA),
-                        size: 28,
-                      ),
-                    ),
+                child: const Center(
+                  child: Icon(
+                    Icons.self_improvement,
+                    color: Color(0xFF667EEA),
+                    size: 28,
                   ),
                 ),
               ),

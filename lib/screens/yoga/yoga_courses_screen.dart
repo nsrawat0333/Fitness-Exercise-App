@@ -399,7 +399,7 @@ class _YogaCoursesScreenState extends State<YogaCoursesScreen> {
                                 ? Image.asset(
                                     pose.image,
                                     fit: BoxFit.contain,
-                                    errorBuilder: (_, __, ___) => const Icon(
+                                    errorBuilder: (_, _, _) => const Icon(
                                       Icons.self_improvement,
                                       color: Color(0xFF5B7E5F),
                                       size: 28,

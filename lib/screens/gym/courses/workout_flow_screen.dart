@@ -5,8 +5,14 @@ import 'package:lottie/lottie.dart';
 import 'package:video_player/video_player.dart';
 import '../../../data/gym_challenge_data.dart';
 import '../../../data/gym_user_data.dart';
+import '../../../data/hindi_exercise_instructions.dart';
 import '../../../widgets/breathing_animation_widget.dart';
 import '../../../widgets/heart_rate_card.dart';
+import '../../../widgets/voice_toggle_button.dart';
+import '../../../widgets/music_toggle_button.dart';
+import '../../../services/voice_coach_service.dart';
+import '../../../services/music_service.dart';
+import '../../../services/points_manager.dart';
 import '../../heart_rate_screen.dart';
 import '../../water_tracker_screen.dart';
 
@@ -44,6 +50,11 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   bool _isPaused = false;
   bool _isCompleted = false;
 
+  // 3-2-1 countdown state
+  bool _showCountdown = false;
+  int _countdownValue = 3;
+  late AnimationController _countdownAnimController;
+
   // Video player for exercises with video assets
   VideoPlayerController? _videoController;
 
@@ -52,9 +63,14 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
+  final VoiceCoachService _voiceCoach = VoiceCoachService();
+  final MusicService _musicService = MusicService();
+
   @override
   void initState() {
     super.initState();
+    _voiceCoach.init();
+    _musicService.init();
     _transitionController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -70,14 +86,23 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     );
 
     _transitionController.forward();
+
+    _countdownAnimController = AnimationController(
+      duration: const Duration(milliseconds: 700),
+      vsync: this,
+    );
+
     _startPhase();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _voiceCoach.stop();
+    _musicService.stop();
     _videoController?.dispose();
     _transitionController.dispose();
+    _countdownAnimController.dispose();
     super.dispose();
   }
 
@@ -89,6 +114,18 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
 
   bool get _isLastExercise =>
       _currentExerciseIndex >= widget.exercises.length - 1;
+
+  int get _totalWorkoutMinutes {
+    int totalSeconds = 0;
+    for (var ex in widget.exercises) {
+      totalSeconds += ex.breathingDuration + ex.previewDuration + ex.performDuration + ex.recoveryDuration;
+    }
+    if (widget.exercises.length > 1) {
+       totalSeconds += (widget.exercises.length - 1) * 20; // next preview time
+    }
+    int mins = totalSeconds ~/ 60;
+    return mins == 0 ? 1 : mins; // Minimum 1 minute
+  }
 
   int _getDurationForPhase(WorkoutPhase phase) {
     switch (phase) {
@@ -108,7 +145,68 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   void _startPhase() {
     _secondsRemaining = _getDurationForPhase(_currentPhase);
     _initMediaForPhase();
+    _speakPhaseInstructions();
+    _syncMusicToPhase();
     _startTimer();
+  }
+
+  void _syncMusicToPhase() {
+    switch (_currentPhase) {
+      case WorkoutPhase.breathing:
+      case WorkoutPhase.recovery:
+        _musicService.setVolume(0.15); // Soft during rest
+        _musicService.play();
+        break;
+      case WorkoutPhase.perform:
+        _musicService.setVolume(0.45); // Full energy during workout
+        _musicService.play();
+        break;
+      case WorkoutPhase.preview:
+      case WorkoutPhase.nextPreview:
+        _musicService.setVolume(0.2);
+        break;
+    }
+  }
+
+  void _speakPhaseInstructions() {
+    final exerciseName = _currentExercise.name.toLowerCase();
+    final data = HindiExerciseInstructions.getInstructions(exerciseName);
+
+    switch (_currentPhase) {
+      case WorkoutPhase.breathing:
+        _voiceCoach.speakSequence(HindiExerciseInstructions.phaseBreathing);
+        break;
+      case WorkoutPhase.preview:
+        // First announce the exercise name
+        _voiceCoach.speak(HindiExerciseInstructions.phasePreview(_currentExercise.name));
+        if (data != null) {
+          // Then explain HOW to start
+          _voiceCoach.speakSequence(data.start);
+          // Then explain the full posture/form so user knows before performing
+          _voiceCoach.speakSequence(data.posture);
+          // Then explain breathing technique
+          _voiceCoach.speakSequence(data.breathing);
+        }
+        break;
+      case WorkoutPhase.perform:
+        // During perform, give motivation and reminders only
+        if (data != null) {
+          _voiceCoach.speakSequence(data.motivation);
+        }
+        break;
+      case WorkoutPhase.recovery:
+        // Announce completion of the exercise
+        if (data != null && data.completion.isNotEmpty) {
+          _voiceCoach.speakSequence(data.completion);
+        }
+        _voiceCoach.speakSequence(HindiExerciseInstructions.phaseRecovery);
+        break;
+      case WorkoutPhase.nextPreview:
+        if (_nextExercise != null) {
+          _voiceCoach.speak(HindiExerciseInstructions.phasePreview(_nextExercise!.name));
+        }
+        break;
+    }
   }
 
   void _initMediaForPhase() {
@@ -125,15 +223,27 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
 
     // Only use video for perform phase, breathing uses the custom widget
     if (_currentPhase == WorkoutPhase.perform && videoPath != null) {
-      _videoController = VideoPlayerController.asset(videoPath)
-        ..initialize().then((_) {
+      try {
+        _videoController = VideoPlayerController.asset(videoPath);
+        _videoController!.initialize().then((_) {
           if (mounted) {
             setState(() {});
             _videoController!.setLooping(true);
             _videoController!.setVolume(0);
             _videoController!.play();
           }
+        }).catchError((error) {
+          debugPrint("VideoPlayer Init Error: $error");
+          if (mounted) {
+            setState(() {
+              _videoController = null;
+            });
+          }
         });
+      } catch (e) {
+        debugPrint("VideoPlayer Error: $e");
+        _videoController = null;
+      }
     }
   }
 
@@ -168,10 +278,25 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
         _currentPhase = WorkoutPhase.preview;
         break;
       case WorkoutPhase.preview:
-        _currentPhase = WorkoutPhase.perform;
-        break;
+        // Insert 3-2-1 countdown before perform
+        _runCountdown();
+        return;
       case WorkoutPhase.perform:
         if (_isLastExercise) {
+          // Reward points and log stats for completion
+          int mins = _totalWorkoutMinutes;
+          int cals = mins * 6; // Roughly 6 calories per minute of active workout
+
+          PointsManager().addWorkoutPoints(100, minutes: mins, calories: cals, onLevelUp: (newLevel) {
+            _showLevelUpDialog(newLevel);
+          }).then((success) {
+            if (success && mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('🎉 Awesome! You earned 100 FitPoints and logged your stats!')),
+              );
+            }
+          });
+
           // No recovery for last exercise → complete
           setState(() => _isCompleted = true);
           _videoController?.pause();
@@ -200,6 +325,101 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     _transitionToNextPhase();
   }
 
+  // ── 3-2-1 Countdown Logic ──
+
+  void _runCountdown() {
+    _timer?.cancel();
+    _countdownValue = 3;
+    _showCountdown = true;
+    setState(() {});
+
+    // Speak "Teen"
+    _voiceCoach.speak('तीन');
+    _countdownAnimController.forward(from: 0);
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) { timer.cancel(); return; }
+
+      if (_countdownValue > 1) {
+        _countdownValue--;
+        _countdownAnimController.forward(from: 0);
+        // Speak countdown in Hindi
+        if (_countdownValue == 2) _voiceCoach.speak('दो');
+        if (_countdownValue == 1) _voiceCoach.speak('एक');
+        setState(() {});
+      } else {
+        // Countdown complete → transition to perform
+        timer.cancel();
+        _voiceCoach.speak('शुरू!');
+        _showCountdown = false;
+        _currentPhase = WorkoutPhase.perform;
+        _animateTransition();
+        _startPhase();
+        setState(() {});
+      }
+    });
+  }
+
+  Widget _buildCountdownScreen() {
+    final countdownTexts = {3: '3', 2: '2', 1: '1'};
+    final countdownColors = {
+      3: const Color(0xFFFF5252),
+      2: const Color(0xFFFFA000),
+      1: const Color(0xFF4CAF50),
+    };
+
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: AnimatedBuilder(
+          animation: _countdownAnimController,
+          builder: (context, child) {
+            final scale = 1.0 + (1 - _countdownAnimController.value) * 1.5;
+            final opacity = _countdownAnimController.value.clamp(0.0, 1.0);
+            return Transform.scale(
+              scale: scale,
+              child: Opacity(
+                opacity: opacity,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      countdownTexts[_countdownValue] ?? '',
+                      style: GoogleFonts.outfit(
+                        fontSize: 120,
+                        fontWeight: FontWeight.w900,
+                        color: countdownColors[_countdownValue] ?? Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'GET READY!',
+                      style: GoogleFonts.outfit(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white70,
+                        letterSpacing: 3,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      _currentExercise.name,
+                      style: GoogleFonts.outfit(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   void _skipBackward() {
     if (_currentPhase != WorkoutPhase.breathing) {
       // Go back to start of current exercise
@@ -211,6 +431,81 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     _animateTransition();
     _startPhase();
     setState(() {});
+  }
+
+  void _showLevelUpDialog(int newLevel) {
+    if (!mounted) return;
+    String tier = PointsManager.getTierFromLevel(newLevel);
+    
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 24),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2B3A31), Color(0xFF1E2822)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.amber.withValues(alpha: 0.5), width: 2),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.stars_rounded, color: Colors.amber, size: 90),
+                const SizedBox(height: 20),
+                Text(
+                  'LEVEL UP!',
+                  style: GoogleFonts.outfit(
+                      fontSize: 34, 
+                      fontWeight: FontWeight.w900, 
+                      color: Colors.white, 
+                      letterSpacing: 3),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'You reached Level $newLevel!',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(fontSize: 20, color: Colors.white, fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Welcome to the $tier Tier 🔥',
+                  textAlign: TextAlign.center,
+                  style: GoogleFonts.outfit(fontSize: 16, color: Colors.amber[200], fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.amber,
+                      foregroundColor: Colors.black,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      elevation: 5,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'KEEP GOING',
+                      style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, letterSpacing: 1),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   // ── Phase Colors & Labels ──
@@ -304,6 +599,11 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
       return _buildCompletedDashboard();
     }
 
+    // Show countdown overlay
+    if (_showCountdown) {
+      return _buildCountdownScreen();
+    }
+
     return Scaffold(
       backgroundColor: _phaseBgColor,
       body: SafeArea(
@@ -347,6 +647,9 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
               child: const Icon(Icons.close, color: Colors.black87, size: 22),
             ),
           ),
+          const VoiceToggleButton(),
+          const SizedBox(width: 6),
+          const MusicToggleButton(),
           const Spacer(),
           // Exercise counter
           Container(
@@ -498,37 +801,21 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     required Color glowColor,
     required String label,
   }) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 250,
-            child: Lottie.asset(
-              'assets/images/jsonanimation/breathresttime.json',
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) {
-                return BreathingAnimationWidget(
-                  color: color,
-                  glowColor: glowColor,
-                  size: 220,
-                  label: label,
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Use available height to prevent overflow
+        final animHeight = (constraints.maxHeight - 50).clamp(120.0, 250.0);
+        return Center(
+          child: SingleChildScrollView(
+            child: BreathingAnimationWidget(
               color: color,
-              letterSpacing: 1.0,
+              glowColor: glowColor,
+              size: animHeight * 0.6, // Smaller to leave room for the internal text
+              label: label,
             ),
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -577,6 +864,29 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   }
 
   Widget _buildExercisePlaceholder(GymExercise exercise) {
+    // Show image if available
+    if (exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty) {
+      return Container(
+        width: double.infinity,
+        height: 280,
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Image.asset(
+            exercise.imageAsset!,
+            fit: BoxFit.contain,
+            errorBuilder: (_, __, ___) => _buildIconPlaceholder(exercise),
+          ),
+        ),
+      );
+    }
+    return _buildIconPlaceholder(exercise);
+  }
+
+  Widget _buildIconPlaceholder(GymExercise exercise) {
     return Container(
       width: 200,
       height: 200,

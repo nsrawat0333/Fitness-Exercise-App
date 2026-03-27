@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../../constants/app_colors.dart';
-import '../../constants/app_text_styles.dart';
 import '../../models/diet_models.dart';
 import '../../services/diet_state_service.dart';
 
@@ -259,7 +258,7 @@ class _DietPlannerView extends StatelessWidget {
           const SizedBox(height: 12),
           Text(title, style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.w600)),
           const SizedBox(height: 4),
-          Text("${consumed}g", style: const TextStyle(color: Colors.white34, fontSize: 11)),
+          Text("${consumed}g", style: TextStyle(color: Colors.white.withValues(alpha: 0.34), fontSize: 11)),
         ],
       ),
     );

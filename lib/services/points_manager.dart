@@ -21,15 +21,64 @@ class PointsManager {
   // Expose status for UI to listen to
   final ValueNotifier<SyncStatus> syncStatus = ValueNotifier(SyncStatus.synced);
 
+  // Observable for Level Ups
+  final ValueNotifier<int> currentLevelNotifier = ValueNotifier(1);
+
+  // Tier Definitions
+  static const String TIER_BRONZE = "Bronze";
+  static const String TIER_SILVER = "Silver";
+  static const String TIER_GOLD = "Gold";
+  static const String TIER_HEROIC = "Heroic";
+
+  /// Formula: 1 level per 100 points. Max level 20.
+  static int computeLevel(int points) {
+    int level = (points ~/ 100) + 1;
+    return level > 20 ? 20 : level;
+  }
+
+  /// Calculates Tier Name based on Level
+  static String getTierFromLevel(int level) {
+    if (level <= 5) return TIER_BRONZE;
+    if (level <= 10) return TIER_SILVER;
+    if (level <= 15) return TIER_GOLD;
+    return TIER_HEROIC;
+  }
+
+  /// Fetch user points directly and update Level Notifier
+  Future<void> refreshLevel() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    try {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        int pts = doc.data()?['points'] ?? 0;
+        currentLevelNotifier.value = computeLevel(pts);
+      }
+    } catch (e) {
+      debugPrint("Error fetching points for level: $e");
+    }
+  }
+
   /// Adds points for completing a workout. 
   /// Ensures users only get points once per day.
   /// Handles offline caching if Firestore fails.
-  Future<bool> addWorkoutPoints(int points) async {
+  /// Also tracks stats: total_minutes, calories_burned, workouts_count, currentStreak.
+  Future<bool> addWorkoutPoints(
+    int points, {
+    int? minutes,
+    int? calories,
+    Function(int newLevel)? onLevelUp,
+  }) async {
     final user = _auth.currentUser;
     if (user == null) return false;
 
     // Use current date as the key (e.g., "2023-10-15")
     final String todayString = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final String yesterdayString = DateFormat('yyyy-MM-dd').format(DateTime.now().subtract(const Duration(days: 1)));
+
+    // Fetch baseline level before pointing up
+    await refreshLevel();
+    int previousLevel = currentLevelNotifier.value;
 
     try {
       final docRef = _firestore.collection('users').doc(user.uid);
@@ -39,19 +88,44 @@ class PointsManager {
 
       final data = snapshot.data();
       final workoutHistory = data?['workoutHistory'] as Map<String, dynamic>? ?? {};
+      int currentStreak = data?['currentStreak'] as int? ?? 0;
 
-      // Ensure points are only awarded once per day
-      if (workoutHistory.containsKey(todayString) && workoutHistory[todayString] == true) {
-        return false; // Already earned points today
+      bool alreadyEarnedPointsToday = workoutHistory.containsKey(todayString) && workoutHistory[todayString] == true;
+
+      Map<String, dynamic> updates = {};
+
+      if (!alreadyEarnedPointsToday) {
+        updates['points'] = FieldValue.increment(points);
+        updates['workoutHistory.$todayString'] = true;
+
+        // Calculate Streak
+        if (workoutHistory.containsKey(yesterdayString) && workoutHistory[yesterdayString] == true) {
+          updates['currentStreak'] = currentStreak + 1;
+        } else {
+          updates['currentStreak'] = 1;
+        }
       }
 
-      // Add points to Firestore
-      await docRef.update({
-        'points': FieldValue.increment(points),
-        'workoutHistory.$todayString': true,
-      });
+      // Always update stats for every workout completed
+      updates['workouts_count'] = FieldValue.increment(1);
+      if (minutes != null) updates['total_minutes'] = FieldValue.increment(minutes);
+      if (calories != null) updates['calories_burned'] = FieldValue.increment(calories);
 
-      return true; // Successfully added points online
+      // Save to Firestore
+      await docRef.update(updates);
+
+      if (!alreadyEarnedPointsToday) {
+        // Update local level visually
+        await refreshLevel();
+
+        // Trigger animation if levelled up
+        if (currentLevelNotifier.value > previousLevel && onLevelUp != null) {
+           onLevelUp(currentLevelNotifier.value);
+        }
+        return true; // Successfully added points online
+      }
+
+      return false; // Points weren't awarded (but stats were saved)
     } catch (e) {
       // If Firestore fails (e.g., offline), store it locally
       await _cachePointsOffline(points, todayString);

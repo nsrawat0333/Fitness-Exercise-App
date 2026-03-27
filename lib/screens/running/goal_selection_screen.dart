@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../constants/app_colors.dart';
 import '../../constants/app_text_styles.dart';
 import '../../models/run_data.dart';
@@ -58,6 +59,14 @@ class _GoalSelectionScreenState extends State<GoalSelectionScreen>
         const SnackBar(content: Text('Location permissions are required to start a run.')),
       );
       return;
+    }
+
+    // Request pedometer/activity recognition permission for step counting
+    final activityStatus = await Permission.activityRecognition.request();
+    if (activityStatus.isDenied && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pedometer permission is needed to count your steps during the run.')),
+      );
     }
 
     if (!mounted) return;

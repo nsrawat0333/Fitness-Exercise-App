@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../constants/app_colors.dart';
 import '../../models/planner_models.dart';
 import '../../services/planner_state_service.dart';
+import '../therapy/therapy_custom_exercise_screen.dart';
+import '../therapy/therapy_screen.dart';
+import '../../data/gym_challenge_data.dart';
 
 class PlannerHomeScreen extends StatefulWidget {
   final String mode; // 'gym' or 'yoga'
@@ -219,15 +222,26 @@ class _PlannerHomeScreenState extends State<PlannerHomeScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: themeColor,
         child: const Icon(Icons.add, color: Colors.white),
-        onPressed: () {
-          // Simple stub to showcase adding custom routines
-          _plannerService.addTask(_selectedWeekday, PlannerTask(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            title: 'Custom Exercise',
-            category: 'Custom',
-            targetReps: widget.mode == 'gym' ? 10 : 30,
-            targetSets: widget.mode == 'gym' ? 3 : 1,
-          ));
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const TherapyCustomExerciseScreen(returnSelection: true),
+            ),
+          );
+
+          if (result != null && result is List<TherapyExerciseEntry>) {
+            // Update plan state with the newly fetched custom exercises
+            for (var entry in result) {
+              _plannerService.addTask(_selectedWeekday, PlannerTask(
+                id: DateTime.now().millisecondsSinceEpoch.toString() + entry.name,
+                title: entry.name,
+                category: 'Custom',
+                targetReps: widget.mode == 'gym' ? 10 : 30,
+                targetSets: widget.mode == 'gym' ? 3 : 1,
+              ));
+            }
+          }
         },
       ),
     );

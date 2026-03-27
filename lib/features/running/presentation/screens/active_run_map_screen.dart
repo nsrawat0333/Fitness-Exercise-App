@@ -8,7 +8,7 @@ import '../../data/services/run_location_service.dart';
 import '../../domain/run_stats_engine.dart';
 
 class ActiveRunMapScreen extends StatefulWidget {
-  const ActiveRunMapScreen({Key? key}) : super(key: key);
+  const ActiveRunMapScreen({super.key});
 
   @override
   State<ActiveRunMapScreen> createState() => _ActiveRunMapScreenState();
@@ -20,8 +20,8 @@ class _ActiveRunMapScreenState extends State<ActiveRunMapScreen> {
   final RunLocationService _locationService = RunLocationService();
   
   MapType _currentMapType = MapType.normal;
-  List<LatLng> _routePoints = [];
-  Set<Polyline> _polylines = {};
+  final List<LatLng> _routePoints = [];
+  final Set<Polyline> _polylines = {};
   
   // Running Stats State
   bool _isRunning = false;

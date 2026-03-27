@@ -1,8 +1,17 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
+import '../data/hindi_exercise_instructions.dart';
+import '../services/pose_detection_service.dart';
+import '../services/rep_counter_service.dart';
+import '../services/health_storage_service.dart';
+import '../services/voice_coach_service.dart';
+import '../services/music_service.dart';
+import 'session_summary_screen.dart';
 
 enum AiActivityState { selection, target, permission, camera, result }
 
@@ -24,11 +33,21 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   // Selections
   String? _selectedActivity;
   int _selectedTarget = 20; // Default
-  int _currentReps = 0;
 
-  // Animations
+  // Camera & AI Services
+  CameraController? _cameraController;
+  final _poseService = PoseDetectionService();
+  final _repService = RepCounterService();
+  final _voiceCoach = VoiceCoachService();
+  final _musicService = MusicService();
+  bool _isCameraReady = false;
+  int _lastAnnouncedRep = 0;
+  int _lastFrameTimeMs = 0;
+  bool _useFrontCamera = false; // Back camera by default for push-ups
+  List<Pose> _currentPoses = []; // Real ML Kit poses for skeleton overlay
+  int _sensorOrientation = 0;
+
   late AnimationController _cameraPulseCtrl;
-  Timer? _simulatedTimer;
 
   @override
   void initState() {
@@ -37,6 +56,9 @@ class _AiActivityScreenState extends State<AiActivityScreen>
       vsync: this,
       duration: const Duration(seconds: 1),
     )..repeat(reverse: true);
+
+    _voiceCoach.init();
+    _musicService.init();
 
     if (widget.initialActivity != null) {
       _selectedActivity = widget.initialActivity;
@@ -47,7 +69,11 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   @override
   void dispose() {
     _cameraPulseCtrl.dispose();
-    _simulatedTimer?.cancel();
+    _voiceCoach.stop();
+    _musicService.stop();
+    _cameraController?.dispose();
+    _poseService.dispose();
+    _repService.trackingNotifier.dispose();
     super.dispose();
   }
 
@@ -66,36 +92,148 @@ class _AiActivityScreenState extends State<AiActivityScreen>
     });
   }
 
-  void _onGrantPermission() {
+  void _onGrantPermission() async {
+    // ── BUG FIX 1: Actually request camera permission ──
+    final status = await Permission.camera.request();
+    if (!status.isGranted) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Camera permission is required for AI tracking'), backgroundColor: Colors.red),
+        );
+      }
+      return; // Stay on permission screen
+    }
+
     setState(() {
       _currentState = AiActivityState.camera;
-      _currentReps = 0;
     });
-    _startSimulation();
+    
+    _repService.reset();
+    _lastAnnouncedRep = 0;
+    
+    // Speak exercise start instructions
+    final data = HindiExerciseInstructions.getInstructions(
+      (_selectedActivity ?? 'push-ups').toLowerCase(),
+    );
+    if (data != null) {
+      _voiceCoach.speakSequence(data.start);
+    }
+    
+    // NO background music during camera AI exercises — only AI voice coaching
+    
+    // ── BUG FIX 2 & 3: Try-catch camera init + use back camera for push-ups ──
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No camera found on this device'), backgroundColor: Colors.red),
+          );
+          setState(() => _currentState = AiActivityState.permission);
+        }
+        return;
+      }
+
+      // Default to BACK camera for floor-based exercises (push-ups)
+      final targetLens = _useFrontCamera ? CameraLensDirection.front : CameraLensDirection.back;
+      final selectedCamera = cameras.firstWhere(
+        (c) => c.lensDirection == targetLens,
+        orElse: () => cameras.first,
+      );
+      _sensorOrientation = selectedCamera.sensorOrientation;
+      
+      _cameraController = CameraController(
+        selectedCamera,
+        ResolutionPreset.medium,
+        enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.yuv420,
+      );
+      
+      await _cameraController!.initialize();
+      if (!mounted) return;
+      
+      setState(() {
+        _isCameraReady = true;
+      });
+      
+      _cameraController!.startImageStream((image) async {
+        final currentTimeMs = DateTime.now().millisecondsSinceEpoch;
+        // Throttle to max 5 FPS to prevent CPU overload:
+        if (currentTimeMs - _lastFrameTimeMs < 200) return;
+        _lastFrameTimeMs = currentTimeMs;
+
+        final poses = await _poseService.processCameraFrame(image, _sensorOrientation);
+        if (mounted) {
+          // ── BUG FIX 4: Store real poses for skeleton overlay ──
+          setState(() {
+            _currentPoses = poses;
+          });
+        }
+        
+        if (poses.isNotEmpty && mounted) {
+          _repService.processPose(poses.first, _selectedActivity ?? 'Push-ups');
+          
+          // Announce reps dynamically
+          final currentReps = _repService.trackingNotifier.value.reps;
+          if (currentReps > _lastAnnouncedRep) {
+            _lastAnnouncedRep = currentReps;
+            if (currentReps % 5 == 0) {
+              _voiceCoach.speak(HindiExerciseInstructions.repMilestone(currentReps));
+            } else {
+              _voiceCoach.speak(HindiExerciseInstructions.repCompleted(currentReps, _selectedTarget));
+            }
+          }
+          
+          // Check if goal reached
+          if (_repService.trackingNotifier.value.reps >= _selectedTarget) {
+            _cameraController?.stopImageStream();
+            
+            HealthStorageService().addWorkoutReps(_selectedActivity ?? 'Push-ups', _selectedTarget);
+            int calories = _selectedTarget * 2;
+            
+            if (!mounted) return;
+            
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => SessionSummaryScreen(
+                  activityName: _selectedActivity ?? 'Push-ups',
+                  repsCompleted: _selectedTarget,
+                  targetReps: _selectedTarget,
+                  caloriesBurned: calories,
+                ),
+              ),
+            );
+          }
+        }
+      });
+    } catch (e) {
+      debugPrint('Camera init error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Camera error: $e'), backgroundColor: Colors.red),
+        );
+        setState(() => _currentState = AiActivityState.permission);
+      }
+    }
   }
 
-  void _startSimulation() {
-    // Simulates an ML detection callback every 2-3 seconds
-    _simulatedTimer = Timer.periodic(const Duration(milliseconds: 2500), (timer) {
-      if (mounted && _currentState == AiActivityState.camera) {
-        setState(() {
-          _currentReps++;
-          if (_currentReps >= _selectedTarget) {
-            timer.cancel();
-            _currentState = AiActivityState.result;
-          }
-        });
-      } else {
-        timer.cancel();
-      }
+  void _toggleCamera() async {
+    _cameraController?.stopImageStream();
+    await _cameraController?.dispose();
+    setState(() {
+      _isCameraReady = false;
+      _useFrontCamera = !_useFrontCamera;
     });
+    _onGrantPermission();
   }
 
   void _resetFlow() {
+    _cameraController?.stopImageStream();
     setState(() {
       _currentState = AiActivityState.selection;
       _selectedActivity = null;
-      _currentReps = 0;
+      _isCameraReady = false;
     });
   }
 
@@ -498,30 +636,51 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   Widget _buildCameraState({required Key key}) {
     return Container(
       key: key,
-      color: AppColors.aiCameraBg, // Dark background
+      color: AppColors.aiCameraBg, 
       child: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Simulated Camera View Finder
-          Positioned.fill(
-             child: Center(
-               child: Icon(Icons.videocam, size: 80, color: Colors.white.withValues(alpha: 0.05)),
-             ), 
-          ),
-
-          // 2. Simulated Pose Detection Overlay (Skeleton)
-          Positioned.fill(
-            child: AnimatedBuilder(
-              animation: _cameraPulseCtrl,
-              builder: (context, child) {
-                return CustomPaint(
-                  painter: _SkeletonPainter(pulse: _cameraPulseCtrl.value),
-                );
-              },
+          // 1. Live Camera Preview
+          if (_isCameraReady && _cameraController != null)
+            Positioned.fill(
+              child: RotatedBox(
+                quarterTurns: 0,
+                child: AspectRatio(
+                  aspectRatio: _cameraController!.value.aspectRatio,
+                  child: CameraPreview(_cameraController!),
+                ),
+              ),
+            )
+          else
+            Positioned.fill(
+               child: Center(
+                 child: Icon(Icons.videocam, size: 80, color: Colors.white.withValues(alpha: 0.05)),
+               ), 
             ),
-          ),
 
-          // 3. UI Header
+          // 2. Real ML Kit Pose Skeleton Overlay
+          if (_currentPoses.isNotEmpty)
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _RealPosePainter(
+                  poses: _currentPoses,
+                  imageSize: _cameraController != null && _isCameraReady
+                    ? Size(
+                        _cameraController!.value.previewSize?.height ?? 480,
+                        _cameraController!.value.previewSize?.width ?? 640,
+                      )
+                    : const Size(480, 640),
+                ),
+              ),
+            )
+          else
+            Positioned.fill(
+              child: Container(
+                color: Colors.black.withValues(alpha: 0.15),
+              ),
+            ),
+
+           // 3. UI Header
           Positioned(
             top: 20,
             left: 20,
@@ -529,35 +688,52 @@ class _AiActivityScreenState extends State<AiActivityScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                GestureDetector(
-                  onTap: () {
-                    _simulatedTimer?.cancel();
-                    setState(() => _currentState = AiActivityState.target);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.black45,
-                      shape: BoxShape.circle,
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        _cameraController?.stopImageStream();
+                        setState(() => _currentState = AiActivityState.target);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.close, color: Colors.white),
+                      ),
                     ),
-                    child: const Icon(Icons.close, color: Colors.white),
-                  ),
+                    const SizedBox(width: 12),
+                    // Camera flip button
+                    GestureDetector(
+                      onTap: _toggleCamera,
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.black45,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.cameraswitch, color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: AppColors.aiActiveDot,
+                    color: _currentPoses.isNotEmpty ? AppColors.aiActiveDot : Colors.orange,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     children: [
                       Container(
                         width: 8, height: 8,
-                        decoration: const BoxDecoration(
-                            color: Colors.white, shape: BoxShape.circle),
+                        decoration: BoxDecoration(
+                            color: _currentPoses.isNotEmpty ? Colors.white : Colors.black, shape: BoxShape.circle),
                       ),
                       const SizedBox(width: 8),
-                      const Text('AI Analyzing',
+                      Text(_currentPoses.isNotEmpty ? 'AI Tracking' : 'Searching...',
                           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
                     ],
                   ),
@@ -566,18 +742,36 @@ class _AiActivityScreenState extends State<AiActivityScreen>
             ),
           ),
 
-          // 4. Reps Counter
+          // 4. Live Reps Counter & Feedback
           Positioned(
             bottom: 60,
-            left: 60,
-            right: 60,
-            child: Column(
-              children: [
-                Text('$_currentReps / $_selectedTarget',
-                    style: TextStyle(fontSize: 84, fontWeight: FontWeight.bold, color: Colors.white, height: 1.0)),
-                Text('REPS COMPLETED',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: 2.0, color: AppColors.aiActiveDot)),
-              ],
+            left: 20,
+            right: 20,
+            child: ValueListenableBuilder<RepCounterData>(
+              valueListenable: _repService.trackingNotifier,
+              builder: (context, trackingData, _) {
+                return Column(
+                  children: [
+                    Text('${trackingData.reps} / $_selectedTarget',
+                        style: TextStyle(fontSize: 84, fontWeight: FontWeight.bold, color: Colors.white, height: 1.0)),
+                    Text('REPS COMPLETED',
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: 2.0, color: AppColors.aiActiveDot)),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: AppColors.aiActiveDot.withValues(alpha: 0.3)),
+                      ),
+                      child: Text(
+                        trackingData.feedback,
+                        style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ],
@@ -636,66 +830,83 @@ class _AiActivityScreenState extends State<AiActivityScreen>
 }
 
 // ══════════════════════════════════════════════════════════════
-// CUSTOM PAINTER (SKELETON)
+// REAL POSE PAINTER — Draws actual ML Kit landmarks
 // ══════════════════════════════════════════════════════════════
 
-/// Simulates a MediaPipe / OpenCV skeleton overlay tracking a person.
-class _SkeletonPainter extends CustomPainter {
-  final double pulse;
-  _SkeletonPainter({required this.pulse});
+class _RealPosePainter extends CustomPainter {
+  final List<Pose> poses;
+  final Size imageSize;
+
+  _RealPosePainter({required this.poses, required this.imageSize});
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Generate a simulated skeleton roughly in the center
-    final cx = size.width / 2;
-    final cy = size.height / 2 - 40;
+    if (poses.isEmpty) return;
 
     final paintLine = Paint()
-      ..color = AppColors.aiActiveDot.withValues(alpha: 0.6 + (0.4 * pulse))
-      ..strokeWidth = 4.0
+      ..color = const Color(0xFF00E676) // Bright green
+      ..strokeWidth = 3.0
       ..strokeCap = StrokeCap.round;
 
     final paintJoint = Paint()
       ..color = Colors.white
       ..style = PaintingStyle.fill;
-    
+
     final paintGlow = Paint()
-      ..color = AppColors.aiActiveDot.withValues(alpha: 0.3 * pulse)
+      ..color = const Color(0xFF00E676).withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
-    // Simulated points (simplified upper body)
-    final head = Offset(cx, cy - 80);
-    final neck = Offset(cx, cy - 30);
-    final leftShoulder = Offset(cx - 60, cy - 20);
-    final rightShoulder = Offset(cx + 60, cy - 20);
-    final leftElbow = Offset(cx - 80, cy + 40);
-    final rightElbow = Offset(cx + 80, cy + 40);
-    final leftWrist = Offset(cx - 60, cy + 100);
-    final rightWrist = Offset(cx + 60, cy + 100);
-    final spine = Offset(cx, cy + 90);
-    final leftHip = Offset(cx - 40, cy + 110);
-    final rightHip = Offset(cx + 40, cy + 110);
+    // Scale factors from image coordinates to canvas coordinates
+    final scaleX = size.width / imageSize.width;
+    final scaleY = size.height / imageSize.height;
 
-    // Draw lines
-    canvas.drawLine(head, neck, paintLine);
-    canvas.drawLine(neck, leftShoulder, paintLine);
-    canvas.drawLine(neck, rightShoulder, paintLine);
-    canvas.drawLine(leftShoulder, leftElbow, paintLine);
-    canvas.drawLine(rightShoulder, rightElbow, paintLine);
-    canvas.drawLine(leftElbow, leftWrist, paintLine);
-    canvas.drawLine(rightElbow, rightWrist, paintLine);
-    canvas.drawLine(neck, spine, paintLine);
-    canvas.drawLine(spine, leftHip, paintLine);
-    canvas.drawLine(spine, rightHip, paintLine);
+    for (final pose in poses) {
+      final landmarks = pose.landmarks;
 
-    // Draw joints
-    final points = [head, neck, leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist, spine, leftHip, rightHip];
-    for (var p in points) {
-      canvas.drawCircle(p, 12 + (4 * pulse), paintGlow); // Outer glow
-      canvas.drawCircle(p, 6, paintJoint); // Inner node
+      // Helper to get scaled offset
+      Offset? getPoint(PoseLandmarkType type) {
+        final lm = landmarks[type];
+        if (lm == null) return null;
+        return Offset(lm.x * scaleX, lm.y * scaleY);
+      }
+
+      // Draw skeletal connections
+      void drawBone(PoseLandmarkType from, PoseLandmarkType to) {
+        final a = getPoint(from);
+        final b = getPoint(to);
+        if (a != null && b != null) {
+          canvas.drawLine(a, b, paintLine);
+        }
+      }
+
+      // Upper body
+      drawBone(PoseLandmarkType.leftShoulder, PoseLandmarkType.rightShoulder);
+      drawBone(PoseLandmarkType.leftShoulder, PoseLandmarkType.leftElbow);
+      drawBone(PoseLandmarkType.leftElbow, PoseLandmarkType.leftWrist);
+      drawBone(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightElbow);
+      drawBone(PoseLandmarkType.rightElbow, PoseLandmarkType.rightWrist);
+
+      // Torso
+      drawBone(PoseLandmarkType.leftShoulder, PoseLandmarkType.leftHip);
+      drawBone(PoseLandmarkType.rightShoulder, PoseLandmarkType.rightHip);
+      drawBone(PoseLandmarkType.leftHip, PoseLandmarkType.rightHip);
+
+      // Lower body
+      drawBone(PoseLandmarkType.leftHip, PoseLandmarkType.leftKnee);
+      drawBone(PoseLandmarkType.leftKnee, PoseLandmarkType.leftAnkle);
+      drawBone(PoseLandmarkType.rightHip, PoseLandmarkType.rightKnee);
+      drawBone(PoseLandmarkType.rightKnee, PoseLandmarkType.rightAnkle);
+
+      // Draw joint circles for all visible landmarks
+      for (final entry in landmarks.entries) {
+        final point = Offset(entry.value.x * scaleX, entry.value.y * scaleY);
+        canvas.drawCircle(point, 10, paintGlow); // Outer glow
+        canvas.drawCircle(point, 5, paintJoint); // Inner dot
+      }
     }
   }
 
   @override
-  bool shouldRepaint(covariant _SkeletonPainter old) => old.pulse != pulse;
+  bool shouldRepaint(covariant _RealPosePainter old) => true;
 }
+

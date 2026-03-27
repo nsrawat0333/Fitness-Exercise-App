@@ -1,0 +1,23 @@
+﻿
+  error - Target of URI doesn't exist: 
+'package:provider/provider.dart' - lib\
+screens\diet\diet_planner_screen.dart:3
+:8 - uri_does_not_exist
+  error - The method 
+'ChangeNotifierProvider' isn't defined 
+for the type 'DietPlannerScreen' - lib\
+screens\diet\diet_planner_screen.dart:1
+5:12 - undefined_method
+  error - The method 'watch' isn't 
+defined for the type 'BuildContext' - l
+ib\screens\diet\diet_planner_screen.dar
+t:27:31 - undefined_method
+  error - Invalid constant value - lib\
+screens\diet\diet_planner_screen.dart:2
+62:62 - invalid_constant
+  error - The getter 'white34' isn't 
+defined for the type 'Colors' - lib\scr
+eens\diet\diet_planner_screen.dart:262:
+69 - undefined_getter
+
+

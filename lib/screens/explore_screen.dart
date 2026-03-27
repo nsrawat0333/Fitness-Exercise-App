@@ -4,6 +4,8 @@ import '../constants/app_colors.dart';
 import 'gym/gym_welcome_screen.dart';
 import 'yoga/onboarding/yoga_welcome_screen.dart';
 import 'body_scan/body_scan_screen.dart';
+import 'settings_screen.dart';
+import 'profile_screen.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -22,7 +24,15 @@ class ExploreScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                 child: Row(
                   children: [
-                    const Icon(Icons.menu, color: AppColors.textPrimary, size: 24),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                        );
+                      },
+                      child: const Icon(Icons.settings, color: AppColors.textPrimary, size: 28),
+                    ),
                     const Spacer(),
                     Text(
                       'Explore',
@@ -34,15 +44,23 @@ class ExploreScreen extends StatelessWidget {
                     ),
                     const Spacer(),
                     // Profile avatar
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: const Color(0xFFE0D5C8),
-                        border: Border.all(color: AppColors.avatarBorder, width: 2),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                        );
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFE0D5C8),
+                          border: Border.all(color: AppColors.avatarBorder, width: 2),
+                        ),
+                        child: const Icon(Icons.person, color: AppColors.textSecondary, size: 20),
                       ),
-                      child: const Icon(Icons.person, color: AppColors.textSecondary, size: 18),
                     ),
                   ],
                 ),

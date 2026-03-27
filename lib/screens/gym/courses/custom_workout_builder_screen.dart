@@ -28,7 +28,12 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
   @override
   void initState() {
     super.initState();
-    _allExercises = GymChallengeData.getAllExercises();
+    try {
+      _allExercises = GymChallengeData.getAllExercises();
+    } catch (e) {
+      debugPrint('CustomWorkoutBuilder: Error loading exercises: $e');
+      _allExercises = [];
+    }
     _filteredExercises = _allExercises;
   }
 
@@ -197,7 +202,33 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          final shouldPop = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Leave Builder?', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
+              content: const Text('Are you sure you want to go back? Your custom plan will not be saved.'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('CANCEL'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  child: const Text('LEAVE', style: TextStyle(color: Colors.red)),
+                ),
+              ],
+            ),
+          );
+          if (shouldPop == true) {
+            if (context.mounted) Navigator.of(context).pop();
+          }
+        }
+      },
+      child: Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -325,6 +356,7 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
           // Exercise list
           Expanded(
             child: ListView.builder(
+              physics: const ClampingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               itemCount: _filteredExercises.length,
               itemBuilder: (context, index) {
@@ -379,7 +411,7 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
                               : null,
                         ),
                         const SizedBox(width: 12),
-                        // Image/Animation
+                        // Image/Animation (Safe rendering with Fallback)
                         Container(
                           width: 52,
                           height: 52,
@@ -387,18 +419,30 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
                             color: const Color(0xFFF5F7FA),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: ex.animationLottie != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Lottie.asset(ex.animationLottie!, fit: BoxFit.cover),
-                                )
-                              : ex.imageAsset != null && ex.imageAsset!.isNotEmpty
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.asset(ex.imageAsset!, fit: BoxFit.cover,
-                                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 24)),
-                                    )
-                                  : const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 24),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: ex.animationLottie != null
+                                ? Lottie.asset(
+                                    ex.animationLottie!,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Image.asset(
+                                      GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 24),
+                                    ),
+                                  )
+                                : Image.asset(
+                                    ex.imageAsset != null && ex.imageAsset!.isNotEmpty
+                                        ? ex.imageAsset!
+                                        : (GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) => Image.asset(
+                                      GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                                      fit: BoxFit.cover,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 24),
+                                    ),
+                                  ),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         // Name + category
@@ -488,6 +532,7 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
               ),
             )
           : null,
+    ),
     );
   }
 }

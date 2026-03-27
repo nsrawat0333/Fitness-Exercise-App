@@ -66,7 +66,7 @@ class _HomeWorkoutProgramScreenState extends State<HomeWorkoutProgramScreen> {
         program.focusArea[0].toUpperCase() + program.focusArea.substring(1);
 
     return SliverAppBar(
-      expandedHeight: 220,
+      expandedHeight: 250,
       pinned: true,
       backgroundColor: const Color(0xFF3B82F6),
       elevation: 0,

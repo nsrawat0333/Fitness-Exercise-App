@@ -1,0 +1,71 @@
+﻿Running Gradle task 'assembleDebug'...                          
+flutter : lib/services/notification_ser
+vice.dart:26:7: Error: No named 
+parameter with the name 
+'initializationSettings'.
+At line:1 char:1
++ flutter build apk --debug > 
+build_error.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~
+    + CategoryInfo          : NotSpeci 
+   fied: (lib/services/no...ationSett  
+  ings'.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCo 
+   mmandError
+ 
+      initializationSettings: 
+initializationSettings,
+      ^^^^^^^^^^^^^^^^^^^^^^
+lib/services/notification_service.dart:
+92:11: Error: The getter 'UILocalNotifi
+cationDateInterpretation' isn't 
+defined for the type 
+'NotificationService'.
+ - 'NotificationService' is from 'packa
+ge:fitness_app/services/notification_se
+rvice.dart' ('lib/services/notification
+_service.dart').
+Try correcting the name to the name of 
+an existing getter, or defining a 
+getter or field named 'UILocalNotificat
+ionDateInterpretation'.
+          UILocalNotificationDateInterp
+retation.absoluteTime,
+          
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+lib/services/notification_service.dart:
+91:7: Error: No named parameter with 
+the name 'uiLocalNotificationDateInterp
+retation'.
+      
+uiLocalNotificationDateInterpretation:
+      
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Target kernel_snapshot_program failed: 
+Exception
+
+
+FAILURE: Build failed with an 
+exception.
+
+* What went wrong:
+Execution failed for task 
+':app:compileFlutterBuildDebug'.
+> Process 'command 'C:\flutter\src\flut
+ter\bin\flutter.bat'' finished with 
+non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get 
+the stack trace.
+> Run with --info or --debug option to 
+get more log output.
+> Run with --scan to get full insights.
+> Get more help at 
+https://help.gradle.org.
+
+BUILD FAILED in 19s
+Running Gradle task 'assembleDebug'...                             19.6s
+Gradle task assembleDebug failed with 
+exit code 1

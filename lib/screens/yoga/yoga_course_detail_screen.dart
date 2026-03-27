@@ -449,7 +449,7 @@ class YogaCourseDetailScreen extends StatelessWidget {
               performDuration: p.durationSeconds,
               previewDuration: 20, // Increased preparation time for yoga poses
               instructions: p.steps,
-              imageAsset: p.image,
+              imageAsset: p.image.isNotEmpty ? p.image : GymChallengeData.getFallbackImage(p.name),
               animationLottie: p.animation.isNotEmpty ? p.animation : null,
             );
           }).toList();

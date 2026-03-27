@@ -5,7 +5,14 @@ import '../constants/app_text_styles.dart';
 /// Custom app bar widget matching the FitFi design.
 /// Shows leaf icon + "FitFi" branding on left, bell + avatar on right.
 class FitfiAppBar extends StatelessWidget {
-  const FitfiAppBar({super.key});
+  final VoidCallback? onProfileTap;
+  final VoidCallback? onNotificationTap;
+
+  const FitfiAppBar({
+    super.key,
+    this.onProfileTap,
+    this.onNotificationTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,21 +37,26 @@ class FitfiAppBar extends StatelessWidget {
           // ── Right: Bell + Avatar ──
           Row(
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: const BoxDecoration(
-                  color: AppColors.notificationBg,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.notifications_outlined,
-                  color: AppColors.textOnDark,
-                  size: 20,
+              GestureDetector(
+                onTap: onNotificationTap,
+                child: Container(
+                  width: 42,
+                  height: 42,
+                  decoration: const BoxDecoration(
+                    color: AppColors.notificationBg,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.notifications_outlined,
+                    color: AppColors.textOnDark,
+                    size: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 10),
-              Container(
+              GestureDetector(
+                onTap: onProfileTap,
+                child: Container(
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
@@ -60,6 +72,7 @@ class FitfiAppBar extends StatelessWidget {
                   Icons.person,
                   color: Colors.white,
                   size: 22,
+                ),
                 ),
               ),
             ],

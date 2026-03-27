@@ -505,8 +505,23 @@ class _GymWorkoutTimerScreenState extends State<GymWorkoutTimerScreen> with Sing
                             ? Lottie.asset(
                                 activeExercise.animationLottie!,
                                 fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => Image.asset(
+                                  GymChallengeData.getFallbackImage(activeExercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 120),
+                                ),
                               )
-                            : const SizedBox(),
+                            : (!isRest)
+                                ? Image.asset(
+                                    activeExercise.imageAsset ?? GymChallengeData.getFallbackImage(activeExercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) => Image.asset(
+                                      GymChallengeData.getFallbackImage(activeExercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 120),
+                                    ),
+                                  )
+                                : const SizedBox(),
                   ),
 
                   // Timer overlay at bottom center

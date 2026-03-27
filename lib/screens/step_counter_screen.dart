@@ -4,6 +4,8 @@ import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 import '../utils/app_utils.dart';
 
+import '../services/step_counter_service.dart';
+
 /// Step Counter Screen – exact replica of the Stitch design.
 class StepCounterScreen extends StatefulWidget {
   const StepCounterScreen({super.key});
@@ -19,8 +21,9 @@ class _StepCounterScreenState extends State<StepCounterScreen>
   bool _syncVisible = true;
   int _avgTabIndex = 0; // 0 = Weekly, 1 = Monthly
 
+  final StepCounterService _stepService = StepCounterService();
+
   // Mock data matching screenshot
-  static const int _stepsToday = 5240;
   static const int _goal = 10000;
   static const int _dailyAvg = 8420;
   static const int _monthlyGoalCurrent = 128400;
@@ -125,38 +128,43 @@ class _StepCounterScreenState extends State<StepCounterScreen>
 
   // ── 2. Circular Progress ───────────────────────────────
   Widget _buildCircularProgress() {
-    return AnimatedBuilder(
-      animation: _progressAnim,
-      builder: (context, _) {
-        final double animatedProgress = (_stepsToday / _goal) * _progressAnim.value;
-        final int animatedSteps = (_stepsToday * _progressAnim.value).round();
-        return Center(
-          child: Column(
-            children: [
-              Text('STEPS TODAY',
-                  style: AppTextStyles.cardLabel.copyWith(letterSpacing: 2, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: 220,
-                height: 220,
-                child: CustomPaint(
-                  painter: _StepArcPainter(progress: animatedProgress),
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(AppUtils.formatNumber(animatedSteps),
-                            style: AppTextStyles.stepScreenCount),
-                        const SizedBox(height: 4),
-                        Text('Goal: ${AppUtils.formatNumber(_goal)}',
-                            style: AppTextStyles.bodySmall),
-                      ],
+    return ValueListenableBuilder<StepData>(
+      valueListenable: _stepService.stepDataNotifier,
+      builder: (context, stepData, _) {
+        return AnimatedBuilder(
+          animation: _progressAnim,
+          builder: (context, _) {
+            final double animatedProgress = (stepData.steps / _goal) * _progressAnim.value;
+            final int animatedSteps = (stepData.steps * _progressAnim.value).round();
+            return Center(
+              child: Column(
+                children: [
+                  Text('STEPS TODAY',
+                      style: AppTextStyles.cardLabel.copyWith(letterSpacing: 2, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: 220,
+                    height: 220,
+                    child: CustomPaint(
+                      painter: _StepArcPainter(progress: animatedProgress),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(AppUtils.formatNumber(animatedSteps),
+                                style: AppTextStyles.stepScreenCount),
+                            const SizedBox(height: 4),
+                            Text('Goal: ${AppUtils.formatNumber(_goal)}',
+                                style: AppTextStyles.bodySmall),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );

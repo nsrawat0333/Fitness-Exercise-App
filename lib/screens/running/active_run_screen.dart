@@ -270,7 +270,11 @@ class _ActiveRunScreenState extends State<ActiveRunScreen>
     // Award points
     int earnedPoints = (record.distanceKm * 100).toInt();
     if (earnedPoints > 0) {
-      final success = await PointsManager().addWorkoutPoints(earnedPoints);
+      final success = await PointsManager().addWorkoutPoints(
+        earnedPoints,
+        minutes: _elapsedSeconds ~/ 60,
+        calories: caloriesBurned.toInt(),
+      );
       if (success && mounted) {
         GamificationOverlay.showPointsEarned(context, earnedPoints);
       }
@@ -582,7 +586,7 @@ class _ActiveRunScreenState extends State<ActiveRunScreen>
                     _buildStatItem(Icons.speed_outlined, '$_avgPace /km', 'Pace'),
                     _buildStatDivider(),
                     _buildStatItem(Icons.local_fire_department,
-                        '${(_totalDistanceMeters / 1000.0 * 60).toStringAsFixed(0)}', 'Cal'),
+                        (_totalDistanceMeters / 1000.0 * 60).toStringAsFixed(0), 'Cal'),
                     _buildStatDivider(),
                     _buildStatItem(Icons.flag,
                         '${(_progress * 100).toStringAsFixed(0)}%', 'Goal'),

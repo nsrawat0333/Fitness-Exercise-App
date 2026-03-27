@@ -13,12 +13,10 @@ class YogaWelcomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F2EC),
       body: SafeArea(
-        child: Padding(
+        child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 16),
+          children: [
+            const SizedBox(height: 16),
 
               // ── FitFi Logo ──
               Row(
@@ -39,8 +37,8 @@ class YogaWelcomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
 
               // ── Large Illustration Card ──
-              Expanded(
-                flex: 5,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
                 child: Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -88,39 +86,32 @@ class YogaWelcomeScreen extends StatelessWidget {
               const SizedBox(height: 36),
 
               // ── Welcome Text ──
-              Expanded(
-                flex: 3,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              RichText(
+                text: TextSpan(
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: 'Namaste,\nwelcome to\nyour ',
-                            style: GoogleFonts.outfit(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.textPrimary,
-                              height: 1.15,
-                            ),
-                          ),
-                          TextSpan(
-                            text: 'yoga\njourney',
-                            style: GoogleFonts.outfit(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w800,
-                              fontStyle: FontStyle.italic,
-                              color: AppColors.primary,
-                              height: 1.15,
-                            ),
-                          ),
-                        ],
+                    TextSpan(
+                      text: 'Namaste,\nwelcome to\nyour ',
+                      style: GoogleFonts.outfit(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                        height: 1.15,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'yoga\njourney',
+                      style: GoogleFonts.outfit(
+                        fontSize: 36,
+                        fontWeight: FontWeight.w800,
+                        fontStyle: FontStyle.italic,
+                        color: AppColors.primary,
+                        height: 1.15,
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
 
               // ── AI Diet Planner Entry ──
               GestureDetector(
@@ -285,7 +276,6 @@ class YogaWelcomeScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

@@ -504,7 +504,7 @@ class TherapyHomeScreen extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 14),
+        separatorBuilder: (_, _) => const SizedBox(width: 14),
         itemBuilder: (context, index) {
           final cat = categories[index];
           return _HorizontalCourseCard(
@@ -588,7 +588,7 @@ class _HorizontalCourseCard extends StatelessWidget {
                 Image.asset(
                   category.imagePath!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _buildGradientBg(),
+                  errorBuilder: (_, _, _) => _buildGradientBg(),
                 )
               else
                 _buildGradientBg(),
@@ -721,7 +721,7 @@ class _TherapyCategoryCard extends StatelessWidget {
                 Image.asset(
                   category.imagePath!,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => _buildGradientBg(),
+                  errorBuilder: (_, _, _) => _buildGradientBg(),
                 )
               else
                 _buildGradientBg(),
