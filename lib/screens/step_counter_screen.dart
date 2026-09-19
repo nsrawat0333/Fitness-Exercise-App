@@ -23,21 +23,7 @@ class _StepCounterScreenState extends State<StepCounterScreen>
 
   final StepCounterService _stepService = StepCounterService();
 
-  // Mock data matching screenshot
-  static const int _goal = 10000;
-  static const int _dailyAvg = 8420;
-  static const int _monthlyGoalCurrent = 128400;
-  static const int _monthlyGoalTarget = 200000;
-
-  // Weekly bar chart heights (fraction 0‑1)
-  static const List<double> _weeklyBars = [0.35, 0.45, 0.55, 0.40, 0.95, 0.30, 0.50];
-  static const List<String> _weekDays = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-
-  // Recent history
-  static const List<_HistoryItem> _history = [
-    _HistoryItem(date: 'Oct 24, 2023', label: 'GOAL REACHED', steps: 10240),
-    _HistoryItem(date: 'Oct 23, 2023', label: 'ACTIVE', steps: 8900),
-  ];
+  int get _goal => StepCounterService.dailyGoal;
 
   @override
   void initState() {
@@ -110,7 +96,7 @@ class _StepCounterScreenState extends State<StepCounterScreen>
         const SizedBox(width: 12),
         Text('Step Counter', style: AppTextStyles.heading3),
         const Spacer(),
-        Text('READY, ALEX', style: AppTextStyles.greeting),
+        Text('READY, USER', style: AppTextStyles.greeting),
         const SizedBox(width: 10),
         Container(
           width: 36,
@@ -172,115 +158,150 @@ class _StepCounterScreenState extends State<StepCounterScreen>
 
   // ── 3. Motivation Banner ───────────────────────────────
   Widget _buildMotivationBanner() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.stepGreen.withValues(alpha: 0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+    return ValueListenableBuilder<StepData>(
+      valueListenable: _stepService.stepDataNotifier,
+      builder: (context, stepData, _) {
+        final remaining = (_goal - stepData.steps).clamp(0, _goal);
+        final isGoalReached = stepData.steps >= _goal;
+        final message = isGoalReached
+            ? 'Goal reached today. Excellent consistency!'
+            : remaining == _goal
+                ? 'Let\'s start fresh today. Every step counts.'
+                : '$remaining steps left to hit today\'s goal.';
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.stepGreen.withValues(alpha: 0.08),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.stepGreenLight,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Center(
-              child: Text('RK', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.primary)),
-            ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.stepGreenLight,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Center(
+                  child: Icon(Icons.directions_walk, color: AppColors.primary, size: 20),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  message,
+                  style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500),
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text("You're halfway there, keep going!",
-                style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w500)),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   // ── 4. Daily Average Card ──────────────────────────────
   Widget _buildDailyAverageCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('DAILY AVERAGE', style: AppTextStyles.cardLabel),
-          const SizedBox(height: 6),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(AppUtils.formatNumber(_dailyAvg),
-                        style: AppTextStyles.stepScreenStatValue),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.trending_up, size: 16, color: AppColors.stepGreen),
-                        const SizedBox(width: 4),
-                        Text('+12% from last week',
-                            style: AppTextStyles.bodySmall.copyWith(color: AppColors.stepGreen)),
-                      ],
-                    ),
-                  ],
-                ),
+    return ValueListenableBuilder<StepStats>(
+      valueListenable: _stepService.stepStatsNotifier,
+      builder: (context, stats, _) {
+        final averageValue = _avgTabIndex == 0 ? stats.weeklyAverage : stats.monthlyAverage;
+        final trendText = _formatTrend(stats.weeklyTrendPercent);
+        final trendUp = stats.weeklyTrendPercent >= 0;
+        final bars = _buildWeeklyBars(stats.weeklySteps);
+
+        return Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
               ),
-              // Mini bar chart
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('DAILY AVERAGE', style: AppTextStyles.cardLabel),
+              const SizedBox(height: 6),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: List.generate(7, (i) {
-                  return Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: AnimatedContainer(
-                      duration: Duration(milliseconds: 600 + i * 80),
-                      curve: Curves.easeOutCubic,
-                      width: 8,
-                      height: 40 * _weeklyBars[i],
-                      decoration: BoxDecoration(
-                        color: i == 4 ? AppColors.stepGreen : AppColors.stepGreen.withValues(alpha: 0.25),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          AppUtils.formatNumber(averageValue),
+                          style: AppTextStyles.stepScreenStatValue,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              trendUp ? Icons.trending_up : Icons.trending_down,
+                              size: 16,
+                              color: trendUp ? AppColors.stepGreen : Colors.orange,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              trendText,
+                              style: AppTextStyles.bodySmall.copyWith(
+                                color: trendUp ? AppColors.stepGreen : Colors.orange,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
-                }),
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: List.generate(7, (i) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 4),
+                        child: AnimatedContainer(
+                          duration: Duration(milliseconds: 600 + i * 80),
+                          curve: Curves.easeOutCubic,
+                          width: 8,
+                          height: 40 * bars[i],
+                          decoration: BoxDecoration(
+                            color: i == 6
+                                ? AppColors.stepGreen
+                                : AppColors.stepGreen.withValues(alpha: 0.25),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  _tabButton('WEEKLY', 0),
+                  const SizedBox(width: 12),
+                  _tabButton('MONTHLY', 1),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          // WEEKLY / MONTHLY toggle
-          Row(
-            children: [
-              _tabButton('WEEKLY', 0),
-              const SizedBox(width: 12),
-              _tabButton('MONTHLY', 1),
-            ],
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -344,173 +365,240 @@ class _StepCounterScreenState extends State<StepCounterScreen>
 
   // ── 6. Monthly Goal ────────────────────────────────────
   Widget _buildMonthlyGoal() {
-    const double progress = _monthlyGoalCurrent / _monthlyGoalTarget;
-    const int percent = 64;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return ValueListenableBuilder<StepStats>(
+      valueListenable: _stepService.stepStatsNotifier,
+      builder: (context, stats, _) {
+        final progress =
+            stats.monthlyTarget == 0 ? 0.0 : (stats.monthlyCurrent / stats.monthlyTarget).clamp(0.0, 1.0);
+        final percent = (progress * 100).round();
+
+        return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Monthly Goal',
-                      style: AppTextStyles.stepScreenSectionTitle.copyWith(fontStyle: FontStyle.italic)),
-                  const SizedBox(height: 4),
-                  Text('Restorative movement\ntarget', style: AppTextStyles.bodySmall),
-                ],
-              ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Monthly Goal',
+                        style: AppTextStyles.stepScreenSectionTitle.copyWith(fontStyle: FontStyle.italic),
+                      ),
+                      const SizedBox(height: 4),
+                      Text('Real-time progress from your tracked steps', style: AppTextStyles.bodySmall),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            GestureDetector(
-              onTap: () {},
-              child: Column(
-                children: [
-                  Icon(Icons.edit_outlined, size: 18, color: AppColors.textSecondary),
-                  const SizedBox(height: 2),
-                  Text('Update\nGoal',
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.bodySmall.copyWith(fontSize: 11)),
-                ],
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    '${AppUtils.formatNumber(stats.monthlyCurrent)} / ${AppUtils.formatNumber(stats.monthlyTarget)} steps',
+                    style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ),
+                Text(
+                  '$percent%',
+                  style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w700, color: AppColors.stepGreen),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 8,
+                backgroundColor: AppColors.stepGreenLight,
+                valueColor: const AlwaysStoppedAnimation(AppColors.stepGreen),
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                '${AppUtils.formatNumber(_monthlyGoalCurrent)} / ${AppUtils.formatNumber(_monthlyGoalTarget)} steps',
-                style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
-              ),
-            ),
-            Text('$percent%',
-                style: AppTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w700, color: AppColors.stepGreen)),
-          ],
-        ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 8,
-            backgroundColor: AppColors.stepGreenLight,
-            valueColor: const AlwaysStoppedAnimation(AppColors.stepGreen),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 
   // ── 7. Step Trends ─────────────────────────────────────
   Widget _buildStepTrends() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Step Trends', style: AppTextStyles.stepScreenSectionTitle),
-        const SizedBox(height: 16),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 160,
-                child: CustomPaint(
-                  size: const Size(double.infinity, 160),
-                  painter: _TrendChartPainter(bars: _weeklyBars),
-                ),
+    return ValueListenableBuilder<StepStats>(
+      valueListenable: _stepService.stepStatsNotifier,
+      builder: (context, stats, _) {
+        final bars = _buildWeeklyBars(stats.weeklySteps);
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Step Trends', style: AppTextStyles.stepScreenSectionTitle),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
               ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: _weekDays
-                    .map((d) => Text(d,
-                        style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600)))
-                    .toList(),
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 160,
+                    child: CustomPaint(
+                      size: const Size(double.infinity, 160),
+                      painter: _TrendChartPainter(bars: bars),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: stats.weeklyLabels
+                        .map(
+                          (d) => Text(
+                            d,
+                            style: AppTextStyles.bodySmall.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ],
+            ),
+          ],
+        );
+      },
     );
   }
 
   // ── 8. Recent History ──────────────────────────────────
   Widget _buildRecentHistory() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return ValueListenableBuilder<StepStats>(
+      valueListenable: _stepService.stepStatsNotifier,
+      builder: (context, stats, _) {
+        final entries = stats.history;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Recent History', style: AppTextStyles.stepScreenSectionTitle),
-            const Spacer(),
-            Text('View All',
-                style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.stepGreen, fontWeight: FontWeight.w600)),
-          ],
-        ),
-        const SizedBox(height: 16),
-        ..._history.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
+            Row(
+              children: [
+                Text('Recent History', style: AppTextStyles.stepScreenSectionTitle),
+                const Spacer(),
+                Text(
+                  '${entries.length} days',
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.stepGreen, fontWeight: FontWeight.w600),
                 ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.stepGreenLight,
-                        borderRadius: BorderRadius.circular(12),
+              ],
+            ),
+            const SizedBox(height: 16),
+            ...entries.map((item) {
+              final label = item.goalReached
+                  ? 'GOAL REACHED'
+                  : item.steps == 0
+                      ? 'STARTED'
+                      : 'ACTIVE';
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 44,
+                        height: 44,
+                        decoration: BoxDecoration(
+                          color: AppColors.stepGreenLight,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Icon(
+                          item.goalReached ? Icons.emoji_events_outlined : Icons.directions_walk,
+                          color: AppColors.primary,
+                          size: 22,
+                        ),
                       ),
-                      child: Icon(
-                        item.label == 'GOAL REACHED' ? Icons.emoji_events_outlined : Icons.directions_walk,
-                        color: AppColors.primary,
-                        size: 22,
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _formatHistoryDate(item.date),
+                              style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              label,
+                              style: AppTextStyles.bodySmall.copyWith(fontSize: 10, letterSpacing: 1),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(item.date,
-                              style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600)),
-                          const SizedBox(height: 2),
-                          Text(item.label, style: AppTextStyles.bodySmall.copyWith(fontSize: 10, letterSpacing: 1)),
+                          Text(
+                            AppUtils.formatNumber(item.steps),
+                            style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w700, fontSize: 18),
+                          ),
+                          Text(
+                            item.goalReached ? 'MET' : (item.steps == 0 ? 'START' : 'ACTIVE'),
+                            style: AppTextStyles.bodySmall.copyWith(
+                              fontSize: 10,
+                              letterSpacing: 1,
+                              color: AppColors.stepGreen,
+                            ),
+                          ),
                         ],
                       ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(AppUtils.formatNumber(item.steps),
-                            style: AppTextStyles.bodyMedium.copyWith(
-                                fontWeight: FontWeight.w700, fontSize: 18)),
-                        Text(item.label == 'GOAL REACHED' ? 'MET' : 'ACTIVE',
-                            style: AppTextStyles.bodySmall.copyWith(
-                                fontSize: 10,
-                                letterSpacing: 1,
-                                color: AppColors.stepGreen)),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            )),
-      ],
+              );
+            }),
+          ],
+        );
+      },
     );
+  }
+
+  List<double> _buildWeeklyBars(List<int> weeklySteps) {
+    if (weeklySteps.isEmpty) return const [0, 0, 0, 0, 0, 0, 0];
+    final maxStep = weeklySteps.reduce(max);
+    final baseline = max(maxStep, _goal);
+    if (baseline == 0) return List<double>.filled(weeklySteps.length, 0);
+    return weeklySteps.map((value) => (value / baseline).clamp(0.0, 1.0)).toList();
+  }
+
+  String _formatTrend(double trendPercent) {
+    if (trendPercent == 0) return 'No change from last week';
+    final absValue = trendPercent.abs();
+    final formatted = absValue >= 10 ? absValue.toStringAsFixed(0) : absValue.toStringAsFixed(1);
+    final sign = trendPercent > 0 ? '+' : '-';
+    return '$sign$formatted% from last week';
+  }
+
+  String _formatHistoryDate(DateTime date) {
+    final monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return '${monthNames[date.month - 1]} ${date.day}, ${date.year}';
   }
 }
 
@@ -573,7 +661,6 @@ class _TrendChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final int count = bars.length;
     final double barWidth = 16;
-    final double spacing = (size.width - count * barWidth) / (count + 1);
     final double maxBarH = size.height - 20;
 
     // Y-axis labels
@@ -648,11 +735,3 @@ class _TrendChartPainter extends CustomPainter {
   bool shouldRepaint(covariant _TrendChartPainter old) => false;
 }
 
-// ── History item model ───────────────────────────────────
-class _HistoryItem {
-  final String date;
-  final String label;
-  final int steps;
-
-  const _HistoryItem({required this.date, required this.label, required this.steps});
-}

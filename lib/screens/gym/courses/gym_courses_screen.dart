@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import '../../../data/gym_user_data.dart';
 import '../../../data/gym_challenge_data.dart';
+import '../../../data/exercise_assets.dart';
+import '../../../services/xp_service.dart';
 import 'gym_course_detail_screen.dart';
 import 'gym_challenge_detail_screen.dart';
 import 'gym_daily_workout_screen.dart';
@@ -24,6 +25,8 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
   final TextEditingController _searchController = TextEditingController();
   List<GymExercise> _searchResults = [];
   bool _isSearching = false;
+  final _xpService = XpService();
+  XpProgress? _gymProgress;
 
   final List<String> _bodyFocusTabs = [
     'Full Body', 'Chest', 'Back', 'Shoulders', 'Biceps', 'Triceps', 'Abs', 'Legs', 'Glutes',
@@ -39,6 +42,15 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
     } else {
       _selectedBodyFocus = 'Full Body';
     }
+    _loadGymProgress();
+  }
+
+  Future<void> _loadGymProgress() async {
+    final progress = await _xpService.getProgress(XpDomain.gym);
+    if (!mounted) return;
+    setState(() {
+      _gymProgress = progress;
+    });
   }
 
   @override
@@ -70,6 +82,10 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
           children: [
             const SizedBox(height: 16),
             _buildSearchBar(),
+            if (_gymProgress != null) ...[
+              const SizedBox(height: 12),
+              _buildGymXpCard(),
+            ],
             if (_isSearching) ...[
               const SizedBox(height: 8),
               _buildSearchResults(),
@@ -90,6 +106,56 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
         ),
       ),
       // No bottomNavigationBar — removed as requested
+    );
+  }
+
+  Widget _buildGymXpCard() {
+    final progress = _gymProgress!;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF6F9FF),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFF3B82F6).withValues(alpha: 0.25)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Text(
+                  'Gym Level ${progress.level}',
+                  style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w800, color: Colors.black),
+                ),
+                const Spacer(),
+                Text(
+                  progress.rank,
+                  style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFF3B82F6)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(999),
+              child: LinearProgressIndicator(
+                minHeight: 8,
+                value: progress.levelProgress,
+                backgroundColor: const Color(0xFFDCE7FF),
+                color: const Color(0xFF3B82F6),
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              progress.isMaxLevel
+                  ? '${progress.xp} XP • Max level reached'
+                  : '${progress.xp} XP • ${progress.xpToNextLevel} XP to next level',
+              style: GoogleFonts.inter(fontSize: 12, color: const Color(0xFF5B6473), fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -217,27 +283,11 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: exercise.animationLottie != null
-                  ? Lottie.asset(
-                      exercise.animationLottie!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Image.asset(
-                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
-                      ),
-                    )
-                  : Image.asset(
-                      exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty
-                          ? exercise.imageAsset!
-                          : (GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Image.asset(
-                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
-                      ),
-                    ),
+              child: ExerciseMediaWidget(
+                assetPath: exercise.animationLottie ?? exercise.imageAsset ?? GymChallengeData.getFallbackImage(exercise.name),
+                fit: BoxFit.cover,
+                isThumbnail: true,
+              ),
             ),
           ),
           const SizedBox(width: 14),
@@ -720,7 +770,6 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
 
           if (levelExercises.isEmpty) return const SizedBox.shrink();
 
-          int days = level == 'Beginner' ? 7 : (level == 'Intermediate' ? 14 : 30);
           int duration = level == 'Beginner' ? 15 : (level == 'Intermediate' ? 24 : 30);
           int levelIndex = level == 'Beginner' ? 1 : (level == 'Intermediate' ? 2 : 3);
 
@@ -768,27 +817,11 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
                     SizedBox(
                       width: 60,
                       height: 60,
-                      child: ex.animationLottie != null
-                          ? Lottie.asset(
-                              ex.animationLottie!,
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => Image.asset(
-                                GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
-                              ),
-                            )
-                          : Image.asset(
-                              ex.imageAsset != null && ex.imageAsset!.isNotEmpty
-                                  ? ex.imageAsset!
-                                  : (GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) => Image.asset(
-                                GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                                fit: BoxFit.contain,
-                                errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 28),
-                              ),
-                            ),
+                      child: ExerciseMediaWidget(
+                        assetPath: ex.animationLottie ?? ex.imageAsset ?? GymChallengeData.getFallbackImage(ex.name),
+                        fit: BoxFit.contain,
+                        isThumbnail: true,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Padding(
@@ -849,26 +882,12 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: exerciseList != null && exerciseList.isNotEmpty
-                    ? (exerciseList.first.animationLottie != null
-                        ? Lottie.asset(
-                            exerciseList.first.animationLottie!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Image.asset(
-                              GymChallengeData.getFallbackImage(exerciseList.first.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 32),
-                            ),
-                          )
-                        : Image.asset(
-                            exerciseList.first.imageAsset ?? (GymChallengeData.getFallbackImage(exerciseList.first.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Image.asset(
-                              GymChallengeData.getFallbackImage(exerciseList.first.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 32),
-                            ),
-                          ))
+                child: (exerciseList != null && exerciseList.isNotEmpty)
+                    ? ExerciseMediaWidget(
+                        assetPath: exerciseList.first.animationLottie ?? exerciseList.first.imageAsset ?? GymChallengeData.getFallbackImage(exerciseList.first.name),
+                        fit: BoxFit.cover,
+                        isThumbnail: true,
+                      )
                     : const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 32),
               ),
             ),
@@ -1051,7 +1070,6 @@ class _GymCoursesScreenState extends State<GymCoursesScreen> {
                           durationSeconds: e['duration'] ?? 30,
                           imageAsset: e['image'],
                           animationLottie: e['lottie'],
-                          videoAsset: e['video'],
                         );
                       }).toList();
                       Navigator.push(context, MaterialPageRoute(

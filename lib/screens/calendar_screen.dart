@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 
@@ -26,38 +25,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   Future<void> _fetchWorkoutHistory() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user == null) return;
-
-    final docSnap = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-    
-    if (docSnap.exists) {
-      if (mounted) {
-        setState(() {
-          _currentStreak = docSnap.data()?['currentStreak'] ?? 0;
-        });
-      }
-      
-      final historySnap = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .collection('point_history')
-          .get();
-
-      Set<DateTime> days = {};
-      for (var doc in historySnap.docs) {
-        final data = doc.data();
-        if (data['timestamp'] != null) {
-          final ts = (data['timestamp'] as Timestamp).toDate();
-          days.add(DateTime(ts.year, ts.month, ts.day)); // Normalize to just the date
-        }
-      }
-      
-      if (mounted) {
-         setState(() {
-           _workoutDays = days;
-         });
-      }
+    // Local / Offline mode dummy implementation
+    if (mounted) {
+      setState(() {
+        _currentStreak = 0;
+        _workoutDays = {};
+      });
     }
   }
 

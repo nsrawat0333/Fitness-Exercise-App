@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import '../../../data/gym_challenge_data.dart';
 import '../../../data/gym_user_data.dart';
+import '../../../data/exercise_assets.dart';
 import 'gym_custom_plan_generation_screen.dart';
 
 class CustomWorkoutBuilderScreen extends StatefulWidget {
@@ -175,14 +175,12 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
         'duration': duration,
         'image': ex.imageAsset,
         'lottie': ex.animationLottie,
-        'video': ex.videoAsset,
       });
       selectedExercises.add(GymExercise(
         name: ex.name,
         durationSeconds: duration,
         imageAsset: ex.imageAsset,
         animationLottie: ex.animationLottie,
-        videoAsset: ex.videoAsset,
         instructions: ex.instructions,
       ));
     }
@@ -421,27 +419,11 @@ class _CustomWorkoutBuilderScreenState extends State<CustomWorkoutBuilderScreen>
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: ex.animationLottie != null
-                                ? Lottie.asset(
-                                    ex.animationLottie!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Image.asset(
-                                      GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 24),
-                                    ),
-                                  )
-                                : Image.asset(
-                                    ex.imageAsset != null && ex.imageAsset!.isNotEmpty
-                                        ? ex.imageAsset!
-                                        : (GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (_, __, ___) => Image.asset(
-                                      GymChallengeData.getFallbackImage(ex.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                                      fit: BoxFit.cover,
-                                      errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Color(0xFF005FF9), size: 24),
-                                    ),
-                                  ),
+                            child: ExerciseMediaWidget(
+                              assetPath: ex.animationLottie ?? ex.imageAsset ?? GymChallengeData.getFallbackImage(ex.name),
+                              fit: BoxFit.cover,
+                              isThumbnail: true,
+                            ),
                           ),
                         ),
                         const SizedBox(width: 12),

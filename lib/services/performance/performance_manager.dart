@@ -3,8 +3,6 @@ import 'device_profiler.dart';
 import 'memory_manager.dart';
 import 'animation_manager.dart';
 import 'task_manager.dart';
-import 'ml_manager.dart';
-import 'location_manager.dart';
 
 /// Central performance coordinator.
 /// Initializes all sub-managers in the correct order and provides
@@ -23,8 +21,6 @@ class PerformanceManager {
   final MemoryManager memoryManager = MemoryManager();
   final AnimationManager animationManager = AnimationManager();
   final TaskManager taskManager = TaskManager();
-  final MLManager mlManager = MLManager();
-  final LocationManager locationManager = LocationManager();
 
   /// Initialize the full performance pipeline.
   /// Call this once from main() AFTER WidgetsFlutterBinding.ensureInitialized().
@@ -43,28 +39,18 @@ class PerformanceManager {
     // 3. Configure animation behaviour
     animationManager.init();
 
-    // 4. TaskManager and MLManager are lazy — no init needed
+    // 4. TaskManager is lazy — no init needed
 
     stopwatch.stop();
-    debugPrint('PerformanceManager: init complete in ${stopwatch.elapsedMilliseconds}ms');
+    debugPrint(
+      'PerformanceManager: init complete in ${stopwatch.elapsedMilliseconds}ms',
+    );
     debugPrint('PerformanceManager: device=${deviceProfiler.summary}');
-  }
-
-  /// Pre-warm ML models in the background during splash screen.
-  /// This way they're ready when the user opens a workout.
-  Future<void> warmUpMLModels() async {
-    await mlManager.warmUpTFLite();
-    // Pose detection is only warmed up when the camera screen opens
   }
 
   /// Clear caches before entering a memory-heavy screen.
   void prepareForHeavyScreen() {
     memoryManager.clearImageCache();
-  }
-
-  /// Release ML resources when leaving workout screens.
-  void releaseMLResources() {
-    mlManager.releaseAll();
   }
 
   /// Print full diagnostics.
@@ -74,13 +60,9 @@ class PerformanceManager {
     debugPrint('ImageCache: ${memoryManager.cacheStats}');
     debugPrint('Animations: enabled=${animationManager.animationsEnabled}');
     debugPrint('Tasks: active=${taskManager.activeTasks}');
-    debugPrint('ML: ${mlManager.status}');
-    debugPrint('Location: tracking=${locationManager.isTracking}');
+
     debugPrint('======================================');
   }
 
-  void dispose() {
-    locationManager.dispose();
-    mlManager.releaseAll();
-  }
+  void dispose() {}
 }

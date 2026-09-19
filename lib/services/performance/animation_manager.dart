@@ -33,7 +33,9 @@ class AnimationManager {
         break;
     }
 
-    debugPrint('AnimationManager: enabled=$_animationsEnabled  speed=$_animationSpeed');
+    debugPrint(
+      'AnimationManager: enabled=$_animationsEnabled  speed=$_animationSpeed',
+    );
   }
 
   /// Returns a Lottie widget or a static placeholder icon based on device tier.
@@ -45,6 +47,8 @@ class AnimationManager {
     BoxFit fit = BoxFit.contain,
     IconData fallbackIcon = Icons.fitness_center,
     Color fallbackColor = const Color(0xFF5B7E5F),
+    Color? lottieTint = const Color(0xFF149D96),
+    double lottieTintStrength = 0.14,
   }) {
     if (!_animationsEnabled) {
       // Static placeholder for low-end devices
@@ -52,7 +56,11 @@ class AnimationManager {
         width: width ?? 200,
         height: height ?? 200,
         child: Center(
-          child: Icon(fallbackIcon, size: 64, color: fallbackColor.withValues(alpha: 0.5)),
+          child: Icon(
+            fallbackIcon,
+            size: 64,
+            color: fallbackColor.withValues(alpha: 0.5),
+          ),
         ),
       );
     }
@@ -62,6 +70,7 @@ class AnimationManager {
       width: width,
       height: height,
       fit: fit,
+      delegates: _buildLottieDelegates(lottieTint, lottieTintStrength),
       frameRate: DeviceProfiler().isHighEnd ? FrameRate.max : FrameRate(30),
       errorBuilder: (context, error, stackTrace) {
         debugPrint('Lottie error for $assetPath: $error');
@@ -69,10 +78,31 @@ class AnimationManager {
           width: width ?? 200,
           height: height ?? 200,
           child: Center(
-            child: Icon(fallbackIcon, size: 64, color: fallbackColor.withValues(alpha: 0.5)),
+            child: Icon(
+              fallbackIcon,
+              size: 64,
+              color: fallbackColor.withValues(alpha: 0.5),
+            ),
           ),
         );
       },
+    );
+  }
+
+  LottieDelegates? _buildLottieDelegates(Color? tint, double strength) {
+    if (tint == null || strength <= 0) return null;
+
+    final alpha = strength.clamp(0.0, 1.0).toDouble();
+    return LottieDelegates(
+      values: [
+        ValueDelegate.colorFilter(
+          ['**'],
+          value: ColorFilter.mode(
+            tint.withValues(alpha: alpha),
+            BlendMode.srcATop,
+          ),
+        ),
+      ],
     );
   }
 }

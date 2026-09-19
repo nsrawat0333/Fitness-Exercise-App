@@ -44,6 +44,24 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Local diagnostics and one-off cleanup probes
+/analysis.txt
+/analyze*.txt
+/build*.txt
+/diet_build_result.txt
+/step*_output.txt
+/lottie_inspection_details.jsonl
+/check_*.dart
+/compare_*.ps1
+/compare_*.py
+/diag_*.py
+/inspect_*.ps1
+/test.dart
+/test_asset.dart
+/tmp_*.ps1
+/tmp_*.py
+/test/tmp_*
+
 # Security and Credentials
 .env
 android/app/google-services.json

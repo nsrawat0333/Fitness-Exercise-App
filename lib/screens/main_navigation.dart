@@ -2,15 +2,14 @@ import 'package:flutter/material.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
 import 'home_screen.dart';
-import 'explore_screen.dart';
-import 'running/running_hub_screen.dart';
-import 'therapy/therapy_screen.dart';
+import 'challenge/challenge_screen.dart';
+import 'ufc/ufc_screen.dart';
+import 'gym/gym_main_screen.dart';
 import 'account/account_screen.dart';
-import '../services/points_manager.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 /// Main navigation shell with bottom navigation bar.
-/// Manages 5 tabs: Home, Map, Therapy, Explore, Account.
+/// Manages 5 tabs: Home, Challenge, UFC, Gym, Growth.
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
@@ -24,13 +23,10 @@ class _MainNavigationState extends State<MainNavigation> {
   @override
   void initState() {
     super.initState();
-    // Trigger offline data sync whenever user logs in or opens the app
-    PointsManager().syncOfflineData();
     _requestPermissions();
   }
 
   Future<void> _requestPermissions() async {
-    // Request pedometer and notification permissions as soon as app opens
     await [
       Permission.activityRecognition,
       Permission.notification,
@@ -38,7 +34,6 @@ class _MainNavigationState extends State<MainNavigation> {
     ].request();
   }
 
-  // Screens – Home and Therapy are built, others are placeholders
   List<Widget> get _screens => [
         HomeScreen(
           onTabChange: (index) {
@@ -47,10 +42,10 @@ class _MainNavigationState extends State<MainNavigation> {
             });
           },
         ),
-        const RunningHubScreen(),
-        const TherapyHomeScreen(),
-        const ExploreScreen(),
-        const AccountScreen(),
+        const ChallengeScreen(),
+        const UFCScreen(),
+        const GymMainScreen(),
+        AccountScreen(isActive: _currentIndex == 4),
       ];
 
   @override
@@ -84,26 +79,26 @@ class _MainNavigationState extends State<MainNavigation> {
                   onTap: () => setState(() => _currentIndex = 0),
                 ),
                 _NavItem(
-                  icon: Icons.map_outlined,
-                  label: 'MAP',
+                  icon: Icons.emoji_events_outlined,
+                  label: 'CHALLENGE',
                   isActive: _currentIndex == 1,
                   onTap: () => setState(() => _currentIndex = 1),
                 ),
                 _NavItem(
-                  icon: Icons.spa_outlined,
-                  label: 'THERAPY',
+                  icon: Icons.sports_mma_outlined,
+                  label: 'UFC',
                   isActive: _currentIndex == 2,
                   onTap: () => setState(() => _currentIndex = 2),
                 ),
                 _NavItem(
-                  icon: Icons.explore_outlined,
-                  label: 'EXPLORE',
+                  icon: Icons.fitness_center_outlined,
+                  label: 'GYM',
                   isActive: _currentIndex == 3,
                   onTap: () => setState(() => _currentIndex = 3),
                 ),
                 _NavItem(
-                  icon: Icons.person_outlined,
-                  label: 'ACCOUNT',
+                  icon: Icons.insights_outlined,
+                  label: 'GROWTH',
                   isActive: _currentIndex == 4,
                   onTap: () => setState(() => _currentIndex = 4),
                 ),
@@ -137,7 +132,7 @@ class _NavItem extends StatelessWidget {
       behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
           color: isActive
               ? AppColors.primary.withValues(alpha: 0.1)
@@ -150,13 +145,14 @@ class _NavItem extends StatelessWidget {
             Icon(
               icon,
               color: isActive ? AppColors.navActive : AppColors.navInactive,
-              size: 24,
+              size: 22,
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 3),
             Text(
               label,
               style: AppTextStyles.navLabel.copyWith(
                 color: isActive ? AppColors.navActive : AppColors.navInactive,
+                fontSize: 9,
               ),
             ),
           ],

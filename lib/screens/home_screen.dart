@@ -7,18 +7,14 @@ import '../widgets/step_counter_widget.dart';
 import '../widgets/water_tracker_card.dart';
 import '../widgets/heart_rate_card.dart';
 import '../widgets/ai_detection_card.dart';
-import '../widgets/therapy_card.dart';
 import 'ai_activity_screen.dart';
 import 'heart_rate_screen.dart';
 import 'step_counter_screen.dart';
 import 'water_tracker_screen.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../services/water_storage_service.dart';
 import '../models/water_intake_model.dart';
 import '../services/health_storage_service.dart';
 import '../services/step_counter_service.dart';
-import '../services/points_manager.dart';
 
 /// Main home screen of the FitFi app.
 class HomeScreen extends StatelessWidget {
@@ -58,46 +54,11 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // ── Sync Status ──
-              ValueListenableBuilder<SyncStatus>(
-                valueListenable: PointsManager().syncStatus,
-                builder: (context, status, child) {
-                  if (status == SyncStatus.synced) {
-                    return const SizedBox.shrink(); // Hide if synced
-                  }
-                  
-                  bool isSyncing = status == SyncStatus.syncing;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: isSyncing ? Colors.blue.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: isSyncing ? Colors.blue.withValues(alpha: 0.3) : Colors.orange.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (isSyncing)
-                          const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2))
-                        else
-                          const Icon(Icons.cloud_off, size: 14, color: Colors.orange),
-                        const SizedBox(width: 6),
-                        Text(
-                          isSyncing ? 'Syncing Activity...' : 'Offline - Data Saved Locally',
-                          style: GoogleFonts.inter(fontSize: 12, color: isSyncing ? Colors.blue[800] : Colors.orange[800], fontWeight: FontWeight.w600),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
 
-              const SizedBox(height: 8),
 
               // ── Greeting ──
               Text(
-                'READY, ${FirebaseAuth.instance.currentUser?.displayName?.toUpperCase() ?? "TESTER"}',
+                'READY, USER',
                 style: AppTextStyles.greeting,
               ),
 
@@ -219,7 +180,10 @@ class HomeScreen extends StatelessWidget {
                         child: ValueListenableBuilder<HealthData>(
                           valueListenable: HealthStorageService().healthDataNotifier,
                           builder: (context, healthData, _) {
-                            return HeartRateCard(bpm: healthData.lastBpm);
+                            final avgBpm = healthData.dailyAvgBpm > 0
+                                ? healthData.dailyAvgBpm
+                                : healthData.lastBpm;
+                            return HeartRateCard(bpm: avgBpm);
                           },
                         ),
                       ),
@@ -269,19 +233,7 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 20),
 
-              // ── Therapy Card ──
-              GestureDetector(
-                onTap: () {
-                  if (onTabChange != null) {
-                    onTabChange!(2); // 2 is the index for Therapy tab
-                  }
-                },
-                child: const TherapyCard(),
-              ),
-
-              const SizedBox(height: 24),
             ],
           ),
         ),

@@ -50,7 +50,7 @@ class WaterIntakeModel {
     required this.dailyGoalMl,
     this.selectedVesselIndex = 1,
     this.remindersEnabled = true,
-    this.reminderInterval = 'Every 1 hour',
+    this.reminderInterval = 'Every 2 hours (8 AM - 8 PM)',
     required this.history,
     required this.reminders,
   });
@@ -72,7 +72,7 @@ class WaterIntakeModel {
         dailyGoalMl: 2000,
         selectedVesselIndex: 1,
         remindersEnabled: true,
-        reminderInterval: 'Every 1 hour',
+        reminderInterval: 'Every 2 hours (8 AM - 8 PM)',
         history: const [
           WaterHistoryEntry(label: 'Medium Glass', time: '09:15 AM', amountMl: 250),
           WaterHistoryEntry(label: 'Large Bottle', time: '12:30 PM', amountMl: 500),

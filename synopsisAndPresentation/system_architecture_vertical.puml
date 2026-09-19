@@ -1,0 +1,92 @@
+@startuml FitFi_Architecture_Vertical
+!theme plain
+top to bottom direction
+
+skinparam backgroundColor #FFFFFF
+skinparam roundcorner 8
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 11
+skinparam packageFontSize 12
+skinparam packageFontStyle bold
+skinparam componentStyle rectangle
+
+skinparam nodesep 12
+skinparam ranksep 18
+
+title **FitFi App — System Architecture (Single Vertical Page)**
+
+' ========================================================
+' TIER 1: HARDWARE & SENSORS
+' ========================================================
+package "1. Hardware & Sensors Layer" as P_HW #F4F6F7 {
+    [Camera Feed & Torch LED\n(Raw Frames & Flashlight)] as HW_Cam #FFEBEE
+    [3D Accelerometer Sensor\n(Motion Vector Stream)] as HW_Sensor #E8F8F5
+    HW_Cam -[hidden]down-> HW_Sensor
+}
+
+' ========================================================
+' TIER 2: CORE PROCESSING & SERVICES
+' ========================================================
+package "2. Core Processing & Service Layer" as P_Serv #FEF9E7 {
+    [AI Pose Detection & Rep Counter\n(Google ML Kit + atan2 Angle Math)] as S_AI #F3E5F5
+    [PPG Heart Rate Engine\n(Luminance Pulse Peak Detection)] as S_HR #FFEBEE
+    [Pedometer Step Engine\n(Vector Magnitude > 12.0 m/s² + 300ms Debounce)] as S_Step #E8F8F5
+    [Workout & Gamification Engine\n(Progressive Overload + Solo Leveling 11 Ranks)] as S_XP #FFF3E0
+    [Notification Service\n(2-Hour Periodic Hydration Reminders)] as S_Notif #FFF9C4
+    
+    S_AI -[hidden]down-> S_HR
+    S_HR -[hidden]down-> S_Step
+    S_Step -[hidden]down-> S_XP
+    S_XP -[hidden]down-> S_Notif
+}
+
+' ========================================================
+' TIER 3: PRESENTATION (FLUTTER UI)
+' ========================================================
+package "3. Presentation Layer (Flutter UI)" as P_UI #E8F8F5 {
+    [Home Dashboard & Growth Hub\n(Metrics, Daily Goals, Rank Badges)] as UI_Home #E0F2F1
+    [AI Activity Screen\n(Live Camera Feed + Neon Skeleton Overlay)] as UI_AI #F3E5F5
+    [Heart Rate & Step Counter Screens\n(Biometric Radar & Bezier Trend Curves)] as UI_Vitals #FFEBEE
+    [Workout Player Screen\n(5-Phase Guided Timed Interval Runner)] as UI_Workout #FFF3E0
+    
+    UI_Home -[hidden]down-> UI_AI
+    UI_AI -[hidden]down-> UI_Vitals
+    UI_Vitals -[hidden]down-> UI_Workout
+}
+
+' ========================================================
+' TIER 4: LOCAL DATA & STORAGE
+' ========================================================
+package "4. Data & Storage Layer (100% Offline)" as P_DB #EBF5FB {
+    database "Local Storage (SharedPreferences)\n(User Profile, Steps, BPM, Ranks, Water Logs)" as DB_Local #BBDEFB
+    [Exercise & Course Database\n(256 Exercises with Lottie/GIF Animations)] as DB_Assets #FFF3E0
+    
+    DB_Assets -[hidden]down-> DB_Local
+}
+
+' ========================================================
+' CONNECTIONS ACROSS TIERS (STRICTLY TOP TO BOTTOM)
+' ========================================================
+HW_Cam --> S_AI : Video Frames
+HW_Cam --> S_HR : Capillary Pulse Data
+HW_Sensor --> S_Step : 3D Accelerometer Stream
+
+S_AI --> UI_AI : Real-Time Reps & Pose Feedback
+S_HR --> UI_Vitals : Live BPM & Stress Level
+S_Step --> UI_Vitals : Daily Steps & Calories Burned
+S_XP --> UI_Home : Level Up & Rank Status
+S_Notif --> UI_Home : Hydration Notification
+
+UI_Home --> UI_AI : Trigger Exercise
+UI_Home --> UI_Vitals : View Metrics
+UI_Home --> UI_Workout : Start Course
+
+UI_Workout --> S_XP : Log Session & Gain XP
+DB_Assets --> UI_Workout : 256 Exercise Guides
+
+S_Step --> DB_Local : Save Steps
+S_HR --> DB_Local : Save BPM History
+S_XP --> DB_Local : Persist Ranks & XP
+UI_Home <--> DB_Local : Sync Offline Data
+
+@enduml

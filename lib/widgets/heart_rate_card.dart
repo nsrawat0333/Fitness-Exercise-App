@@ -81,7 +81,7 @@ class _HeartRateCardState extends State<HeartRateCard>
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${widget.bpm}',
+                widget.bpm > 0 ? '${widget.bpm}' : '--',
                 style: AppTextStyles.cardValueLarge.copyWith(fontSize: 28),
               ),
               const SizedBox(width: 4),
@@ -102,7 +102,7 @@ class _HeartRateCardState extends State<HeartRateCard>
             ],
           ),
           const SizedBox(height: 2),
-          Text('AVG BPM', style: AppTextStyles.cardLabel),
+          Text(widget.bpm > 0 ? 'AVG BPM' : 'ADD BPM READING', style: AppTextStyles.cardLabel),
         ],
       ),
     );

@@ -11,55 +11,29 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
   percent_indicator: ^4.2.3
-  lottie: ^3.1.2
-  video_player: ^2.9.3
-  google_maps_flutter: ^2.5.3
-  geolocator: ^11.0.0
   permission_handler: ^11.3.0
-  flutter_polyline_points: ^2.0.0
-  firebase_core: ^4.6.0
-  firebase_auth: ^6.3.0
-  cloud_firestore: ^6.2.0
   shared_preferences: ^2.5.4
-  intl: ^0.20.2
-  image_picker: ^1.2.1
-  tflite_flutter: ^0.12.1
-  image: ^4.8.0
-  provider: ^6.1.2
   sensors_plus: ^7.0.0
   flutter_local_notifications: ^21.0.0
   camera: ^0.12.0+1
   google_mlkit_pose_detection: ^0.14.1
   table_calendar: ^3.1.2
   timezone: ^0.11.0
-  flutter_tts: ^4.2.0
-  audioplayers: ^6.1.0
-
+  lottie: ^3.3.2
+  archive: any
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-
 flutter:
   uses-material-design: true
   assets:
     - assets/images/
-    - assets/images/20images/
-    - assets/images/explore/
     - assets/images/gym/
-    - assets/images/jsonanimation/
-    - assets/images/yogajsonanimation/
-    - assets/images/extraexercises/
-    - assets/images/therapy/
-    - assets/images/therepy/jsonanimationheadeche/
-    - assets/images/therepy/jsonanimationneckpain/
-    - assets/images/therepy/jsonanimationbackpain/
-    - assets/images/therepy/jsonanimationkneepain/
-    - assets/images/therepy/jsonanimationperiodscare/
-    - assets/images/therepy/jsonanimationstomackpain/
-    - assets/model.tflite
-    - assets/labels.txt
-    - assets/images/music/
+    - assets/sections/challange/
+    - assets/sections/ufc/
+    - assets/sections/gym focus area cards/
+    - assets/sections/extra course card images/
+    - assets/all_exercises/

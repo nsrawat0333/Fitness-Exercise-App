@@ -41,6 +41,20 @@ class GymUserData {
   // Body type from scanner/BMI: 'skinny', 'normal', 'overweight', 'fat'
   String bodyType = 'normal';
 
+  // Last AI scan body type used to filter body-type courses in browse screen.
+  String? lastScannedBodyTypeFilter;
+
+  void setLastScannedBodyTypeFilter(String bodyType) {
+    final normalized = bodyType.toLowerCase();
+    if (normalized == 'lean' || normalized == 'fit' || normalized == 'fat') {
+      lastScannedBodyTypeFilter = normalized;
+    }
+  }
+
+  void clearLastScannedBodyTypeFilter() {
+    lastScannedBodyTypeFilter = null;
+  }
+
   /// Returns workout/diet recommendation based on body type.
   /// 'diet-heavy' → more diet focus, less intense exercise
   /// 'workout-heavy' → more workouts + healthy diet

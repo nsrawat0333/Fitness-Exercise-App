@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../models/home_workout_models.dart';
+import '../../../data/exercise_assets.dart';
 import '../../../data/gym_challenge_data.dart';
 import 'workout_flow_screen.dart';
 
@@ -421,11 +422,20 @@ class _HomeWorkoutProgramScreenState extends State<HomeWorkoutProgramScreen> {
       onTap: () {
         // Convert HomeExercise list to GymExercise list for WorkoutFlowScreen
         final gymExercises = day.exercises.map((e) {
+          final resolvedFromAllExercises = ExerciseAssets.getAssetForExercise(e.name);
+          final hasResolvedAnimation = resolvedFromAllExercises != null &&
+              (resolvedFromAllExercises.toLowerCase().endsWith('.lottie') ||
+                  resolvedFromAllExercises.toLowerCase().endsWith('.json'));
+
+          final animationAsset = hasResolvedAnimation
+              ? resolvedFromAllExercises
+              : (e.animation.isNotEmpty ? e.animation : null);
+
           return GymExercise(
             name: e.name,
             durationSeconds: _parseDuration(e.duration),
             imageAsset: e.image,
-            animationLottie: e.animation.isNotEmpty ? e.animation : null,
+            animationLottie: animationAsset,
             instructions: e.steps,
           );
         }).toList();

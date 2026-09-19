@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import '../../../data/gym_challenge_data.dart';
+import '../../../data/exercise_assets.dart';
 import 'workout_flow_screen.dart';
 
 class GymWorkoutPlanScreen extends StatelessWidget {
@@ -118,27 +118,11 @@ class GymWorkoutPlanScreen extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: exercise.animationLottie != null
-                  ? Lottie.asset(
-                      exercise.animationLottie!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Image.asset(
-                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Colors.grey),
-                      ),
-                    )
-                  : Image.asset(
-                      exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty
-                          ? exercise.imageAsset!
-                          : (GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Image.asset(
-                        GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => const Icon(Icons.fitness_center, color: Colors.grey),
-                      ),
-                    ),
+              child: ExerciseMediaWidget(
+                assetPath: exercise.animationLottie ?? exercise.imageAsset ?? GymChallengeData.getFallbackImage(exercise.name),
+                fit: BoxFit.cover,
+                isThumbnail: true,
+              ),
             ),
           ),
           const SizedBox(width: 16),

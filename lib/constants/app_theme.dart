@@ -12,7 +12,9 @@ class AppTheme {
         colorScheme: ColorScheme.fromSeed(
           seedColor: AppColors.primary,
           primary: AppColors.primary,
+          secondary: const Color(0xFF1696D2),
           surface: AppColors.scaffoldBg,
+          brightness: Brightness.light,
         ),
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.scaffoldBg,
@@ -24,7 +26,7 @@ class AppTheme {
           ),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
           selectedItemColor: AppColors.navActive,
           unselectedItemColor: AppColors.navInactive,
           type: BottomNavigationBarType.fixed,

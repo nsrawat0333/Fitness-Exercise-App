@@ -1,0 +1,70 @@
+@startuml FitFi_Architecture_Simple
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam roundcorner 8
+skinparam defaultFontName "Arial"
+skinparam defaultFontSize 11
+skinparam packageFontSize 13
+skinparam packageFontStyle bold
+skinparam componentStyle rectangle
+
+title **FitFi App — High-Level System Architecture**
+
+' 1. INPUT / SENSORS
+package "Hardware Inputs & Sensors" #F4F6F7 {
+    [Camera Feed\n& Torch LED] as HW_Camera #FFEBEE
+    [3D Accelerometer\nSensor] as HW_Sensor #E8F8F5
+    [User Interactions\n& Inputs] as HW_User #EAF2F8
+}
+
+' 2. UI LAYER
+package "Presentation Layer (Flutter UI)" #E8F8F5 {
+    [Home Dashboard] as UI_Home
+    [AI Activity Screen\n(Live Skeleton Overlay)] as UI_AI #F3E5F5
+    [Heart Rate Screen\n(PPG Pulse Scanner)] as UI_HR #FFEBEE
+    [Step Counter Screen\n(Progress Arc & Trends)] as UI_Step #E8F8F5
+    [Workout Player\n(Gym & UFC Courses)] as UI_Workout #FFF3E0
+    [Water Tracker & Growth Hub\n(Hydration & XP Ranks)] as UI_WaterXP #E1F5FE
+}
+
+' 3. SERVICE & LOGIC LAYER
+package "Core Processing & Service Layer" #FEF9E7 {
+    [AI Pose Detection & Rep Counter\n(Google ML Kit + Angle Math)] as S_AI #F3E5F5
+    [PPG Heart Rate Engine\n(Luminance Peak Detection)] as S_HR #FFEBEE
+    [Step Counter Engine\n(Motion Vector Thresholding)] as S_Step #E8F8F5
+    [Workout & XP Engine\n(Progressive Overload + Ranks)] as S_XP #FFF3E0
+    [Notification Service\n(Hydration Reminders)] as S_Notif #FFF9C4
+}
+
+' 4. STORAGE & DATA LAYER
+package "Data & Storage Layer (100% Offline)" #EBF5FB {
+    database "Local Storage\n(SharedPreferences)" as DB_Local #BBDEFB
+    [Exercise & Course Assets\n(256 Exercises + Lottie Animations)] as DB_Assets #FFF3E0
+}
+
+' FLOW CONNECTIONS
+HW_Camera --> S_AI : Video Frames
+HW_Camera --> S_HR : Fingertip Pulse Feed
+HW_Sensor --> S_Step : 3D Motion Data
+HW_User --> UI_Home : User Actions
+
+S_AI --> UI_AI : Real-Time Reps & Feedback
+S_HR --> UI_HR : Real-Time BPM & Stress
+S_Step --> UI_Step : Daily Steps & Calories
+DB_Assets --> UI_Workout : Guided Exercises
+S_XP --> UI_WaterXP : Level Up & Rank Badges
+S_Notif --> UI_WaterXP : Periodic Hydration Alerts
+
+' UI TO SERVICES
+UI_Workout --> S_XP : Completed Workouts
+UI_Home --> UI_AI : Launch Exercise
+UI_Home --> UI_HR : Measure Pulse
+UI_Home --> UI_Step : View Steps
+
+' PERSISTENCE
+S_Step --> DB_Local : Save Steps
+S_HR --> DB_Local : Save BPM History
+S_XP --> DB_Local : Save XP & Rank
+UI_WaterXP <--> DB_Local : Hydration Logs
+
+@enduml

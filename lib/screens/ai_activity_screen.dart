@@ -1,16 +1,15 @@
-
+import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
 import '../constants/app_colors.dart';
 import '../constants/app_text_styles.dart';
-import '../data/hindi_exercise_instructions.dart';
+import '../models/challenge_model.dart';
 import '../services/pose_detection_service.dart';
 import '../services/rep_counter_service.dart';
 import '../services/health_storage_service.dart';
-import '../services/voice_coach_service.dart';
-import '../services/music_service.dart';
 import 'session_summary_screen.dart';
 
 enum AiActivityState { selection, target, permission, camera, result }
@@ -19,8 +18,29 @@ enum AiActivityState { selection, target, permission, camera, result }
 /// It cycles through: Selection -> Target -> Permission -> Camera -> Result.
 class AiActivityScreen extends StatefulWidget {
   final String? initialActivity;
+  final int? targetOverride;
+  final bool isChallengeMode;
+  final ChallengeExerciseType? challengeExerciseType;
+  final String? challengeExerciseId;
+  final bool forceTimeBased;
+  final List<int>? targetOptions;
+  final bool targetValuesAreMinutes;
+  final String? customTargetUnitLabel;
+  final bool rewardAsChallenge;
 
-  const AiActivityScreen({super.key, this.initialActivity});
+  const AiActivityScreen({
+    super.key, 
+    this.initialActivity,
+    this.targetOverride,
+    this.isChallengeMode = false,
+    this.challengeExerciseType,
+    this.challengeExerciseId,
+    this.forceTimeBased = false,
+    this.targetOptions,
+    this.targetValuesAreMinutes = false,
+    this.customTargetUnitLabel,
+    this.rewardAsChallenge = false,
+  });
 
   @override
   State<AiActivityScreen> createState() => _AiActivityScreenState();
@@ -38,16 +58,40 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   CameraController? _cameraController;
   final _poseService = PoseDetectionService();
   final _repService = RepCounterService();
-  final _voiceCoach = VoiceCoachService();
-  final _musicService = MusicService();
   bool _isCameraReady = false;
   int _lastAnnouncedRep = 0;
   int _lastFrameTimeMs = 0;
   bool _useFrontCamera = false; // Back camera by default for push-ups
   List<Pose> _currentPoses = []; // Real ML Kit poses for skeleton overlay
   int _sensorOrientation = 0;
+  int _activeHoldMillis = 0;
+  int _holdSeconds = 0;
+  int _lastTrackingMs = 0;
+  bool _isExerciseCompletionInProgress = false;
 
   late AnimationController _cameraPulseCtrl;
+
+  bool get _isTimeBased {
+    final type = widget.challengeExerciseType;
+    return widget.forceTimeBased || type == ChallengeExerciseType.time || type == ChallengeExerciseType.speed;
+  }
+
+  List<int> get _targetOptions {
+    if (widget.targetOptions != null && widget.targetOptions!.isNotEmpty) {
+      return widget.targetOptions!;
+    }
+    return _isTimeBased ? const [5, 10, 20] : const [10, 20, 30];
+  }
+
+  int get _effectiveTarget => widget.targetValuesAreMinutes ? _selectedTarget * 60 : _selectedTarget;
+
+  String get _targetUnitLabel {
+    if (widget.customTargetUnitLabel != null && widget.customTargetUnitLabel!.isNotEmpty) {
+      return widget.customTargetUnitLabel!;
+    }
+    if (widget.targetValuesAreMinutes) return 'MIN';
+    return _isTimeBased ? 'SEC' : 'REPS';
+  }
 
   @override
   void initState() {
@@ -57,20 +101,29 @@ class _AiActivityScreenState extends State<AiActivityScreen>
       duration: const Duration(seconds: 1),
     )..repeat(reverse: true);
 
-    _voiceCoach.init();
-    _musicService.init();
 
     if (widget.initialActivity != null) {
       _selectedActivity = widget.initialActivity;
-      _currentState = AiActivityState.target;
+      if (widget.targetOverride != null) {
+        _selectedTarget = widget.targetOverride!;
+      } else if (_targetOptions.isNotEmpty) {
+        _selectedTarget = _targetOptions.length > 1 ? _targetOptions[1] : _targetOptions.first;
+      }
+      
+      if (widget.isChallengeMode) {
+        _currentState = AiActivityState.permission;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _onGrantPermission();
+        });
+      } else {
+        _currentState = AiActivityState.target;
+      }
     }
   }
 
   @override
   void dispose() {
     _cameraPulseCtrl.dispose();
-    _voiceCoach.stop();
-    _musicService.stop();
     _cameraController?.dispose();
     _poseService.dispose();
     _repService.trackingNotifier.dispose();
@@ -110,16 +163,13 @@ class _AiActivityScreenState extends State<AiActivityScreen>
     
     _repService.reset();
     _lastAnnouncedRep = 0;
+    _activeHoldMillis = 0;
+    _holdSeconds = 0;
+    _lastTrackingMs = 0;
+    _isExerciseCompletionInProgress = false;
     
-    // Speak exercise start instructions
-    final data = HindiExerciseInstructions.getInstructions(
-      (_selectedActivity ?? 'push-ups').toLowerCase(),
-    );
-    if (data != null) {
-      _voiceCoach.speakSequence(data.start);
-    }
     
-    // NO background music during camera AI exercises — only AI voice coaching
+    // NO background music during camera AI exercises — only AI tracking
     
     // ── BUG FIX 2 & 3: Try-catch camera init + use back camera for push-ups ──
     try {
@@ -146,7 +196,7 @@ class _AiActivityScreenState extends State<AiActivityScreen>
         selectedCamera,
         ResolutionPreset.medium,
         enableAudio: false,
-        imageFormatGroup: ImageFormatGroup.yuv420,
+        imageFormatGroup: Platform.isAndroid ? ImageFormatGroup.nv21 : ImageFormatGroup.bgra8888,
       );
       
       await _cameraController!.initialize();
@@ -169,42 +219,53 @@ class _AiActivityScreenState extends State<AiActivityScreen>
             _currentPoses = poses;
           });
         }
-        
-        if (poses.isNotEmpty && mounted) {
-          _repService.processPose(poses.first, _selectedActivity ?? 'Push-ups');
-          
-          // Announce reps dynamically
-          final currentReps = _repService.trackingNotifier.value.reps;
-          if (currentReps > _lastAnnouncedRep) {
-            _lastAnnouncedRep = currentReps;
-            if (currentReps % 5 == 0) {
-              _voiceCoach.speak(HindiExerciseInstructions.repMilestone(currentReps));
-            } else {
-              _voiceCoach.speak(HindiExerciseInstructions.repCompleted(currentReps, _selectedTarget));
+        if (poses.isEmpty || !mounted) {
+          _repService.onNoPoseDetected();
+          _lastTrackingMs = currentTimeMs;
+          return;
+        }
+
+        _repService.processPose(
+          poses.first,
+          widget.challengeExerciseId ?? _selectedActivity ?? 'push_ups',
+          isTimeBased: _isTimeBased,
+        );
+
+        final trackingData = _repService.trackingNotifier.value;
+
+        // Announce reps dynamically
+        final currentReps = trackingData.reps;
+        if (currentReps > _lastAnnouncedRep) {
+          _lastAnnouncedRep = currentReps;
+        }
+
+        // For hold/speed challenges, timer only runs while pose is correct.
+        if (_isTimeBased) {
+          if (_lastTrackingMs == 0) {
+            _lastTrackingMs = currentTimeMs;
+          }
+          final deltaMs = currentTimeMs - _lastTrackingMs;
+          _lastTrackingMs = currentTimeMs;
+
+          if (trackingData.isPoseCorrect && deltaMs > 0) {
+            _activeHoldMillis += deltaMs;
+            final nextSeconds = _activeHoldMillis ~/ 1000;
+            if (nextSeconds != _holdSeconds && mounted) {
+              setState(() {
+                _holdSeconds = nextSeconds;
+              });
             }
           }
-          
-          // Check if goal reached
-          if (_repService.trackingNotifier.value.reps >= _selectedTarget) {
-            _cameraController?.stopImageStream();
-            
-            HealthStorageService().addWorkoutReps(_selectedActivity ?? 'Push-ups', _selectedTarget);
-            int calories = _selectedTarget * 2;
-            
-            if (!mounted) return;
-            
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => SessionSummaryScreen(
-                  activityName: _selectedActivity ?? 'Push-ups',
-                  repsCompleted: _selectedTarget,
-                  targetReps: _selectedTarget,
-                  caloriesBurned: calories,
-                ),
-              ),
-            );
+
+          if (_holdSeconds >= _effectiveTarget) {
+            await _completeCurrentExercise();
           }
+          return;
+        }
+
+        // Rep-based completion
+        if (trackingData.reps >= _effectiveTarget) {
+          await _completeCurrentExercise();
         }
       });
     } catch (e) {
@@ -218,8 +279,47 @@ class _AiActivityScreenState extends State<AiActivityScreen>
     }
   }
 
+  Future<void> _completeCurrentExercise() async {
+    if (_isExerciseCompletionInProgress) return;
+    _isExerciseCompletionInProgress = true;
+
+    try {
+      if (_cameraController?.value.isStreamingImages ?? false) {
+        await _cameraController?.stopImageStream();
+      }
+    } catch (_) {}
+
+    final activityName = _selectedActivity ?? 'Exercise';
+    final completedValue = _isTimeBased ? _holdSeconds : _effectiveTarget;
+    final calories = max(1, completedValue) * 2;
+
+    HealthStorageService().addWorkoutReps(activityName, completedValue);
+    if (!mounted) return;
+
+    if (widget.isChallengeMode) {
+      Navigator.pop(context, true); // Return success to ChallengePlayer
+      return;
+    }
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SessionSummaryScreen(
+          activityName: activityName,
+          repsCompleted: completedValue,
+          targetReps: _effectiveTarget,
+          caloriesBurned: calories,
+          isTimeBased: _isTimeBased,
+          rewardAsChallenge: widget.rewardAsChallenge,
+        ),
+      ),
+    );
+  }
+
   void _toggleCamera() async {
-    _cameraController?.stopImageStream();
+    if (_cameraController?.value.isStreamingImages ?? false) {
+      await _cameraController?.stopImageStream();
+    }
     await _cameraController?.dispose();
     setState(() {
       _isCameraReady = false;
@@ -229,11 +329,15 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   }
 
   void _resetFlow() {
-    _cameraController?.stopImageStream();
+    if (_cameraController?.value.isStreamingImages ?? false) {
+      _cameraController?.stopImageStream();
+    }
     setState(() {
       _currentState = AiActivityState.selection;
       _selectedActivity = null;
       _isCameraReady = false;
+      _activeHoldMillis = 0;
+      _holdSeconds = 0;
     });
   }
 
@@ -418,6 +522,7 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   // STATE 2: TARGET SETUP UI
   // ══════════════════════════════════════════════════════════════
   Widget _buildTargetState({required Key key}) {
+    final options = _targetOptions;
     return SingleChildScrollView(
       key: key,
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -477,17 +582,21 @@ class _AiActivityScreenState extends State<AiActivityScreen>
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildTargetOption(10, 'MAINTAIN'),
-              _buildTargetOption(20, 'RECOMMENDED'),
-              _buildTargetOption(30, 'CHALLENGE'),
-            ],
+            children: List.generate(options.length, (index) {
+              final option = options[index];
+              final label = _targetLabelForIndex(index, options.length);
+              return _buildTargetOption(option, label);
+            }),
           ),
 
           const SizedBox(height: 40),
 
           Text(
-            'Consistency is key. Focus on your form and\nkeep a steady breathing rhythm through all\n$_selectedTarget repetitions.',
+            _isTimeBased
+                ? (widget.targetValuesAreMinutes
+                    ? 'Consistency is key. Hold correct posture and\nkeep steady breathing for\n$_selectedTarget minutes.'
+                    : 'Consistency is key. Hold correct posture and\nkeep steady breathing for\n$_selectedTarget seconds.')
+                : 'Consistency is key. Focus on your form and\nkeep a steady breathing rhythm through all\n$_selectedTarget repetitions.',
             textAlign: TextAlign.center,
             style: AppTextStyles.bodySmall.copyWith(height: 1.6),
           ),
@@ -562,18 +671,47 @@ class _AiActivityScreenState extends State<AiActivityScreen>
               borderRadius: BorderRadius.circular(40),
             ),
             child: Center(
-              child: Text(
-                target.toString(),
-                style: AppTextStyles.aiTargetValue.copyWith(
-                  color: isSelected ? AppColors.textPrimary : AppColors.textPrimary,
-                  fontSize: isSelected ? 48 : 36,
-                ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    target.toString(),
+                    style: AppTextStyles.aiTargetValue.copyWith(
+                      color: AppColors.textPrimary,
+                      fontSize: isSelected ? 48 : 36,
+                    ),
+                  ),
+                  if (widget.targetValuesAreMinutes)
+                    Text(
+                      _targetUnitLabel,
+                      style: AppTextStyles.aiTargetLabel.copyWith(
+                        color: AppColors.textPrimary,
+                        fontSize: 10,
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _targetLabelForIndex(int index, int total) {
+    const repLabels = ['MAINTAIN', 'RECOMMENDED', 'CHALLENGE'];
+    const timeLabels = ['QUICK', 'STANDARD', 'INTENSE'];
+    final source = _isTimeBased ? timeLabels : repLabels;
+    if (index < source.length) return source[index];
+    return index == total - 1 ? 'ADVANCED' : 'TARGET';
+  }
+
+  String _formatDuration(int seconds) {
+    final mins = seconds ~/ 60;
+    final secs = seconds % 60;
+    final mm = mins.toString().padLeft(2, '0');
+    final ss = secs.toString().padLeft(2, '0');
+    return '$mm:$ss';
   }
 
   // ══════════════════════════════════════════════════════════════
@@ -634,6 +772,13 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   // STATE 4: CAMERA UI (SIMULATION)
   // ══════════════════════════════════════════════════════════════
   Widget _buildCameraState({required Key key}) {
+    final liveTracking = _repService.trackingNotifier.value;
+    final statusColor = !liveTracking.isPoseDetected
+        ? Colors.orange
+        : liveTracking.isPoseCorrect
+            ? const Color(0xFF00E676)
+            : Colors.redAccent;
+
     return Container(
       key: key,
       color: AppColors.aiCameraBg, 
@@ -664,6 +809,7 @@ class _AiActivityScreenState extends State<AiActivityScreen>
               child: CustomPaint(
                 painter: _RealPosePainter(
                   poses: _currentPoses,
+                  isCorrectPose: liveTracking.isPoseCorrect,
                   imageSize: _cameraController != null && _isCameraReady
                     ? Size(
                         _cameraController!.value.previewSize?.height ?? 480,
@@ -722,7 +868,7 @@ class _AiActivityScreenState extends State<AiActivityScreen>
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: _currentPoses.isNotEmpty ? AppColors.aiActiveDot : Colors.orange,
+                    color: statusColor,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -730,10 +876,14 @@ class _AiActivityScreenState extends State<AiActivityScreen>
                       Container(
                         width: 8, height: 8,
                         decoration: BoxDecoration(
-                            color: _currentPoses.isNotEmpty ? Colors.white : Colors.black, shape: BoxShape.circle),
+                            color: Colors.white, shape: BoxShape.circle),
                       ),
                       const SizedBox(width: 8),
-                      Text(_currentPoses.isNotEmpty ? 'AI Tracking' : 'Searching...',
+                      Text(!liveTracking.isPoseDetected
+                              ? 'Searching...'
+                              : liveTracking.isPoseCorrect
+                                  ? 'Pose Correct'
+                                  : 'Fix Position',
                           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
                     ],
                   ),
@@ -750,11 +900,22 @@ class _AiActivityScreenState extends State<AiActivityScreen>
             child: ValueListenableBuilder<RepCounterData>(
               valueListenable: _repService.trackingNotifier,
               builder: (context, trackingData, _) {
+                final progressValue = _isTimeBased ? _holdSeconds : trackingData.reps;
+                final targetValue = _isTimeBased ? _effectiveTarget : _effectiveTarget;
+                final progressLabel = _isTimeBased
+                  ? (widget.targetValuesAreMinutes ? 'TIME ACTIVE' : 'SEC ACTIVE')
+                  : 'REPS COMPLETED';
+                final feedbackBorder = trackingData.isPoseDetected
+                    ? (trackingData.isPoseCorrect ? const Color(0xFF00E676) : Colors.redAccent)
+                    : Colors.orange;
+                final progressText = _isTimeBased ? _formatDuration(progressValue) : '$progressValue';
+                final targetText = _isTimeBased ? _formatDuration(targetValue) : '$targetValue';
+
                 return Column(
                   children: [
-                    Text('${trackingData.reps} / $_selectedTarget',
+                  Text('$progressText / $targetText',
                         style: TextStyle(fontSize: 84, fontWeight: FontWeight.bold, color: Colors.white, height: 1.0)),
-                    Text('REPS COMPLETED',
+                    Text(progressLabel,
                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, letterSpacing: 2.0, color: AppColors.aiActiveDot)),
                     const SizedBox(height: 16),
                     Container(
@@ -762,7 +923,7 @@ class _AiActivityScreenState extends State<AiActivityScreen>
                       decoration: BoxDecoration(
                         color: Colors.black54,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: AppColors.aiActiveDot.withValues(alpha: 0.3)),
+                        border: Border.all(color: feedbackBorder.withValues(alpha: 0.8)),
                       ),
                       child: Text(
                         trackingData.feedback,
@@ -783,6 +944,12 @@ class _AiActivityScreenState extends State<AiActivityScreen>
   // STATE 5: RESULT UI
   // ══════════════════════════════════════════════════════════════
   Widget _buildResultState({required Key key}) {
+    final completionText = _isTimeBased
+        ? (widget.targetValuesAreMinutes
+            ? '${(_effectiveTarget / 60).round()} min hold'
+            : '$_effectiveTarget sec hold')
+        : '$_effectiveTarget reps';
+
     return Container(
       key: key,
       padding: const EdgeInsets.all(40),
@@ -802,7 +969,7 @@ class _AiActivityScreenState extends State<AiActivityScreen>
             Text('Great Job!', style: AppTextStyles.aiTitleHuge),
             const SizedBox(height: 16),
             Text(
-              'You successfully completed $_selectedTarget $_selectedActivity.',
+              'You successfully completed $completionText for $_selectedActivity.',
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyMedium,
             ),
@@ -836,15 +1003,22 @@ class _AiActivityScreenState extends State<AiActivityScreen>
 class _RealPosePainter extends CustomPainter {
   final List<Pose> poses;
   final Size imageSize;
+  final bool isCorrectPose;
 
-  _RealPosePainter({required this.poses, required this.imageSize});
+  _RealPosePainter({
+    required this.poses,
+    required this.imageSize,
+    required this.isCorrectPose,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     if (poses.isEmpty) return;
 
+    final poseColor = isCorrectPose ? const Color(0xFF00E676) : Colors.redAccent;
+
     final paintLine = Paint()
-      ..color = const Color(0xFF00E676) // Bright green
+      ..color = poseColor
       ..strokeWidth = 3.0
       ..strokeCap = StrokeCap.round;
 
@@ -853,7 +1027,7 @@ class _RealPosePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     final paintGlow = Paint()
-      ..color = const Color(0xFF00E676).withValues(alpha: 0.3)
+      ..color = poseColor.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
     // Scale factors from image coordinates to canvas coordinates

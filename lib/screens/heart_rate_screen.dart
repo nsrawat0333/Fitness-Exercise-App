@@ -42,6 +42,7 @@ class _HeartRateScreenState extends State<HeartRateScreen>
     // Give it 10 seconds to find a good pulse, then jump to Result
     _progressCtrl = AnimationController(
         vsync: this, duration: const Duration(seconds: 10));
+    _progressCtrl.addStatusListener(_onScanProgressStatusChanged);
 
     _equalizerCtrl = AnimationController(
       vsync: this,
@@ -51,6 +52,7 @@ class _HeartRateScreenState extends State<HeartRateScreen>
 
   @override
   void dispose() {
+    _progressCtrl.removeStatusListener(_onScanProgressStatusChanged);
     _hrService.stopMeasurement();
     _pulseCtrl.dispose();
     _progressCtrl.dispose();
@@ -58,27 +60,36 @@ class _HeartRateScreenState extends State<HeartRateScreen>
     super.dispose();
   }
 
+  void _onScanProgressStatusChanged(AnimationStatus status) {
+    if (status == AnimationStatus.completed && _currentState == ScanState.scanning) {
+      _completeScan();
+    }
+  }
+
+  Future<void> _completeScan() async {
+    if (!mounted || _currentState != ScanState.scanning) return;
+
+    _finalBpm = _hrService.readingNotifier.value.bpm;
+    if (_finalBpm == 0) {
+      _finalBpm = HealthStorageService().healthDataNotifier.value.lastBpm;
+    }
+    if (_finalBpm == 0) {
+      _finalBpm = 72; // Final fallback if no prior reading exists.
+    }
+
+    await HealthStorageService().updateBpm(_finalBpm);
+    await _hrService.stopMeasurement();
+
+    if (mounted) {
+      setState(() => _currentState = ScanState.result);
+    }
+  }
+
   void _startScan() async {
     setState(() => _currentState = ScanState.scanning);
     _progressCtrl.forward(from: 0);
     
     await _hrService.startMeasurement();
-
-    // End scan when progress is done or if manually stopped
-    _progressCtrl.addStatusListener((status) async {
-      if (status == AnimationStatus.completed && _currentState == ScanState.scanning) {
-        _finalBpm = _hrService.readingNotifier.value.bpm;
-        if (_finalBpm == 0) _finalBpm = 72; // fallback if no pulse detected
-        
-        // Save to persistent storage
-        HealthStorageService().updateBpm(_finalBpm);
-        
-        await _hrService.stopMeasurement();
-        if (mounted) {
-          setState(() => _currentState = ScanState.result);
-        }
-      }
-    });
   }
 
   void _resetScan() {
@@ -257,60 +268,65 @@ class _HeartRateScreenState extends State<HeartRateScreen>
 
         const SizedBox(height: 40),
 
-        // Bottom Cards
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('LAST READING', style: AppTextStyles.cardLabel),
-                      const SizedBox(height: 8),
-                      RichText(
-                        text: TextSpan(children: [
-                          TextSpan(text: '72 ', style: AppTextStyles.heading2),
-                          TextSpan(
-                              text: 'BPM', style: AppTextStyles.bodyMedium),
-                        ]),
+        ValueListenableBuilder<HealthData>(
+          valueListenable: HealthStorageService().healthDataNotifier,
+          builder: (context, healthData, _) {
+            final lastReadingLabel = healthData.lastBpm > 0 ? '${healthData.lastBpm} ' : '-- ';
+            final avgReadingLabel = healthData.dailyAvgBpm > 0 ? '${healthData.dailyAvgBpm} ' : '-- ';
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(24),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('DAILY AVG', style: AppTextStyles.cardLabel),
-                      const SizedBox(height: 8),
-                      RichText(
-                        text: TextSpan(children: [
-                          TextSpan(text: '68 ', style: AppTextStyles.heading2),
-                          TextSpan(
-                              text: 'BPM', style: AppTextStyles.bodyMedium),
-                        ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('LAST READING', style: AppTextStyles.cardLabel),
+                          const SizedBox(height: 8),
+                          RichText(
+                            text: TextSpan(children: [
+                              TextSpan(text: lastReadingLabel, style: AppTextStyles.heading2),
+                              TextSpan(text: 'BPM', style: AppTextStyles.bodyMedium),
+                            ]),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.5),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('DAILY AVG', style: AppTextStyles.cardLabel),
+                          const SizedBox(height: 8),
+                          RichText(
+                            text: TextSpan(children: [
+                              TextSpan(text: avgReadingLabel, style: AppTextStyles.heading2),
+                              TextSpan(text: 'BPM', style: AppTextStyles.bodyMedium),
+                            ]),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
         const SizedBox(height: 40),
       ],

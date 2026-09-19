@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../main.dart';
+import 'main_navigation.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,7 +11,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   double _loadingProgress = 0.0;
@@ -24,9 +24,10 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       vsync: this,
       duration: const Duration(milliseconds: 1500),
     );
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
 
     _controller.forward();
     _startLoading();
@@ -46,20 +47,17 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     // Request permissions
     await _requestPermissions();
 
-    // Navigate to AuthWrapper
+    // Navigate to MainNavigation
     if (mounted) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AuthWrapper()),
+        MaterialPageRoute(builder: (_) => const MainNavigation()),
       );
     }
   }
 
   Future<void> _requestPermissions() async {
     try {
-      await [
-        Permission.notification,
-        Permission.activityRecognition,
-      ].request();
+      await [Permission.notification, Permission.activityRecognition].request();
     } catch (e) {
       debugPrint("Permission request failed: $e");
     }
@@ -82,11 +80,11 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
           FadeTransition(
             opacity: _fadeAnimation,
             child: Image.asset(
-              'assets/images/splash_bodybuilder.png',
+              'assets/images/splash screen images.jpg',
               fit: BoxFit.cover,
             ),
           ),
-          
+
           // Dark Overlay for better text visibility
           Container(
             decoration: BoxDecoration(
@@ -94,8 +92,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.3),
-                  Colors.black.withOpacity(0.8),
+                  Colors.black.withValues(alpha: 0.3),
+                  Colors.black.withValues(alpha: 0.8),
                 ],
               ),
             ),
@@ -118,7 +116,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                     color: Colors.white,
                     shadows: [
                       Shadow(
-                        color: const Color(0xFF5B7E5F).withOpacity(0.8),
+                        color: const Color(0xFF5B7E5F).withValues(alpha: 0.8),
                         blurRadius: 20,
                       ),
                     ],
@@ -135,17 +133,6 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                   ),
                 ),
                 const SizedBox(height: 60),
-
-                // Lottie Animation / Loading Indicator
-                SizedBox(
-                  height: 120,
-                  child: Lottie.asset(
-                    'assets/images/jsonanimation/animation.json',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                
-                const SizedBox(height: 40),
 
                 // Premium Loading Bar
                 Column(
@@ -164,11 +151,16 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                               width: 200 * _loadingProgress,
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
-                                  colors: [Color(0xFF5B7E5F), Color(0xFF90B494)],
+                                  colors: [
+                                    Color(0xFF5B7E5F),
+                                    Color(0xFF90B494),
+                                  ],
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF5B7E5F).withOpacity(0.5),
+                                    color: const Color(
+                                      0xFF5B7E5F,
+                                    ).withValues(alpha: 0.5),
                                     blurRadius: 10,
                                     spreadRadius: 2,
                                   ),

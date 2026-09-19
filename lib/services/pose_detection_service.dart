@@ -9,17 +9,31 @@ class PoseDetectionService {
   factory PoseDetectionService() => _instance;
   PoseDetectionService._internal();
 
-  final PoseDetector _poseDetector = PoseDetector(
-    options: PoseDetectorOptions(
-      model: PoseDetectionModel.base,
-      mode: PoseDetectionMode.stream,
-    ),
-  );
+  PoseDetector? _poseDetector;
 
   bool _isProcessingFrame = false;
 
   void dispose() {
-    _poseDetector.close();
+    _poseDetector?.close();
+    _poseDetector = null;
+  }
+
+  PoseDetector _createPoseDetector() {
+    return PoseDetector(
+      options: PoseDetectorOptions(
+        model: PoseDetectionModel.base,
+        mode: PoseDetectionMode.stream,
+      ),
+    );
+  }
+
+  PoseDetector _ensurePoseDetector() {
+    return _poseDetector ??= _createPoseDetector();
+  }
+
+  bool _isClosedDetectorError(Object error) {
+    final text = error.toString().toLowerCase();
+    return text.contains('closed') || text.contains('already closed');
   }
 
   Future<List<Pose>> processCameraFrame(CameraImage image, int sensorOrientation) async {
@@ -30,8 +44,17 @@ class PoseDetectionService {
       final inputImage = _inputImageFromCameraImage(image, sensorOrientation);
       if (inputImage == null) return [];
 
-      final poses = await _poseDetector.processImage(inputImage);
-      return poses;
+      final detector = _ensurePoseDetector();
+      try {
+        final poses = await detector.processImage(inputImage);
+        return poses;
+      } catch (e) {
+        if (_isClosedDetectorError(e)) {
+          _poseDetector = _createPoseDetector();
+          return await _poseDetector!.processImage(inputImage);
+        }
+        rethrow;
+      }
     } catch (e) {
       debugPrint('PoseDetectionService error: $e');
       return [];
@@ -49,7 +72,7 @@ class PoseDetectionService {
     // Provide default bytes if only one plane exists (e.g., bgra8888)
     final bytes = image.planes.length == 1
         ? image.planes.first.bytes
-        : _yuv420ToBytes(image);
+        : _getBytes(image);
         
     if (bytes == null) return null;
 
@@ -57,17 +80,6 @@ class PoseDetectionService {
     
     final rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
     if (rotation == null) return null;
-
-    final planeData = image.planes.map(
-      (Plane plane) {
-        return InputImageMetadata(
-          bytesPerRow: plane.bytesPerRow,
-          size: size,
-          rotation: rotation,
-          format: format,
-        );
-      },
-    ).toList();
 
     return InputImage.fromBytes(
       bytes: bytes,
@@ -80,8 +92,8 @@ class PoseDetectionService {
     );
   }
 
-  Uint8List? _yuv420ToBytes(CameraImage image) {
-    if (Platform.isAndroid && image.format.group == ImageFormatGroup.yuv420) {
+  Uint8List? _getBytes(CameraImage image) {
+    if (Platform.isAndroid) {
       final WriteBuffer allBytes = WriteBuffer();
       for (final Plane plane in image.planes) {
         allBytes.putUint8List(plane.bytes);
@@ -90,7 +102,7 @@ class PoseDetectionService {
     }
     
     // For iOS format mainly BGRA8888 
-    if (Platform.isIOS && image.format.group == ImageFormatGroup.bgra8888) {
+    if (Platform.isIOS) {
         return image.planes[0].bytes;
     }
 

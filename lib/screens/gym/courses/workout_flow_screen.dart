@@ -1,18 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
-import 'package:video_player/video_player.dart';
 import '../../../data/gym_challenge_data.dart';
 import '../../../data/gym_user_data.dart';
-import '../../../data/hindi_exercise_instructions.dart';
-import '../../../widgets/breathing_animation_widget.dart';
+import '../../../data/exercise_assets.dart';
+import '../../../services/progress_service.dart';
+import '../../../services/xp_service.dart';
 import '../../../widgets/heart_rate_card.dart';
-import '../../../widgets/voice_toggle_button.dart';
-import '../../../widgets/music_toggle_button.dart';
-import '../../../services/voice_coach_service.dart';
-import '../../../services/music_service.dart';
-import '../../../services/points_manager.dart';
 import '../../heart_rate_screen.dart';
 import '../../water_tracker_screen.dart';
 
@@ -26,7 +20,7 @@ enum WorkoutPhase {
 }
 
 /// Full 5-phase workout flow screen.
-/// Replaces the old GymWorkoutTimerScreen with smooth transitions.
+/// Runs workout sessions with smooth phase transitions.
 class WorkoutFlowScreen extends StatefulWidget {
   final List<GymExercise> exercises;
   final int dayIndex;
@@ -49,28 +43,19 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   Timer? _timer;
   bool _isPaused = false;
   bool _isCompleted = false;
-
-  // 3-2-1 countdown state
-  bool _showCountdown = false;
-  int _countdownValue = 3;
-  late AnimationController _countdownAnimController;
-
-  // Video player for exercises with video assets
-  VideoPlayerController? _videoController;
+  final _progressService = ProgressService();
+  final _xpService = XpService();
+  XpAwardResult? _gymAward;
+  XpProgress? _gymProgress;
 
   // Phase transition animation
   late AnimationController _transitionController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  final VoiceCoachService _voiceCoach = VoiceCoachService();
-  final MusicService _musicService = MusicService();
-
   @override
   void initState() {
     super.initState();
-    _voiceCoach.init();
-    _musicService.init();
     _transitionController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -87,22 +72,13 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
 
     _transitionController.forward();
 
-    _countdownAnimController = AnimationController(
-      duration: const Duration(milliseconds: 700),
-      vsync: this,
-    );
-
     _startPhase();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
-    _voiceCoach.stop();
-    _musicService.stop();
-    _videoController?.dispose();
     _transitionController.dispose();
-    _countdownAnimController.dispose();
     super.dispose();
   }
 
@@ -151,100 +127,15 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
   }
 
   void _syncMusicToPhase() {
-    switch (_currentPhase) {
-      case WorkoutPhase.breathing:
-      case WorkoutPhase.recovery:
-        _musicService.setVolume(0.15); // Soft during rest
-        _musicService.play();
-        break;
-      case WorkoutPhase.perform:
-        _musicService.setVolume(0.45); // Full energy during workout
-        _musicService.play();
-        break;
-      case WorkoutPhase.preview:
-      case WorkoutPhase.nextPreview:
-        _musicService.setVolume(0.2);
-        break;
-    }
+    // Music service removed
   }
 
   void _speakPhaseInstructions() {
-    final exerciseName = _currentExercise.name.toLowerCase();
-    final data = HindiExerciseInstructions.getInstructions(exerciseName);
-
-    switch (_currentPhase) {
-      case WorkoutPhase.breathing:
-        _voiceCoach.speakSequence(HindiExerciseInstructions.phaseBreathing);
-        break;
-      case WorkoutPhase.preview:
-        // First announce the exercise name
-        _voiceCoach.speak(HindiExerciseInstructions.phasePreview(_currentExercise.name));
-        if (data != null) {
-          // Then explain HOW to start
-          _voiceCoach.speakSequence(data.start);
-          // Then explain the full posture/form so user knows before performing
-          _voiceCoach.speakSequence(data.posture);
-          // Then explain breathing technique
-          _voiceCoach.speakSequence(data.breathing);
-        }
-        break;
-      case WorkoutPhase.perform:
-        // During perform, give motivation and reminders only
-        if (data != null) {
-          _voiceCoach.speakSequence(data.motivation);
-        }
-        break;
-      case WorkoutPhase.recovery:
-        // Announce completion of the exercise
-        if (data != null && data.completion.isNotEmpty) {
-          _voiceCoach.speakSequence(data.completion);
-        }
-        _voiceCoach.speakSequence(HindiExerciseInstructions.phaseRecovery);
-        break;
-      case WorkoutPhase.nextPreview:
-        if (_nextExercise != null) {
-          _voiceCoach.speak(HindiExerciseInstructions.phasePreview(_nextExercise!.name));
-        }
-        break;
-    }
+    // Voice coach removed
   }
 
   void _initMediaForPhase() {
-    _videoController?.dispose();
-    _videoController = null;
-
-    String? videoPath;
-    if (_currentPhase == WorkoutPhase.perform) {
-      videoPath = _currentExercise.videoAsset;
-    } else if (_currentPhase == WorkoutPhase.recovery ||
-        _currentPhase == WorkoutPhase.breathing) {
-      videoPath = 'assets/images/mp4videofolder/resttakeabreath.mp4';
-    }
-
-    // Only use video for perform phase, breathing uses the custom widget
-    if (_currentPhase == WorkoutPhase.perform && videoPath != null) {
-      try {
-        _videoController = VideoPlayerController.asset(videoPath);
-        _videoController!.initialize().then((_) {
-          if (mounted) {
-            setState(() {});
-            _videoController!.setLooping(true);
-            _videoController!.setVolume(0);
-            _videoController!.play();
-          }
-        }).catchError((error) {
-          debugPrint("VideoPlayer Init Error: $error");
-          if (mounted) {
-            setState(() {
-              _videoController = null;
-            });
-          }
-        });
-      } catch (e) {
-        debugPrint("VideoPlayer Error: $e");
-        _videoController = null;
-      }
-    }
+    // No video players needed — all exercises use Lottie or static images now
   }
 
   void _startTimer() {
@@ -278,28 +169,11 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
         _currentPhase = WorkoutPhase.preview;
         break;
       case WorkoutPhase.preview:
-        // Insert 3-2-1 countdown before perform
-        _runCountdown();
-        return;
+        _currentPhase = WorkoutPhase.perform;
+        break;
       case WorkoutPhase.perform:
         if (_isLastExercise) {
-          // Reward points and log stats for completion
-          int mins = _totalWorkoutMinutes;
-          int cals = mins * 6; // Roughly 6 calories per minute of active workout
-
-          PointsManager().addWorkoutPoints(100, minutes: mins, calories: cals, onLevelUp: (newLevel) {
-            _showLevelUpDialog(newLevel);
-          }).then((success) {
-            if (success && mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('🎉 Awesome! You earned 100 FitPoints and logged your stats!')),
-              );
-            }
-          });
-
-          // No recovery for last exercise → complete
-          setState(() => _isCompleted = true);
-          _videoController?.pause();
+          _handleWorkoutCompletion();
           return;
         }
         _currentPhase = WorkoutPhase.recovery;
@@ -325,101 +199,6 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     _transitionToNextPhase();
   }
 
-  // ── 3-2-1 Countdown Logic ──
-
-  void _runCountdown() {
-    _timer?.cancel();
-    _countdownValue = 3;
-    _showCountdown = true;
-    setState(() {});
-
-    // Speak "Teen"
-    _voiceCoach.speak('तीन');
-    _countdownAnimController.forward(from: 0);
-
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (!mounted) { timer.cancel(); return; }
-
-      if (_countdownValue > 1) {
-        _countdownValue--;
-        _countdownAnimController.forward(from: 0);
-        // Speak countdown in Hindi
-        if (_countdownValue == 2) _voiceCoach.speak('दो');
-        if (_countdownValue == 1) _voiceCoach.speak('एक');
-        setState(() {});
-      } else {
-        // Countdown complete → transition to perform
-        timer.cancel();
-        _voiceCoach.speak('शुरू!');
-        _showCountdown = false;
-        _currentPhase = WorkoutPhase.perform;
-        _animateTransition();
-        _startPhase();
-        setState(() {});
-      }
-    });
-  }
-
-  Widget _buildCountdownScreen() {
-    final countdownTexts = {3: '3', 2: '2', 1: '1'};
-    final countdownColors = {
-      3: const Color(0xFFFF5252),
-      2: const Color(0xFFFFA000),
-      1: const Color(0xFF4CAF50),
-    };
-
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _countdownAnimController,
-          builder: (context, child) {
-            final scale = 1.0 + (1 - _countdownAnimController.value) * 1.5;
-            final opacity = _countdownAnimController.value.clamp(0.0, 1.0);
-            return Transform.scale(
-              scale: scale,
-              child: Opacity(
-                opacity: opacity,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      countdownTexts[_countdownValue] ?? '',
-                      style: GoogleFonts.outfit(
-                        fontSize: 120,
-                        fontWeight: FontWeight.w900,
-                        color: countdownColors[_countdownValue] ?? Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'GET READY!',
-                      style: GoogleFonts.outfit(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white70,
-                        letterSpacing: 3,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _currentExercise.name,
-                      style: GoogleFonts.outfit(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
   void _skipBackward() {
     if (_currentPhase != WorkoutPhase.breathing) {
       // Go back to start of current exercise
@@ -433,9 +212,49 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     setState(() {});
   }
 
-  void _showLevelUpDialog(int newLevel) {
+  Future<void> _handleWorkoutCompletion() async {
+    final totalDurationSeconds = widget.exercises.fold<int>(0, (sum, ex) {
+      return sum + ex.breathingDuration + ex.previewDuration + ex.performDuration + ex.recoveryDuration;
+    });
+
+    final calories = (_totalWorkoutMinutes * 6).clamp(1, 9999);
+
+    await _progressService.logWorkout(
+      type: 'gym',
+      name: 'Workout Day ${widget.dayIndex + 1}',
+      durationMinutes: (totalDurationSeconds / 60).ceil(),
+      caloriesBurned: calories,
+    );
+
+    final award = await _xpService.awardGymWorkout(
+      exerciseCount: widget.exercises.length,
+      totalDurationSeconds: totalDurationSeconds,
+      caloriesBurned: calories,
+    );
+    final progress = await _xpService.getProgress(XpDomain.gym);
+
     if (!mounted) return;
-    String tier = PointsManager.getTierFromLevel(newLevel);
+
+    if (award.leveledUp) {
+      _showLevelUpDialog(award.afterLevel, award.afterRank);
+    }
+
+    setState(() {
+      _gymAward = award;
+      _gymProgress = progress;
+      _isCompleted = true;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Workout complete • +${award.awardedXp} Gym XP'),
+        backgroundColor: const Color(0xFF005FF9),
+      ),
+    );
+  }
+
+  void _showLevelUpDialog(int newLevel, String rank) {
+    if (!mounted) return;
     
     showDialog(
       context: context,
@@ -476,7 +295,7 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Welcome to the $tier Tier 🔥',
+                  rank,
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(fontSize: 16, color: Colors.amber[200], fontWeight: FontWeight.w600),
                 ),
@@ -599,11 +418,6 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
       return _buildCompletedDashboard();
     }
 
-    // Show countdown overlay
-    if (_showCountdown) {
-      return _buildCountdownScreen();
-    }
-
     return Scaffold(
       backgroundColor: _phaseBgColor,
       body: SafeArea(
@@ -647,9 +461,6 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
               child: const Icon(Icons.close, color: Colors.black87, size: 22),
             ),
           ),
-          const VoiceToggleButton(),
-          const SizedBox(width: 6),
-          const MusicToggleButton(),
           const Spacer(),
           // Exercise counter
           Container(
@@ -806,14 +617,7 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
         // Use available height to prevent overflow
         final animHeight = (constraints.maxHeight - 50).clamp(120.0, 250.0);
         return Center(
-          child: SingleChildScrollView(
-            child: BreathingAnimationWidget(
-              color: color,
-              glowColor: glowColor,
-              size: animHeight * 0.6, // Smaller to leave room for the internal text
-              label: label,
-            ),
-          ),
+            child: Icon(Icons.air, size: animHeight * 0.6, color: color),
         );
       },
     );
@@ -827,21 +631,15 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (exercise.animationLottie != null)
-                Container(
-                  width: double.infinity,
-                  height: animHeight.clamp(200.0, 400.0),
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Lottie.asset(
-                    exercise.animationLottie!,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return _buildExercisePlaceholder(exercise);
-                    },
-                  ),
-                )
-              else
-                _buildExercisePlaceholder(exercise),
+              Container(
+                width: double.infinity,
+                height: animHeight.clamp(200.0, 400.0),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                child: ExerciseMediaWidget(
+                  assetPath: exercise.animationLottie ?? exercise.imageAsset ?? GymChallengeData.getFallbackImage(exercise.name),
+                  fit: BoxFit.contain,
+                ),
+              ),
               const SizedBox(height: 16),
               if (exercise.instructions.isNotEmpty)
                 Padding(
@@ -863,90 +661,21 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
     );
   }
 
-  Widget _buildExercisePlaceholder(GymExercise exercise) {
-    // Show image if available
-    if (exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty) {
-      return Container(
-        width: double.infinity,
-        height: 280,
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Image.asset(
-            exercise.imageAsset!,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => _buildIconPlaceholder(exercise),
-          ),
-        ),
-      );
-    }
-    return _buildIconPlaceholder(exercise);
-  }
-
-  Widget _buildIconPlaceholder(GymExercise exercise) {
-    return Container(
-      width: 200,
-      height: 200,
-      decoration: BoxDecoration(
-        color: _phaseColor.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.fitness_center,
-            size: 64,
-            color: _phaseColor.withValues(alpha: 0.4),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            exercise.name,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: _phaseColor.withValues(alpha: 0.6),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPerformContent() {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Stack(
           alignment: Alignment.center,
           children: [
-            // Video or Lottie
-            if (_videoController != null && _videoController!.value.isInitialized)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: AspectRatio(
-                  aspectRatio: _videoController!.value.aspectRatio,
-                  child: VideoPlayer(_videoController!),
-                ),
-              )
-            else if (_currentExercise.animationLottie != null)
-              Container(
-                width: double.infinity,
-                height: constraints.maxHeight - 70,
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                child: Lottie.asset(
-                  _currentExercise.animationLottie!,
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return _buildExercisePlaceholder(_currentExercise);
-                  },
-                ),
-              )
-            else
-              _buildExercisePlaceholder(_currentExercise),
+            Container(
+              width: double.infinity,
+              height: constraints.maxHeight - 70,
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              child: ExerciseMediaWidget(
+                assetPath: _currentExercise.animationLottie ?? _currentExercise.imageAsset ?? GymChallengeData.getFallbackImage(_currentExercise.name),
+                fit: BoxFit.contain,
+              ),
+            ),
 
             // Instructions overlay at bottom
             if (_currentExercise.instructions.isNotEmpty)
@@ -1172,11 +901,6 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
           onTap: () {
             setState(() {
               _isPaused = !_isPaused;
-              if (_isPaused) {
-                _videoController?.pause();
-              } else {
-                _videoController?.play();
-              }
             });
           },
           child: Container(
@@ -1325,10 +1049,75 @@ class _WorkoutFlowScreenState extends State<WorkoutFlowScreen>
                       widget.dayIndex > 0 ? 'Day ${widget.dayIndex} Finished' : 'Custom Workout Finished',
                       style: GoogleFonts.inter(fontSize: 15, color: Colors.grey[600], fontWeight: FontWeight.w600),
                     ),
+                    if (_gymAward != null) ...[
+                      const SizedBox(height: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF005FF9).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          '+${_gymAward!.awardedXp} XP',
+                          style: GoogleFonts.outfit(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFF005FF9),
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
               const SizedBox(height: 24),
+
+              if (_gymProgress != null) ...[
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFEAF1FF),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Gym Level ${_gymProgress!.level}',
+                            style: GoogleFonts.outfit(fontSize: 15, fontWeight: FontWeight.w800),
+                          ),
+                          const Spacer(),
+                          Text(
+                            _gymProgress!.rank,
+                            style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w800, color: const Color(0xFF005FF9)),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(999),
+                        child: LinearProgressIndicator(
+                          minHeight: 8,
+                          value: _gymProgress!.levelProgress,
+                          backgroundColor: Colors.white,
+                          color: const Color(0xFF005FF9),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        _gymProgress!.isMaxLevel
+                            ? '${_gymProgress!.xp} XP • Max level reached'
+                            : '${_gymProgress!.xp} XP • ${_gymProgress!.xpToNextLevel} XP to next level',
+                        style: GoogleFonts.inter(fontSize: 12, color: Colors.black54, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+              ],
 
               // BMI + Kcal Row
               Row(

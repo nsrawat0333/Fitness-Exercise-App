@@ -355,7 +355,7 @@ for i, (eid, name, category, muscle_group, difficulty, equipment, reps_or_dur) i
         "muscle_group": muscle_group,
         "difficulty": difficulty,
         "equipment": equipment,
-        "image": "assets/images/jsonimg/" + name.lower().replace(" ", "_").replace("/", "_").replace("&", "and").replace("-", "_").replace("'", "") + ".png",
+        "image": "assets/all_exercises/" + name.lower().replace(" ", "_").replace("/", "_").replace("&", "and").replace("-", "_").replace("'", "") + ".png",
         "instructions": instr,
         "duration": duration,
     }

@@ -151,7 +151,7 @@ class _WaterTrackerScreenState extends State<WaterTrackerScreen>
                 children: [
                   Text('Hydration Reminders', style: AppTextStyles.heading2),
                   const SizedBox(height: 8),
-                  Text('Set up to 5 reminders for your daily water intake.',
+                    Text('Auto reminders run every 2 hours from 8 AM to 8 PM. Night alerts stay off.',
                       style: AppTextStyles.bodyMedium
                           .copyWith(color: AppColors.textSecondary)),
                   const SizedBox(height: 24),

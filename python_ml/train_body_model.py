@@ -113,7 +113,6 @@ if __name__ == "__main__":
     parser.add_argument("--dummy", action='store_true', help="Generate a dummy model without training data")
     
     args = parser.parse_args()
-    
     if args.dummy:
         generate_dummy_model(args.export)
     elif args.dataset:

@@ -1,0 +1,234 @@
+@startuml FitFi_System_Architecture
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam shadowing true
+skinparam roundcorner 10
+skinparam defaultFontName "Calibri"
+skinparam defaultFontSize 12
+
+skinparam package {
+    BackgroundColor #F8F9FA
+    BorderColor #2C3E50
+    BorderThickness 1.5
+    FontSize 14
+    FontStyle bold
+    FontColor #1A252F
+}
+
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #34495E
+    BorderThickness 1
+    FontSize 11
+    FontColor #2C3E50
+}
+
+skinparam database {
+    BackgroundColor #EBF5FB
+    BorderColor #2980B9
+    FontColor #1B4F72
+    FontSize 12
+    FontStyle bold
+}
+
+skinparam node {
+    BackgroundColor #FDEDEC
+    BorderColor #C0392B
+    FontColor #78281F
+    FontSize 12
+    FontStyle bold
+}
+
+title **FitFi: AI-Powered Smart Fitness Coach — Complete System Architecture**
+
+' ==========================================================
+' HARDWARE & OS SENSOR LAYER
+' ==========================================================
+node "Mobile Device Hardware & Sensors (Android / iOS)" as HardwareLayer {
+    [Device Camera\n(Front & Rear + Torch LED)] as HW_Camera #FFEBEE
+    [Hardware Accelerometer\n(3D Motion Sensor)] as HW_Accel #E8F8F5
+    [Internal Device Storage\n(Flash Memory)] as HW_Storage #EAF2F8
+    [Alarm & Notification Service\n(OS System Alarms)] as HW_Alarm #FEF9E7
+}
+
+' ==========================================================
+' FLUTTER PLUGINS & DRIVER ABSTRACTION LAYER
+' ==========================================================
+package "Flutter Hardware Abstraction & Plugin Layer" as PluginLayer {
+    [camera: ^0.12.0+1\n(Camera ImageStream)] as P_Camera #FFCDD2
+    [google_mlkit_pose_detection: ^0.14.1\n(On-Device AI Engine)] as P_MLKit #E1BEE7
+    [sensors_plus: ^7.0.0\n(userAccelerometerEventStream)] as P_Sensors #C8E6C9
+    [shared_preferences: ^2.5.4\n(Key-Value Local Store)] as P_SharedPref #BBDEFB
+    [flutter_local_notifications & timezone\n(Zoned Periodic Alarms)] as P_Notif #FFF9C4
+    [permission_handler: ^11.3.0\n(Runtime Permissions)] as P_Perm #D7CCC8
+    [lottie: ^3.3.2\n(Vector Animation Engine)] as P_Lottie #FFE0B2
+}
+
+' ==========================================================
+' CORE SERVICE & BUSINESS LOGIC LAYER
+' ==========================================================
+package "Core Service Layer (Business Logic & Biomechanical Algorithms)" as ServiceLayer {
+    
+    package "AI & Computer Vision Subsystem" as AISubsystem {
+        [PoseDetectionService\n(Stream Ingestion & 33 Landmark Extraction)] as S_Pose
+        [RepCounterService\n(atan2 Joint Angle Calculations)] as S_RepCounter
+        [Biomechanical State Machines\n• Push-ups (<90° / >150°)\n• Squats (<100° / >158°)\n• Crunches, Lunges, Burpees\n• Planks & Wall Sits Isometric Holds] as S_StateMachines #F3E5F5
+    }
+
+    package "Sensor Signal Processing Subsystem" as SensorSubsystem {
+        [HeartRateService\n(Optical PPG Pulse Extractor)\n• 50x50 ROI Luminance Analyzer\n• Moving Average Peak Detector\n• Real-Time BPM & HRV Stress Engine] as S_HeartRate #FFEBEE
+        
+        [StepCounterService\n(Dynamic Pedometer Algorithm)\n• Vector Magnitude: sqrt(x²+y²+z²)\n• Threshold: >12.0 m/s²\n• 300ms Debounce Filter\n• Distance (km) & Calorie Estimator] as S_StepCounter #E8F8F5
+    }
+
+    package "Fitness, Course & Gamification Services" as CoreFitnessServices {
+        [HomeWorkoutService\n(Algorithmic Progressive Overload\nReps +30% | Rest -10s)] as S_WorkoutPlan
+        [XPService\n(Solo Leveling Progression\n10 Levels | 11 Ranks | Dual Track)] as S_XP
+        [WaterStorageService\n(Hydration Target & History Logger)] as S_Water
+        [HealthStorageService\n(BPM Aggregation & AI Rep Logs)] as S_Health
+        [ProgressService\n(Challenge Tiers & Course History)] as S_Progress
+        [NotificationService & SchedulingService\n(2-Hour Hydration & Daily Course Alerts)] as S_NotifServ
+    }
+
+    package "Performance & Optimization Subsystem" as PerfSubsystem {
+        [PerformanceManager & DeviceProfiler\n(Low / Mid / High Hardware Tier Detector)] as S_Perf
+        [MemoryManager & AnimationManager\n(Dynamic Image Cache & Shader Throttling)] as S_Memory
+    }
+}
+
+' ==========================================================
+' STATIC DATA & CATALOG REPOSITORY LAYER
+' ==========================================================
+package "Static Data Layer (Asset Catalogs & Model Registries)" as DataLayer {
+    [exercise_assets.dart\n(256 Mapped Exercises with Media)] as D_Exercises #FFF3E0
+    [gym_courses_data.dart & gym_challenge_data.dart\n(Target Programs: Fat, Fit, Lean)] as D_Gym
+    [ufc_data.dart\n(Dagestani Wrestling & Irish Striking Curriculums)] as D_UFC
+    [challenge_data.dart\n(6 Challenge Levels & 15 Individual Challenges)] as D_Challenge
+    [diet_plan_data.dart\n(Lose Weight, Build Muscle, Keep Fit)] as D_Diet
+}
+
+' ==========================================================
+' PRESENTATION LAYER (FLUTTER SCREENS & CUSTOM PAINTERS)
+' ==========================================================
+package "Presentation Layer (Flutter UI & Rendering Pipeline)" as PresentationLayer {
+    
+    [SplashScreen & MainNavigation\n(5-Tab IndexedStack Bottom Nav)] as UI_Nav #E0F2F1
+    
+    package "Core Feature Screens" as FeatureScreens {
+        [HomeScreen\n(FitfiAppBar, Metric Cards, Quick Actions)] as UI_Home
+        [AiActivityScreen\n(Live Camera Feed, Rep Overlay, Status Cues)] as UI_AIActivity #F3E5F5
+        [HeartRateScreen\n(Radar Scan Animation, BPM & Recovery Analysis)] as UI_HeartRate #FFEBEE
+        [StepCounterScreen\n(Progress Arc, Bezier Trends, History Badges)] as UI_StepCounter #E8F8F5
+        [WaterTrackerScreen\n(Wave Animation, Vessel Pickers, Reminder Sheet)] as UI_Water #E1F5FE
+        [GymMainScreen & Onboarding Wizard\n(8-Step Questionnaire with Live BMI)] as UI_Gym #FFF8E1
+        [WorkoutPlayerScreen\n(5-Phase Timed Interval Guided Runner)] as UI_WorkoutPlayer #FFF3E0
+        [UFCScreen & Detail\n(Dagestani & Irish Multi-Day Training Plans)] as UI_UFC #FFEBEE
+        [ChallengeScreen & ChallengePlayer\n(6 Tier Ladder + 15 Quick Challenges)] as UI_Challenge #E8F5E9
+        [AccountScreen (Growth Hub)\n(Consolidated Health Analytics & Rank Badges)] as UI_Account #EDE7F6
+        [DietPlanScreen & CalendarScreen\n(Nutrition Breakdown & Workout Streaks)] as UI_DietCal #FBE9E7
+        [SessionSummaryScreen\n(Post-Workout XP Rewards & Level-Up Dialogs)] as UI_Summary #E8EAF6
+    }
+
+    package "CustomPainter Hardware Rendering Engine" as PainterEngine {
+        [_RealPosePainter\n(Neon Green/Red Skeleton Overlays)] as CP_Pose #E1BEE7
+        [_EcgPainter\n(Continuous Cardiac Waveform)] as CP_Ecg #FFCDD2
+        [_WavePainter\n(Sinusoidal Liquid Hydration Fill)] as CP_Wave #B3E5FC
+        [_StepArcPainter & _TrendChartPainter\n(Cubic Bezier Step Curve & Gauges)] as CP_Step #C8E6C9
+        [_ScanningPulsePainter\n(Biometric Radar & Equalizer Bars)] as CP_Radar #FFCDD2
+    }
+}
+
+' ==========================================================
+' PERSISTENCE / LOCAL DATABASE
+' ==========================================================
+database "Local SQLite / SharedPreferences\n(100% Offline On-Device Store)" as LocalDB {
+    folder "User & Health Records" {
+        [User Profile & Body Info]
+        [Daily Step Counts & Distance Logs]
+        [Hydration History & Custom Goals]
+        [Resting & Active BPM Readings]
+        [AI Exercise Rep Counters]
+        [XP Points, Ranks & Completed Tiers]
+        [Language Preference (en / hi)]
+    }
+}
+
+' ==========================================================
+' OFFLINE MACHINE LEARNING PIPELINE (PYTHON / TFLITE)
+' ==========================================================
+package "Offline Machine Learning Training Subsystem (python_ml/)" as MLTrainingPipeline #FAFAFA {
+    [train_body_model.py\n(MobileNetV2 Transfer Learning -> model.tflite)] as ML_Body
+    [train_diet_model.py\n(Caloric Adjustment Regression -> diet_model.tflite)] as ML_Diet
+    [train_planner_model.py\n(Progressive Overload Targeter -> planner_model.tflite)] as ML_Planner
+    [pushup_counter/ (Desktop Prototype)\n(OpenCV + YOLOv8-pose Engine)] as ML_Yolo
+}
+
+' ==========================================================
+' HARDWARE TO PLUGIN BINDINGS
+' ==========================================================
+HW_Camera --> P_Camera : Raw YUV/NV21 Image Stream & Flash Torch Control
+HW_Accel --> P_Sensors : Raw Triaxial Acceleration (x, y, z)
+HW_Storage <--> P_SharedPref : Disk I/O (Key-Value Records)
+HW_Alarm <-- P_Notif : OS AlarmManager & Notification Broadcasts
+
+' ==========================================================
+' PLUGIN TO SERVICE BINDINGS
+' ==========================================================
+P_Camera --> S_Pose : Feed CameraImage frames
+S_Pose --> P_MLKit : Ingest InputImage into PoseDetector
+P_Camera --> S_HeartRate : Ingest frames for 50x50 ROI pixel analysis
+P_Sensors --> S_StepCounter : Stream 3D motion vectors
+P_Notif <-- S_NotifServ : Register periodic exact reminders
+P_Lottie <-- UI_WorkoutPlayer : Render vector exercise guides
+
+' ==========================================================
+' SERVICE LAYER INTERACTIONS
+' ==========================================================
+P_MLKit --> S_RepCounter : 33 Spatial Landmarks
+S_RepCounter --> S_StateMachines : Joint Angles (atan2)
+S_StateMachines --> S_Health : Increment Daily Push-ups, Squats, Holds
+S_StepCounter --> S_Health : Emit Steps, Distance, Calories
+S_HeartRate --> S_Health : Emit Processed BPM & Stress Index
+S_WorkoutPlan --> D_Exercises : Fetch 256 Exercise Templates
+S_WorkoutPlan --> S_Progress : Sync multi-week course schedules
+S_Progress --> S_XP : Award workout & challenge XP
+S_XP --> LocalDB : Persist XP Levels & Rank Upgrades
+
+S_Health <--> P_SharedPref : Save / Load daily metrics
+S_Water <--> P_SharedPref : Save / Load hydration timestamps
+S_Progress <--> P_SharedPref : Save / Load course progression
+S_Perf --> S_Memory : Trigger cache tuning & animation limits
+
+' ==========================================================
+' SERVICE TO PRESENTATION BINDINGS
+' ==========================================================
+S_Pose --> CP_Pose : Real-time landmark coordinates
+CP_Pose --> UI_AIActivity : Overlay skeleton on live camera
+S_RepCounter --> UI_AIActivity : Live rep count & form feedback
+S_HeartRate --> CP_Ecg : Stream real-time pulse data
+S_HeartRate --> CP_Radar : Stream scanning state
+CP_Ecg --> UI_Home : ECG card visualizer
+CP_Radar --> UI_HeartRate : Biometric radar sweep
+S_StepCounter --> CP_Step : Vector count & weekly statistics
+CP_Step --> UI_StepCounter : Render animated progress arc & trends
+S_Water --> CP_Wave : Hydration volume / daily goal
+CP_Wave --> UI_Water : Render animated wave liquid
+D_Gym --> UI_Gym : Populate body-focus curriculums
+D_UFC --> UI_UFC : Populate combat programs
+D_Challenge --> UI_Challenge : Populate 6-tier ladder
+D_Diet --> UI_DietCal : Populate nutritional meal guides
+S_WorkoutPlan --> UI_WorkoutPlayer : Stream 5-phase exercise sequence
+S_XP --> UI_Account : Display current Level & Rank Badge
+S_XP --> UI_Summary : Trigger level-up modal celebrations
+
+' ==========================================================
+' LOCAL DB CONNECTIONS
+' ==========================================================
+P_SharedPref <--> LocalDB : Asynchronous Read/Write
+
+' ==========================================================
+' OFFLINE TRAINING PIPELINE RELATIONSHIP
+' ==========================================================
+MLTrainingPipeline ..> DataLayer : Prepared TFLite Models\n(Ready for Future Phase II Integration)
+
+@enduml

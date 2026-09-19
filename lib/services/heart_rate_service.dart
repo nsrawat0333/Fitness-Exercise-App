@@ -115,7 +115,6 @@ class HeartRateService {
     if (_redVariations.length < 50) return; // Not enough data yet
 
     // Find peaks and valleys
-    int peakCount = 0;
     double threshold = 0;
     
     // Calculate simple moving average as threshold
@@ -131,7 +130,6 @@ class HeartRateService {
       if (isAbove && !wasAbove) {
         // Crossed threshold upwards = roughly a beat
         peakIndices.add(i);
-        peakCount++;
       }
       wasAbove = isAbove;
     }

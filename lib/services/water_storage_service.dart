@@ -18,9 +18,19 @@ class WaterStorageService {
     ),
   );
 
+  static const int _waterReminderStartHour = 8;
+  static const int _waterReminderEndHour = 20;
+  static const int _waterReminderIntervalHours = 2;
+  static const int _waterReminderBaseId = 2100;
+  static const String _fixedReminderIntervalLabel = 'Every 2 hours (8 AM - 8 PM)';
+
   Future<void> init() async {
     await _loadData();
-    _checkAndScheduleReminders();
+    try {
+      await _checkAndScheduleReminders();
+    } catch (e) {
+      debugPrint('Failed to initialize water reminders: $e');
+    }
   }
 
   Future<void> _loadData() async {
@@ -55,7 +65,12 @@ class WaterStorageService {
 
     waterDataNotifier.value.dailyGoalMl = prefs.getInt('water_daily_goal') ?? 2000;
     waterDataNotifier.value.remindersEnabled = prefs.getBool('water_reminders_enabled') ?? true;
-    waterDataNotifier.value.reminderInterval = prefs.getString('water_reminder_interval') ?? 'Every 2 hours';
+    waterDataNotifier.value.reminderInterval =
+        prefs.getString('water_reminder_interval') ?? _fixedReminderIntervalLabel;
+    if (waterDataNotifier.value.reminderInterval != _fixedReminderIntervalLabel) {
+      waterDataNotifier.value.reminderInterval = _fixedReminderIntervalLabel;
+      await prefs.setString('water_reminder_interval', _fixedReminderIntervalLabel);
+    }
     
     // Notify listeners
     _notify();
@@ -80,14 +95,14 @@ class WaterStorageService {
   Future<void> toggleReminders(bool enabled) async {
     waterDataNotifier.value.remindersEnabled = enabled;
     await _saveData();
-    _checkAndScheduleReminders();
+    await _checkAndScheduleReminders();
     _notify();
   }
   
   Future<void> updateReminderInterval(String interval) async {
-    waterDataNotifier.value.reminderInterval = interval;
+    waterDataNotifier.value.reminderInterval = _fixedReminderIntervalLabel;
     await _saveData();
-    _checkAndScheduleReminders();
+    await _checkAndScheduleReminders();
     _notify();
   }
 
@@ -133,18 +148,31 @@ class WaterStorageService {
     }
   }
 
-  void _checkAndScheduleReminders() {
+  Future<void> _checkAndScheduleReminders() async {
     final notifService = NotificationService();
-    notifService.cancelAllNotifications();
+
+    // Only cancel water reminder IDs, do not cancel other module notifications.
+    for (int id = _waterReminderBaseId; id < _waterReminderBaseId + 24; id++) {
+      await notifService.cancelNotification(id);
+    }
 
     if (waterDataNotifier.value.remindersEnabled) {
-      // In a real app, use flutter_local_notifications zonedSchedule API or flutter_workmanager
-      // For this implementation plan, we simulate the scheduling since exact timing requires native work
-      notifService.showNotification(
-        id: 100, 
-        title: 'Stay Hydrated! 💧', 
-        body: 'Time to drink some water. You are at ${waterDataNotifier.value.currentIntakeMl}ml today.'
-      );
+      int i = 0;
+      for (int hour = _waterReminderStartHour; hour <= _waterReminderEndHour; hour += _waterReminderIntervalHours) {
+        try {
+          await notifService.scheduleDailyNotificationAtTime(
+            id: _waterReminderBaseId + i,
+            title: 'Stay Hydrated',
+            body: 'Time to drink water. Keep your recovery on track.',
+            hour: hour,
+            minute: 0,
+            payload: 'water|$hour',
+          );
+        } catch (e) {
+          debugPrint('Failed to schedule water reminder for $hour:00: $e');
+        }
+        i++;
+      }
     }
   }
 }

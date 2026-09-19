@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import '../../../data/gym_challenge_data.dart';
+import '../../../data/exercise_assets.dart';
 import 'workout_flow_screen.dart';
 
 class GymDailyWorkoutScreen extends StatelessWidget {
@@ -204,35 +204,14 @@ class GymDailyWorkoutScreen extends StatelessWidget {
               color: const Color(0xFFF5F7FA),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: exercise.videoAsset != null
-                ? const Icon(Icons.play_circle_fill, color: Color(0xFF005FF9), size: 30)
-                : exercise.animationLottie != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Lottie.asset(
-                          exercise.animationLottie!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Image.asset(
-                            GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.directions_run, color: Color(0xFF005FF9), size: 30),
-                          ),
-                        ),
-                      )
-                    : ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(
-                          exercise.imageAsset != null && exercise.imageAsset!.isNotEmpty
-                              ? exercise.imageAsset!
-                              : (GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png'),
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => Image.asset(
-                            GymChallengeData.getFallbackImage(exercise.name) ?? 'assets/images/gym/goal_keep_fit_male.png',
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.directions_run, color: Color(0xFF005FF9), size: 30),
-                          ),
-                        ),
-                      ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: ExerciseMediaWidget(
+                assetPath: exercise.animationLottie ?? exercise.imageAsset ?? GymChallengeData.getFallbackImage(exercise.name),
+                fit: BoxFit.cover,
+                isThumbnail: true,
+              ),
+            ),
           ),
           const SizedBox(width: 16),
           // Text Details

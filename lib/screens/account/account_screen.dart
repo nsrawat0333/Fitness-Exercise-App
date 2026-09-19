@@ -1,144 +1,335 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'leaderboard_screen.dart';
-import 'login_register_screen.dart';
-import '../heart_rate_screen.dart';
-import '../water_tracker_screen.dart';
+
+import '../../services/health_storage_service.dart';
+import '../../services/progress_service.dart';
+import '../../services/step_counter_service.dart';
+import '../../services/water_storage_service.dart';
+import '../../services/xp_service.dart';
 import '../calendar_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../services/family_service.dart';
-import 'package:flutter/services.dart';
+import '../heart_rate_screen.dart';
+import '../step_counter_screen.dart';
+import '../water_tracker_screen.dart';
 
 class AccountScreen extends StatefulWidget {
-  const AccountScreen({super.key});
+  final bool isActive;
+  const AccountScreen({super.key, this.isActive = false});
 
   @override
   State<AccountScreen> createState() => _AccountScreenState();
 }
 
-class _AccountScreenState extends State<AccountScreen> with TickerProviderStateMixin {
-  late AnimationController _pointsAnimController;
-  late Animation<double> _pointsAnim;
+class _AccountScreenState extends State<AccountScreen>
+    with SingleTickerProviderStateMixin {
+  final StepCounterService _stepService = StepCounterService();
+  final WaterStorageService _waterService = WaterStorageService();
+  final HealthStorageService _healthService = HealthStorageService();
+  final ProgressService _progressService = ProgressService();
+  final XpService _xpService = XpService();
 
-  final FamilyService _familyService = FamilyService();
-  final User? currentUser = FirebaseAuth.instance.currentUser;
-  
-  // App theme colors
-  static const _bg = Color(0xFFF9F7F3);
-  static const _cardBg = Color(0xFFFFFFFF);
-  static const _accent = Color(0xFF5B7E5F);
-  static const _accentLight = Color(0xFFD3D8C8);
-  static const _textDark = Color(0xFF1A1A1A);
-  static const _textMuted = Color(0xFF8D8D8D);
+  late AnimationController _entryController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  _GrowthSnapshot _snapshot = const _GrowthSnapshot.empty();
+  bool _loading = true;
 
   @override
   void initState() {
     super.initState();
-    _pointsAnimController = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+    _entryController = AnimationController(
       vsync: this,
+      duration: const Duration(milliseconds: 900),
     );
-    _pointsAnim = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _pointsAnimController, curve: Curves.easeOutCubic),
+    _fadeAnimation = CurvedAnimation(
+      parent: _entryController,
+      curve: Curves.easeOut,
     );
-    _pointsAnimController.forward();
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.06),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(parent: _entryController, curve: Curves.easeOutCubic),
+    );
+
+    _loadGrowthSnapshot();
+    _entryController.forward();
   }
 
   @override
   void dispose() {
-    _pointsAnimController.dispose();
+    _entryController.dispose();
     super.dispose();
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (currentUser == null) {
-      return const Scaffold(body: Center(child: Text("Please Login to view your account.")));
+  void didUpdateWidget(AccountScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _loadGrowthSnapshot();
+      _entryController.forward(from: 0);
     }
+  }
+
+  Future<void> _loadGrowthSnapshot() async {
+    await _progressService.init();
+
+    final workoutHistory = _progressService.getWorkoutHistory();
+    final now = DateTime.now();
+
+    int workoutsToday = 0;
+    int totalMinutes = 0;
+    int totalCalories = 0;
+
+    for (final workout in workoutHistory) {
+      final rawDate = workout['date'];
+      final parsed = DateTime.tryParse('$rawDate');
+      if (parsed != null &&
+          parsed.year == now.year &&
+          parsed.month == now.month &&
+          parsed.day == now.day) {
+        workoutsToday++;
+      }
+      totalMinutes += _asInt(workout['duration']);
+      totalCalories += _asInt(workout['calories']);
+    }
+
+    final completedChallenges = _progressService.getCompletedChallenges();
+    final unlockedChallengeLevel = _progressService.getUnlockedChallengeLevel();
+
+    final challengeProgress = await _xpService.getProgress(XpDomain.challenge);
+    final gymProgress = await _xpService.getProgress(XpDomain.gym);
+
+    if (!mounted) return;
+    setState(() {
+      _snapshot = _GrowthSnapshot(
+        workoutsToday: workoutsToday,
+        totalWorkouts: workoutHistory.length,
+        totalMinutes: totalMinutes,
+        totalCalories: totalCalories,
+        completedChallenges: completedChallenges.length,
+        unlockedChallengeLevel: unlockedChallengeLevel,
+        challengeProgress: challengeProgress,
+        gymProgress: gymProgress,
+      );
+      _loading = false;
+    });
+  }
+
+  int _asInt(dynamic value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    return int.tryParse('$value') ?? 0;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final merge = Listenable.merge([
+      _stepService.stepDataNotifier,
+      _waterService.waterDataNotifier,
+      _healthService.healthDataNotifier,
+    ]);
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: const Color(0xFFF2FBFA),
       body: SafeArea(
-        child: StreamBuilder<DocumentSnapshot>(
-          stream: FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (!snapshot.hasData || !snapshot.data!.exists) {
-              return const Center(child: Text("Missing User Data."));
-            }
+        child: RefreshIndicator(
+          onRefresh: _loadGrowthSnapshot,
+          color: const Color(0xFF0D9D93),
+          child: AnimatedBuilder(
+            animation: merge,
+            builder: (context, _) {
+              final stepData = _stepService.stepDataNotifier.value;
+              final waterData = _waterService.waterDataNotifier.value;
+              final healthData = _healthService.healthDataNotifier.value;
 
-            final data = snapshot.data!.data() as Map<String, dynamic>;
-            final userName = data['name'] ?? 'User';
-            final email = data['email'] ?? '';
-            final totalPoints = data['points'] ?? 0;
-            final level = (totalPoints ~/ 500) + 1; // 500 points per level
-            final familyCode = data['familyCode'];
-            final currentStreak = data['currentStreak'] ?? 0;
-            final workoutsCount = data['workouts_count'] ?? 0;
-            final totalMinutes = data['total_minutes'] ?? 0;
-            final caloriesBurned = data['calories_burned'] ?? 0;
+              final int stepGoal = StepCounterService.dailyGoal;
+              final int waterGoal = max(1, waterData.dailyGoalMl);
+              final int avgBpm =
+                  healthData.dailyAvgBpm > 0 ? healthData.dailyAvgBpm : healthData.lastBpm;
+              final int repsToday =
+                  healthData.pushUps + healthData.pullUps + healthData.chinUps;
 
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              final bool isActiveToday =
+                  stepData.steps > 0 ||
+                  waterData.currentIntakeMl > 0 ||
+                  repsToday > 0 ||
+                  _snapshot.workoutsToday > 0;
+
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics(),
+                ),
+                padding: const EdgeInsets.fromLTRB(18, 12, 18, 30),
                 children: [
-                  _buildTopBar(),
-                  const SizedBox(height: 8),
-                  _buildProfileHeader(userName, email, currentStreak),
-                  const SizedBox(height: 24),
-                  _buildPointsAndLevel(totalPoints, level),
-                  const SizedBox(height: 24),
-                  _buildFamilySection(familyCode),
-                  const SizedBox(height: 24),
-                  _buildStatsCards(workoutsCount),
-                  const SizedBox(height: 24),
-                  _buildWeeklyImprovement(),
-                  const SizedBox(height: 24),
-                  _buildDataAnalysis(workoutsCount, totalMinutes, caloriesBurned, currentStreak),
-                  const SizedBox(height: 24),
-                  _buildLeaderboardPreview(totalPoints, familyCode),
-                  const SizedBox(height: 24),
-                  _buildSettingsSection(),
-                  const SizedBox(height: 40),
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: _buildHeader(isActiveToday),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildPrimaryStats(
+                    steps: stepData.steps,
+                    waterMl: waterData.currentIntakeMl,
+                    avgBpm: avgBpm,
+                    workoutsToday: _snapshot.workoutsToday,
+                  ),
+                  const SizedBox(height: 14),
+                  _buildProgressCard(
+                    title: 'Daily Steps',
+                    subtitle: '${stepData.steps} / $stepGoal',
+                    progress: (stepData.steps / stepGoal).clamp(0.0, 1.0),
+                    color: const Color(0xFF0D9D93),
+                    icon: Icons.directions_walk,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const StepCounterScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildProgressCard(
+                    title: 'Water Intake',
+                    subtitle: '${waterData.currentIntakeMl}ml / $waterGoal ml',
+                    progress: (waterData.currentIntakeMl / waterGoal).clamp(0.0, 1.0),
+                    color: const Color(0xFF1696D2),
+                    icon: Icons.water_drop,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const WaterTrackerScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  _buildStatusCard(
+                    repsToday: repsToday,
+                    isActiveToday: isActiveToday,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildChallengeCard(),
+                  const SizedBox(height: 12),
+                  _buildWorkoutSummary(),
+                  const SizedBox(height: 12),
+                  _buildQuickActions(),
                 ],
-              ),
-            );
-          }
+              );
+            },
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTopBar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
-        children: [
-          Text(
-            'ACCOUNT',
-            style: GoogleFonts.outfit(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: _textDark,
-              letterSpacing: 0.5,
-            ),
+  Widget _buildHeader(bool isActiveToday) {
+    final now = DateTime.now();
+    final monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF0D9D93), Color(0xFF1593C7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF0D9D93).withValues(alpha: 0.25),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
           ),
-          const Spacer(),
-          GestureDetector(
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginRegisterScreen())),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: _accent,
-                borderRadius: BorderRadius.circular(12),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'APP GROWTH',
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${monthNames[now.month - 1]} ${now.day}, ${now.year}',
+                      style: GoogleFonts.inter(
+                        color: Colors.white.withValues(alpha: 0.85),
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              child: Text(
-                'Login',
-                style: GoogleFonts.outfit(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.18),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      isActiveToday ? Icons.bolt : Icons.hourglass_bottom,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isActiveToday ? 'ACTIVE' : 'STARTING',
+                      style: GoogleFonts.outfit(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Text(
+            'Daily exercises, challenges, BPM, steps, water and workout momentum in one growth view.',
+            style: GoogleFonts.inter(
+              color: Colors.white.withValues(alpha: 0.9),
+              fontSize: 12,
+              height: 1.45,
             ),
           ),
         ],
@@ -146,668 +337,467 @@ class _AccountScreenState extends State<AccountScreen> with TickerProviderStateM
     );
   }
 
-  Widget _buildProfileHeader(String userName, String email, int currentStreak) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          Container(
-            width: 72,
-            height: 72,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: _accent,
-              boxShadow: [
-                BoxShadow(color: _accent.withValues(alpha: 0.3), blurRadius: 16, offset: const Offset(0, 6)),
-              ],
-            ),
-            child: Center(
-              child: Text(
-                userName.isNotEmpty ? userName[0].toUpperCase() : 'U',
-                style: GoogleFonts.outfit(fontSize: 30, fontWeight: FontWeight.w800, color: Colors.white),
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildPrimaryStats({
+    required int steps,
+    required int waterMl,
+    required int avgBpm,
+    required int workoutsToday,
+  }) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        _StatTile(
+          width: (MediaQuery.of(context).size.width - 46) / 2,
+          title: 'Steps',
+          value: '$steps',
+          caption: 'today',
+          icon: Icons.directions_walk,
+          color: const Color(0xFF0D9D93),
+        ),
+        _StatTile(
+          width: (MediaQuery.of(context).size.width - 46) / 2,
+          title: 'Water',
+          value: '${waterMl}ml',
+          caption: 'today',
+          icon: Icons.water_drop,
+          color: const Color(0xFF1696D2),
+        ),
+        _StatTile(
+          width: (MediaQuery.of(context).size.width - 46) / 2,
+          title: 'Avg BPM',
+          value: avgBpm > 0 ? '$avgBpm' : '--',
+          caption: 'today',
+          icon: Icons.favorite,
+          color: const Color(0xFF15A88E),
+        ),
+        _StatTile(
+          width: (MediaQuery.of(context).size.width - 46) / 2,
+          title: 'Workouts',
+          value: '$workoutsToday',
+          caption: 'today',
+          icon: Icons.fitness_center,
+          color: const Color(0xFF147EA8),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressCard({
+    required String title,
+    required String subtitle,
+    required double progress,
+    required Color color,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(userName, style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w800, color: _textDark)),
-                const SizedBox(height: 4),
-                Text(email, style: GoogleFonts.inter(fontSize: 13, color: _textMuted)),
-                const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  width: 36,
+                  height: 36,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF6B35).withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    color: color.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                  child: Icon(icon, color: color, size: 20),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(Icons.local_fire_department, color: Color(0xFFFF6B35), size: 14),
-                      const SizedBox(width: 4),
-                      Text('$currentStreak Day Streak',
-                        style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w700, color: const Color(0xFFFF6B35)),
+                      Text(
+                        title,
+                        style: GoogleFonts.outfit(
+                          color: const Color(0xFF10313D),
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      Text(
+                        subtitle,
+                        style: GoogleFonts.inter(
+                          color: const Color(0xFF5E7681),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
                 ),
+                Text(
+                  '${(progress * 100).round()}%',
+                  style: GoogleFonts.outfit(
+                    color: color,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPointsAndLevel(int totalPoints, int level) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: _cardBg,
-          borderRadius: BorderRadius.circular(24),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-        ),
-        child: Row(
-          children: [
-            AnimatedBuilder(
-              animation: _pointsAnim,
-              builder: (context, child) {
-                return SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: CustomPaint(
-                    painter: _ProgressRingPainter(
-                      progress: _pointsAnim.value * (totalPoints % 500) / 500,
-                      color: _accent,
-                      bgColor: _accentLight.withValues(alpha: 0.5),
-                    ),
-                    child: Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('Lv $level', style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: _textDark)),
-                          Text('${(_pointsAnim.value * totalPoints).toInt()}', style: GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w600, color: _accent)),
-                        ],
-                      ),
-                    ),
+            const SizedBox(height: 10),
+            TweenAnimationBuilder<double>(
+              duration: const Duration(milliseconds: 700),
+              curve: Curves.easeOutCubic,
+              tween: Tween<double>(begin: 0, end: progress),
+              builder: (context, animatedValue, _) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(99),
+                  child: LinearProgressIndicator(
+                    minHeight: 8,
+                    value: animatedValue,
+                    backgroundColor: color.withValues(alpha: 0.15),
+                    valueColor: AlwaysStoppedAnimation<Color>(color),
                   ),
                 );
               },
             ),
-            const SizedBox(width: 24),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Total Points', style: GoogleFonts.inter(fontSize: 12, color: _textMuted)),
-                  const SizedBox(height: 4),
-                  AnimatedBuilder(
-                    animation: _pointsAnim,
-                    builder: (context, _) {
-                      return Text('${(_pointsAnim.value * totalPoints).toInt()} XP',
-                        style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, color: _textDark),
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 6,
-                    decoration: BoxDecoration(color: _accentLight.withValues(alpha: 0.4), borderRadius: BorderRadius.circular(3)),
-                    child: AnimatedBuilder(
-                      animation: _pointsAnim,
-                      builder: (context, _) {
-                        return FractionallySizedBox(
-                          alignment: Alignment.centerLeft,
-                          widthFactor: _pointsAnim.value * (totalPoints % 500) / 500,
-                          child: Container(
-                            decoration: BoxDecoration(color: _accent, borderRadius: BorderRadius.circular(3)),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text('${500 - (totalPoints % 500)} XP to Level ${level + 1}', style: GoogleFonts.inter(fontSize: 11, color: _textMuted)),
-                ],
-              ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFamilySection(String? familyCode) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: _cardBg,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.group, color: _accent, size: 20),
-                const SizedBox(width: 8),
-                Text('Family System', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (familyCode != null && familyCode.isNotEmpty) ...[
-              Text("Your Family Code:", style: GoogleFonts.inter(fontSize: 12, color: _textMuted)),
-              const SizedBox(height: 4),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(familyCode, style: GoogleFonts.outfit(fontSize: 28, fontWeight: FontWeight.w900, color: _accent, letterSpacing: 2)),
-                  IconButton(
-                    icon: const Icon(Icons.copy, size: 20, color: _accent),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: familyCode));
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Copied Family Code!')));
-                    },
-                  )
-                ],
-              ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () async {
-                  await _familyService.leaveFamily();
-                },
-                child: const Text('Leave Family', style: TextStyle(color: Colors.red)),
-              )
-            ] else ...[
-              Text("Join or create a family to compete together!", style: GoogleFonts.inter(fontSize: 12, color: _textMuted), textAlign: TextAlign.center),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: _accent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                      onPressed: () => _showJoinFamilyDialog(),
-                      child: Text('Join', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: Colors.white)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: _accent.withValues(alpha: 0.5)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                      onPressed: () async {
-                        try {
-                          await _familyService.createFamily();
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-                        }
-                      },
-                      child: Text('Create', style: GoogleFonts.outfit(fontWeight: FontWeight.w700, color: _accent)),
-                    ),
-                  ),
-                ],
-              ),
-            ]
-          ],
+  Widget _buildStatusCard({
+    required int repsToday,
+    required bool isActiveToday,
+  }) {
+    final statusLabel = isActiveToday ? 'Consistency On Track' : 'Get Started Today';
+    final statusSub = isActiveToday
+        ? 'You are actively building growth with movement and recovery.'
+        : 'No tracked movement yet. Start one exercise to unlock growth momentum.';
+
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 350),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isActiveToday ? const Color(0xFFE9F8F6) : const Color(0xFFF2F8FC),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(
+          color: isActiveToday
+              ? const Color(0xFF0D9D93).withValues(alpha: 0.3)
+              : const Color(0xFF1696D2).withValues(alpha: 0.3),
         ),
       ),
-    );
-  }
-
-  void _showJoinFamilyDialog() {
-    final tc = TextEditingController();
-    showDialog(context: context, builder: (ctx) => AlertDialog(
-      title: const Text("Join Family"),
-      content: TextField(
-        controller: tc,
-        textCapitalization: TextCapitalization.characters,
-        maxLength: 6,
-        decoration: const InputDecoration(hintText: "Enter 6-char Family Code"),
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx), child: const Text("Cancel")),
-        ElevatedButton(
-          onPressed: () async {
-            try {
-              await _familyService.joinFamily(tc.text.trim());
-              Navigator.pop(ctx);
-            } catch (e) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-            }
-          },
-          child: const Text("Join"),
-        )
-      ],
-    ));
-  }
-
-  Widget _buildStatsCards(int totalWorkouts) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
-          Expanded(child: _StatCard(icon: Icons.favorite, label: 'Heart Rate', value: '72 bpm', color: const Color(0xFFFF6B8A),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HeartRateScreen())))),
-          const SizedBox(width: 12),
-          Expanded(child: _StatCard(icon: Icons.water_drop, label: 'Water', value: '6 / 8', color: const Color(0xFF5EC6C6),
-            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const WaterTrackerScreen())))),
-          const SizedBox(width: 12),
-          Expanded(child: _StatCard(icon: Icons.fitness_center, label: 'Workouts', value: '$totalWorkouts', color: _accent, onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const CalendarScreen()));
-          })),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildWeeklyImprovement() {
-    final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final List<int> weeklyActivity = [0, 0, 0, 0, 0, 0, 0];
-    final maxVal = weeklyActivity.reduce(max).toDouble();
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: _cardBg,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.trending_up, color: _accent, size: 20),
-                const SizedBox(width: 8),
-                Text('Weekly Activity', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(color: _accent.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                  child: Text('+12% vs last week', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w600, color: _accent)),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 140,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: List.generate(7, (i) {
-                  final ratio = maxVal > 0 ? weeklyActivity[i] / maxVal : 0.0;
-                  final isToday = i == DateTime.now().weekday - 1;
-                  return Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text('${weeklyActivity[i]}m', style: GoogleFonts.inter(fontSize: 9, fontWeight: FontWeight.w600, color: _textMuted)),
-                          const SizedBox(height: 4),
-                          AnimatedContainer(
-                            duration: Duration(milliseconds: 600 + i * 100),
-                            height: (90 * ratio).clamp(8.0, 90.0),
-                            decoration: BoxDecoration(
-                              color: isToday ? _accent : _accentLight,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(days[i], style: GoogleFonts.inter(
-                            fontSize: 10,
-                            fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
-                            color: isToday ? _accent : _textMuted,
-                          )),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDataAnalysis(int totalWorkouts, int totalMinutes, int caloriesBurned, int currentStreak) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: _cardBg,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.analytics, color: _accent, size: 20),
-                const SizedBox(width: 8),
-                Text('Your Journey', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(child: _AnalysisTile(icon: Icons.timer, label: 'Total Minutes', value: '$totalMinutes', color: const Color(0xFFFFA000))),
-                const SizedBox(width: 12),
-                Expanded(child: _AnalysisTile(icon: Icons.local_fire_department, label: 'Calories', value: '$caloriesBurned', color: const Color(0xFFFF5252))),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(child: _AnalysisTile(icon: Icons.fitness_center, label: 'Workouts', value: '$totalWorkouts', color: _accent)),
-                const SizedBox(width: 12),
-                Expanded(child: _AnalysisTile(icon: Icons.emoji_events, label: 'Best Streak', value: '$currentStreak days', color: const Color(0xFFFFD700))),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLeaderboardPreview(int totalPoints, String? familyCode) {
-    if (familyCode == null || familyCode.isEmpty) {
-      return _buildGlobalLeaderboardPreview(totalPoints);
-    }
-    
-    return Column(
-      children: [
-        StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('users').where('familyCode', isEqualTo: familyCode).snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData) {
-              return const Center(child: CircularProgressIndicator());
-            }
-
-            final docs = snapshot.data!.docs;
-            final List<Map<String, dynamic>> familyMembers = docs.map((doc) {
-              final data = doc.data() as Map<String, dynamic>;
-              return {
-                'uid': doc.id,
-                'name': data['name'] ?? 'User',
-                'points': data['points'] ?? 0,
-              };
-            }).toList();
-
-            // Sort locally by points descending
-            familyMembers.sort((a, b) => (b['points'] as int).compareTo(a['points'] as int));
-
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: _cardBg,
-                  borderRadius: BorderRadius.circular(22),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-                ),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.groups, color: _accent, size: 20),
-                        const SizedBox(width: 8),
-                        Text('Family Clash', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
-                        const Spacer(),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(color: const Color(0xFFFF6B35).withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
-                          child: Text('Live', style: GoogleFonts.inter(fontSize: 10, fontWeight: FontWeight.w700, color: const Color(0xFFFF6B35))),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ...familyMembers.asMap().entries.take(5).map((entry) {
-                      final rank = entry.key + 1;
-                      final user = entry.value;
-                      final isYou = user['uid'] == currentUser!.uid;
-                      
-                      Color rankColor = _textMuted;
-                      if (rank == 1) rankColor = const Color(0xFFFFD700);
-                      if (rank == 2) rankColor = const Color(0xFFC0C0C0);
-                      if (rank == 3) rankColor = const Color(0xFFCD7F32);
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                        decoration: BoxDecoration(
-                          color: isYou ? _accent.withValues(alpha: 0.08) : const Color(0xFFF5F0EB),
-                          borderRadius: BorderRadius.circular(14),
-                          border: isYou ? Border.all(color: _accent.withValues(alpha: 0.3)) : null,
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 28, height: 28,
-                              decoration: BoxDecoration(color: rankColor.withValues(alpha: 0.15), shape: BoxShape.circle),
-                              child: Center(child: Text('#$rank', style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w800, color: rankColor))),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(child: Text(user['name'] as String,
-                              maxLines: 1, overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.outfit(fontSize: 14, fontWeight: isYou ? FontWeight.w800 : FontWeight.w600, color: isYou ? _accent : _textDark))),
-                            const SizedBox(width: 8),
-                            Text('${user['points']} XP', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: isYou ? _accent : _textMuted)),
-                          ],
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-              ),
-            );
-          }
-        ),
-        const SizedBox(height: 24),
-        _buildGlobalLeaderboardPreview(totalPoints),
-      ],
-    );
-  }
-
-  Widget _buildGlobalLeaderboardPreview(int totalPoints) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('users').orderBy('points', descending: true).limit(5).snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        final docs = snapshot.data!.docs;
-        final List<Map<String, dynamic>> globalTopUsers = docs.map((doc) {
-          final data = doc.data() as Map<String, dynamic>;
-          return {
-            'uid': doc.id,
-            'name': data['name'] ?? 'User',
-            'points': data['points'] ?? 0,
-          };
-        }).toList();
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Container(
-            padding: const EdgeInsets.all(20),
+          Container(
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
-              color: _cardBg,
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.emoji_events, color: Color(0xFFFFD700), size: 20),
-                    const SizedBox(width: 8),
-                    Text('Global Leaderboard', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w700, color: _textDark)),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LeaderboardScreen())),
-                      child: Text('View All →', style: GoogleFonts.outfit(fontSize: 12, fontWeight: FontWeight.w600, color: _accent)),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                ...globalTopUsers.asMap().entries.map((entry) {
-                  final rank = entry.key + 1;
-                  final user = entry.value;
-                  final isYou = user['uid'] == currentUser!.uid;
-                  
-                  Color rankColor = _textMuted;
-                  if (rank == 1) rankColor = const Color(0xFFFFD700);
-                  if (rank == 2) rankColor = const Color(0xFFC0C0C0);
-                  if (rank == 3) rankColor = const Color(0xFFCD7F32);
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: isYou ? _accent.withValues(alpha: 0.08) : const Color(0xFFF5F0EB),
-                      borderRadius: BorderRadius.circular(14),
-                      border: isYou ? Border.all(color: _accent.withValues(alpha: 0.3)) : null,
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 28, height: 28,
-                          decoration: BoxDecoration(color: rankColor.withValues(alpha: 0.15), shape: BoxShape.circle),
-                          child: Center(child: Text('#$rank', style: GoogleFonts.outfit(fontSize: 11, fontWeight: FontWeight.w800, color: rankColor))),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(child: Text(user['name'] as String,
-                          maxLines: 1, overflow: TextOverflow.ellipsis,
-                          style: GoogleFonts.outfit(fontSize: 14, fontWeight: isYou ? FontWeight.w800 : FontWeight.w600, color: isYou ? _accent : _textDark))),
-                        const SizedBox(width: 8),
-                        Text('${user['points']} XP', style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: isYou ? _accent : _textMuted)),
-                      ],
-                    ),
-                  );
-                }),
-              ],
+            child: Icon(
+              isActiveToday ? Icons.insights : Icons.play_circle,
+              color: isActiveToday ? const Color(0xFF0D9D93) : const Color(0xFF1696D2),
             ),
           ),
-        );
-      }
-    );
-  }
-
-  Widget _buildSettingsSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: _cardBg,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 12, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          children: [
-            _SettingsTile(icon: Icons.person, label: 'Edit Profile', onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming Soon!')));
-            }),
-            _SettingsTile(icon: Icons.notifications, label: 'Notifications', onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming Soon!')));
-            }),
-            _SettingsTile(icon: Icons.privacy_tip, label: 'Privacy', onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming Soon!')));
-            }),
-            _SettingsTile(icon: Icons.help, label: 'Help & Support', onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming Soon!')));
-            }),
-            _SettingsTile(icon: Icons.logout, label: 'Logout', onTap: () {
-              FirebaseAuth.instance.signOut();
-            }, isLast: true),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ═══════════════════════════════════════
-//  Supporting Widgets
-// ═══════════════════════════════════════
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _StatCard({required this.icon, required this.label, required this.value, required this.color, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 10, offset: const Offset(0, 4))],
-        ),
-        child: Column(
-          children: [
-            Container(
-              width: 40, height: 40,
-              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
-              child: Icon(icon, color: color, size: 20),
-            ),
-            const SizedBox(height: 8),
-            FittedBox(fit: BoxFit.scaleDown, child: Text(value, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF1A1A1A)))),
-            const SizedBox(height: 2),
-            FittedBox(fit: BoxFit.scaleDown, child: Text(label, style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF8D8D8D)))),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _AnalysisTile extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  const _AnalysisTile({required this.icon, required this.label, required this.value, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
-      child: Row(
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                FittedBox(fit: BoxFit.scaleDown, child: Text(value, style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w800, color: const Color(0xFF1A1A1A)))),
-                FittedBox(fit: BoxFit.scaleDown, child: Text(label, style: GoogleFonts.inter(fontSize: 10, color: const Color(0xFF8D8D8D)))),
+                Text(
+                  statusLabel,
+                  style: GoogleFonts.outfit(
+                    color: const Color(0xFF10313D),
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  statusSub,
+                  style: GoogleFonts.inter(
+                    color: const Color(0xFF5E7681),
+                    fontSize: 12,
+                    height: 1.35,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Exercise reps today: $repsToday',
+                  style: GoogleFonts.outfit(
+                    color: const Color(0xFF0D9D93),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChallengeCard() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFF0D9D93).withValues(alpha: 0.22)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.emoji_events, color: Color(0xFF0D9D93), size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Challenges & Achievements',
+                style: GoogleFonts.outfit(
+                  color: const Color(0xFF10313D),
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          if (_loading)
+            const LinearProgressIndicator(minHeight: 3)
+          else ...[
+            _ChallengeLine(
+              label: 'Completed challenge levels',
+              value: '${_snapshot.completedChallenges}',
+            ),
+            _ChallengeLine(
+              label: 'Unlocked challenge tier',
+              value: '${_snapshot.unlockedChallengeLevel}',
+            ),
+            _ChallengeLine(
+              label: 'Challenge rank',
+              value: _snapshot.challengeProgress.rank,
+            ),
+            _ChallengeLine(
+              label: 'Gym rank',
+              value: _snapshot.gymProgress.rank,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWorkoutSummary() {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: const Color(0xFF1696D2).withValues(alpha: 0.22)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Workout Summary',
+            style: GoogleFonts.outfit(
+              color: const Color(0xFF10313D),
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: _SummaryStat(
+                  title: 'Sessions',
+                  value: '${_snapshot.totalWorkouts}',
+                  color: const Color(0xFF0D9D93),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _SummaryStat(
+                  title: 'Minutes',
+                  value: '${_snapshot.totalMinutes}',
+                  color: const Color(0xFF1696D2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: _SummaryStat(
+                  title: 'Calories',
+                  value: '${_snapshot.totalCalories}',
+                  color: const Color(0xFF147EA8),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickActions() {
+    return Row(
+      children: [
+        Expanded(
+          child: _ActionButton(
+            icon: Icons.favorite,
+            label: 'Heart',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const HeartRateScreen()),
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ActionButton(
+            icon: Icons.water_drop,
+            label: 'Water',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const WaterTrackerScreen()),
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: _ActionButton(
+            icon: Icons.calendar_today,
+            label: 'Calendar',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CalendarScreen()),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GrowthSnapshot {
+  final int workoutsToday;
+  final int totalWorkouts;
+  final int totalMinutes;
+  final int totalCalories;
+  final int completedChallenges;
+  final int unlockedChallengeLevel;
+  final XpProgress challengeProgress;
+  final XpProgress gymProgress;
+
+  const _GrowthSnapshot({
+    required this.workoutsToday,
+    required this.totalWorkouts,
+    required this.totalMinutes,
+    required this.totalCalories,
+    required this.completedChallenges,
+    required this.unlockedChallengeLevel,
+    required this.challengeProgress,
+    required this.gymProgress,
+  });
+
+  const _GrowthSnapshot.empty()
+      : workoutsToday = 0,
+        totalWorkouts = 0,
+        totalMinutes = 0,
+        totalCalories = 0,
+        completedChallenges = 0,
+        unlockedChallengeLevel = 10,
+        challengeProgress = const XpProgress(
+          xp: 0,
+          level: 0,
+          rank: 'UNRANKED',
+          currentLevelMinXp: 0,
+          nextLevelXp: 100,
+        ),
+        gymProgress = const XpProgress(
+          xp: 0,
+          level: 0,
+          rank: 'UNRANKED',
+          currentLevelMinXp: 0,
+          nextLevelXp: 100,
+        );
+}
+
+class _StatTile extends StatelessWidget {
+  final double width;
+  final String title;
+  final String value;
+  final String caption;
+  final IconData icon;
+  final Color color;
+
+  const _StatTile({
+    required this.width,
+    required this.title,
+    required this.value,
+    required this.caption,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.22)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 18),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: GoogleFonts.inter(
+                  color: const Color(0xFF5E7681),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: GoogleFonts.outfit(
+              color: const Color(0xFF10313D),
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          Text(
+            caption,
+            style: GoogleFonts.inter(
+              color: const Color(0xFF7F97A2),
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -816,53 +806,124 @@ class _AnalysisTile extends StatelessWidget {
   }
 }
 
-class _SettingsTile extends StatelessWidget {
-  final IconData icon;
+class _ChallengeLine extends StatelessWidget {
   final String label;
-  final VoidCallback onTap;
-  final bool isLast;
+  final String value;
 
-  const _SettingsTile({required this.icon, required this.label, required this.onTap, this.isLast = false});
+  const _ChallengeLine({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        decoration: BoxDecoration(
-          border: isLast ? null : Border(bottom: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: const Color(0xFF8D8D8D), size: 20),
-            const SizedBox(width: 14),
-            Expanded(child: Text(label, style: GoogleFonts.outfit(fontSize: 14, fontWeight: FontWeight.w600, color: const Color(0xFF1A1A1A)))),
-            const Icon(Icons.chevron_right, color: Color(0xFFB0B0B0), size: 20),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              style: GoogleFonts.inter(
+                color: const Color(0xFF5E7681),
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          Text(
+            value,
+            style: GoogleFonts.outfit(
+              color: const Color(0xFF10313D),
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _ProgressRingPainter extends CustomPainter {
-  final double progress;
+class _SummaryStat extends StatelessWidget {
+  final String title;
+  final String value;
   final Color color;
-  final Color bgColor;
 
-  _ProgressRingPainter({required this.progress, required this.color, required this.bgColor});
+  const _SummaryStat({
+    required this.title,
+    required this.value,
+    required this.color,
+  });
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.width / 2 - 6;
-    canvas.drawCircle(center, radius, Paint()..style = PaintingStyle.stroke..strokeWidth = 6..color = bgColor);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2, 2 * pi * progress, false,
-      Paint()..style = PaintingStyle.stroke..strokeWidth = 6..strokeCap = StrokeCap.round..color = color);
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: GoogleFonts.outfit(
+              color: const Color(0xFF10313D),
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            title,
+            style: GoogleFonts.inter(
+              color: const Color(0xFF5E7681),
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
   }
+}
+
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
-  bool shouldRepaint(covariant _ProgressRingPainter old) => old.progress != progress;
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFF0D9D93).withValues(alpha: 0.2)),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: const Color(0xFF0D9D93), size: 20),
+            const SizedBox(height: 5),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                color: const Color(0xFF10313D),
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
